@@ -1,0 +1,20 @@
+# configs/colab.yaml
+# Memory-optimised overrides for Colab T4 (15 GB VRAM).
+# Merged on top of default.yaml at runtime:
+#   cfg = OmegaConf.merge(default, colab)
+# Only keys that differ from default are listed here.
+
+training:
+  batch_size: 32          # Reduce if OOM; ViT-Small + LoRA is ~3 GB at bs=32
+  precision: bf16
+  gradient_checkpointing: true
+  wandb_enabled: false
+
+llm:
+  quantization: 4bit      # Essential on T4; saves ~10 GB vs fp16
+
+retrieval:
+  faiss_index_type: flat  # Flat is fine for <100k vectors on Colab
+
+explain:
+  shap_n_background: 50   # Fewer background samples = faster on CPU

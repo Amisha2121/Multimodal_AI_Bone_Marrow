@@ -1,0 +1,14 @@
+{"patient_id": "02522A2B2726FB0A03BB19F2D8D9524D", "n_success": 5, "n_failed": 0, "n_skipped": 0, "elapsed_s": 0.0}
+{"patient_id": "02522A2B2726FB0A03BB19F2D8D9524D", "n_success": 8, "n_failed": 0, "n_skipped": 0, "elapsed_s": 85.1}
+{"patient_id": "02522A2B2726FB0A03BB19F2D8D9524D", "n_success": 96, "n_failed": 0, "n_skipped": 8, "elapsed_s": 80.7}
+{"patient_id": "02522A2B2726FB0A03BB19F2D8D9524D", "n_success": 96, "n_failed": 0, "n_skipped": 8, "elapsed_s": 79.0}
+{"patient_id": "02E74F10E0327AD868D138F2B4FDD6F0", "n_success": 183, "n_failed": 0, "n_skipped": 0, "elapsed_s": 333.2}
+{"patient_id": "069059B7EF840F0C74A814EC9237B6EC", "n_success": 106, "n_failed": 0, "n_skipped": 0, "elapsed_s": 101.0}
+{"patient_id": "0A09C8844BA8F0936C20BD791130D6B6", "n_success": 71, "n_failed": 0, "n_skipped": 0, "elapsed_s": 90.3}
+{"patient_id": "14BFA6BB14875E45BBA028A21ED38046", "n_success": 170, "n_failed": 0, "n_skipped": 0, "elapsed_s": 79.3}
+{"patient_id": "1679091C5A880FAF6FB5E6087EB1B2DC", "n_success": 284, "n_failed": 0, "n_skipped": 0, "elapsed_s": 473.5}
+{"patient_id": "17E62166FC8586DFA4D1BC0E1742C08B", "n_success": 328, "n_failed": 0, "n_skipped": 0, "elapsed_s": 137.7}
+{"patient_id": "182BE0C5CDCD5072BB1864CDEE4D3D6E", "n_success": 291, "n_failed": 0, "n_skipped": 0, "elapsed_s": 161.5}
+{"patient_id": "19CA14E7EA6328A42E0EB13D585E4C22", "n_success": 301, "n_failed": 0, "n_skipped": 0, "elapsed_s": 107.8}
+{"patient_id": "1C383CD30B7C298AB50293ADFECB7B18", "n_success": 145, "n_failed": 0, "n_skipped": 0, "elapsed_s": 132.1}
+{"patient_id": "1F0E3DAD99908345F7439F8FFABDFFC4", "n_success": 174, "n_failed": 0, "n_skipped": 0, "elapsed_s": 364.9}

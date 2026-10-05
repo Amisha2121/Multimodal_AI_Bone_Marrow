@@ -1,0 +1,118 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# configs/default.yaml
+# Central configuration for the Bone Marrow RAG project.
+# Override specific keys in configs/colab.yaml for memory-constrained runs.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Reproducibility ──────────────────────────────────────────────────────────
+seed: 42
+
+# ── Data paths ───────────────────────────────────────────────────────────────
+data:
+  raw_dir:        data/raw          # Downloaded TCIA images (gitignored)
+  processed_dir:  data/processed    # Patient-level splits
+  synthetic_dir:  data/synthetic    # Rule-based AML/MDS cases
+  kb_dir:         data/knowledge_base
+  dataset_cards:  data/dataset_cards
+
+# ── Dataset ───────────────────────────────────────────────────────────────────
+dataset:
+  name: bonemarrowwsi_pediatricleukemia_consensus
+  num_classes: 8   # 8 morphology categories from verified consensus annotations
+  cell_metadata: data/processed/cell_metadata.csv
+  splits_file:   data/processed/splits.json
+  # Patient-level split ratios (fixed in splits.json — do not change without regenerating)
+  split:
+    train: 0.70
+    val:   0.15
+    test:  0.15
+  # Image preprocessing
+  image_size: 224
+  # Augmentation strength: "light" | "medium" | "heavy"
+  augmentation: medium
+
+# ── Vision model ─────────────────────────────────────────────────────────────
+vision:
+  backbone: vit_small_patch16_224   # timm model name; swap here to change backbone
+  pretrained: true
+  # LoRA
+  lora:
+    enabled: true
+    r: 8
+    alpha: 16
+    dropout: 0.05
+    target_modules: ["qkv"]   # timm vit_small fused Q/K/V projection layer name
+
+# ── Training ─────────────────────────────────────────────────────────────────
+training:
+  epochs: 30
+  batch_size: 64
+  lr: 3.0e-4
+  weight_decay: 1.0e-2
+  label_smoothing: 0.1
+  # Mixed precision: "bf16" | "fp16" | "fp32"
+  precision: bf16
+  gradient_checkpointing: true
+  # Weighted random sampler for class imbalance
+  use_weighted_sampler: true
+  # Early stopping
+  early_stopping_patience: 5
+  # Logging
+  wandb_project: bonemarrow-vision
+  wandb_enabled: false     # flip to true to enable W&B
+
+# ── Patient-level aggregation ────────────────────────────────────────────────
+aggregation:
+  # Minimum crops per patient to trust the differential
+  min_crops: 50
+  # WHO 5th: blasts = myeloblast + (monoblast if AML-M5)
+  blast_classes: ["myeloblast"]
+
+# ── Retrieval ────────────────────────────────────────────────────────────────
+retrieval:
+  embedder: BAAI/bge-small-en-v1.5
+  reranker: BAAI/bge-reranker-base
+  chunk_size: 512
+  chunk_overlap: 64
+  top_k_dense: 20
+  top_k_sparse: 20
+  top_k_reranked: 5    # final chunks passed to Synthesizer
+  faiss_index_type: flat   # "flat" | "ivf" for large KB
+
+# ── LLM ──────────────────────────────────────────────────────────────────────
+llm:
+  model: mistralai/Mistral-7B-Instruct-v0.3
+  quantization: 4bit          # "4bit" | "8bit" | null
+  max_new_tokens: 1024
+  temperature: 0.1
+  # Fallback model used if VRAM < vram_threshold_gb
+  fallback_model: microsoft/Phi-3-mini-4k-instruct
+  vram_threshold_gb: 8.0
+
+# ── Critic / NLI ─────────────────────────────────────────────────────────────
+critic:
+  nli_model: cross-encoder/nli-deberta-v3-small
+  # Abstention threshold is calibrated on eval/query_set.json.
+  # This value is a starting default; calibrate_threshold.py overwrites it.
+  abstention_threshold: 0.5
+  max_revision_iterations: 3
+  # Min retrieval similarity score to allow synthesis (cosine, bge embedding space)
+  min_retrieval_similarity: 0.50
+
+# ── Synthetic data generation ─────────────────────────────────────────────────
+synthetic:
+  conditions: ["AML", "MDS"]
+  # Classification standard for labels and ground truth
+  classification_standard: WHO5th   # "WHO5th" | "ICC2022"
+  cases_per_condition: 100
+  crops_per_case: 200
+
+# ── Explainability ───────────────────────────────────────────────────────────
+explain:
+  shap_n_background: 100    # background samples for KernelExplainer
+  rollout_head_fusion: mean  # "mean" | "max" | "min"
+
+# ── UI ───────────────────────────────────────────────────────────────────────
+ui:
+  port: 8501
+  max_upload_size_mb: 50

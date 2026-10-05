@@ -1,0 +1,57 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# requirements.txt
+# Pin to tested versions where stability matters; leave flexible elsewhere.
+# Install: pip install -r requirements.txt
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Core ─────────────────────────────────────────────────────────────────────
+python-dotenv>=1.0.0
+omegaconf>=2.3.0
+pyyaml>=6.0
+
+# ── Vision ───────────────────────────────────────────────────────────────────
+torch>=2.2.0
+torchvision>=0.17.0
+timm>=0.9.16                   # ViT-Small backbone
+peft>=0.10.0                   # LoRA via Hugging Face PEFT
+
+# ── LLM / HuggingFace ────────────────────────────────────────────────────────
+transformers>=4.40.0
+accelerate>=0.28.0
+bitsandbytes>=0.43.0           # 4-bit quantisation on CUDA
+sentencepiece>=0.1.99          # Mistral tokeniser
+
+# ── RAG / Retrieval ───────────────────────────────────────────────────────────
+faiss-cpu>=1.8.0               # Use faiss-gpu if GPU FAISS is desired
+rank-bm25>=0.2.2
+sentence-transformers>=2.6.0   # BGE embedder + BGE-reranker
+langchain>=0.1.0
+langchain-community>=0.0.20
+langgraph>=0.0.28
+
+# ── NLI Critic ───────────────────────────────────────────────────────────────
+# cross-encoder/nli-deberta-v3-small loaded via sentence-transformers
+
+# ── Explainability ───────────────────────────────────────────────────────────
+shap>=0.45.0
+
+# ── Data / Utilities ─────────────────────────────────────────────────────────
+numpy>=1.26.0
+pandas>=2.2.0
+scikit-learn>=1.4.0
+tqdm>=4.66.0
+Pillow>=10.3.0
+matplotlib>=3.8.0
+seaborn>=0.13.0
+
+# ── TCIA Download ─────────────────────────────────────────────────────────────
+tcia-utils>=2.7.0
+requests>=2.31.0
+
+# ── UI ───────────────────────────────────────────────────────────────────────
+streamlit>=1.35.0
+plotly>=5.22.0
+
+# ── Testing ──────────────────────────────────────────────────────────────────
+pytest>=8.0.0
+pytest-cov>=5.0.0
