@@ -28,6 +28,7 @@
             flex-direction: column;
             transition: transform 0.3s ease;
             z-index: 100;
+            position: relative;
         }
         
         .sidebar.collapsed {
@@ -36,24 +37,33 @@
         
         .sidebar-toggle {
             position: absolute;
-            left: 280px;
+            right: 10px;
             top: 20px;
             width: 32px;
             height: 32px;
-            background: #1a202c;
+            background: rgba(255,255,255,0.1);
             color: white;
             border: none;
-            border-radius: 0 4px 4px 0;
+            border-radius: 4px;
             cursor: pointer;
-            z-index: 101;
-            transition: left 0.3s ease;
+            z-index: 102;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.3s ease;
         }
         
-        .sidebar-toggle.collapsed {
-            left: 0;
+        .sidebar-toggle:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .sidebar.collapsed .sidebar-toggle {
+            position: fixed;
+            left: 10px;
+            top: 20px;
+            right: auto;
+            background: #1a202c;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
         
         .sidebar-header {
@@ -592,17 +602,36 @@
             
             return (
                 <div className="app">
-                    <button 
-                        className={`sidebar-toggle ${sidebarCollapsed ? 'collapsed' : ''}`}
-                        onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                    >
-                        <i className={`fas fa-chevron-${sidebarCollapsed ? 'right' : 'left'}`}></i>
-                    </button>
-                    
+                    {sidebarCollapsed && (
+                        <button 
+                            className="sidebar-toggle-external"
+                            onClick={() => setSidebarCollapsed(false)}
+                            style={{
+                                position: 'fixed',
+                                left: '10px',
+                                top: '20px',
+                                width: '32px',
+                                height: '32px',
+                                background: '#1a202c',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                zIndex: 1000,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
+                            }}
+                        >
+                            <i className="fas fa-chevron-right"></i>
+                        </button>
+                    )}
                     <Sidebar 
                         activeTab={activeTab} 
                         setActiveTab={setActiveTab} 
                         collapsed={sidebarCollapsed}
+                        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
                     />
                     
                     <div className={`main-content ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
@@ -640,7 +669,7 @@
             );
         }
         
-        function Sidebar({ activeTab, setActiveTab, collapsed }) {
+        function Sidebar({ activeTab, setActiveTab, collapsed, onToggle }) {
             const tabs = [
                 { id: 'detection', icon: 'fa-microscope', label: 'Detection View' },
                 { id: 'questions', icon: 'fa-comments', label: 'Ask Questions' },
@@ -653,6 +682,12 @@
                     <div className="sidebar-header">
                         <h1>Bone Marrow Analysis</h1>
                         <p>Cytomorphology Assistant</p>
+                        <button 
+                            className={`sidebar-toggle ${collapsed ? 'collapsed' : ''}`}
+                            onClick={onToggle}
+                        >
+                            <i className={`fas fa-chevron-${collapsed ? 'right' : 'left'}`}></i>
+                        </button>
                     </div>
                     <div className="sidebar-nav">
                         {tabs.map(tab => (

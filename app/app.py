@@ -36,7 +36,7 @@ app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
 # Optimize LLM settings for faster generation
 LLM_TEMP_FAST = 0.1  # Faster, more deterministic
 LLM_MAX_TOKENS_FAST = 400  # Shorter responses
-USE_LLM_FOR_REPORTS = False  # Set to True for LLM-generated content, False for instant fallback reports
+USE_LLM_FOR_REPORTS = True  # Set to True for LLM-generated content, False for instant fallback reports
 
 # Initialize RAG
 try:
@@ -369,14 +369,17 @@ The system has been validated against expert hematopathologist reviews and provi
                 # Use fast fallback for instant report generation
                 raise Exception("Using fast fallback")
             
-            overview = llm.generate([{"role": "user", "content": f"""You are a board-certified hematopathologist writing a clinical bone marrow report. Write a comprehensive Overall Morphological Assessment section (6-8 sentences) in a professional, doctor-friendly narrative style WITHOUT technical jargon or bullet points.
+            overview = llm.generate([{"role": "user", "content": f"""You are a board-certified hematopathologist writing a clinical bone marrow report for Case {r.case_id}. Write a comprehensive Overall Morphological Assessment section (6-8 sentences) in a professional, doctor-friendly narrative style WITHOUT technical jargon or bullet points.
 
-CASE DATA:
+CASE DATA FOR {r.case_id}:
 - Total cells analyzed: {r.total_cells_detected}
 - Blast percentage: {r.blast_fraction:.1%} ({blast_count} cells)
 - M:E Ratio: {me_ratio}
 - Top 5 cell types: {', '.join([f'{k} ({v} cells, {r.morphology_percentages.get(k, 0):.1%})' for k, v in top_cell_types[:5]])}
 - Myeloid cells: {myeloid_count}, Erythroid: {erythroid_count}, Lymphoid: {lymphoid_count}
+
+COMPLETE CELL DISTRIBUTION:
+{chr(10).join([f'- {k}: {v} cells ({r.morphology_percentages.get(k, 0):.1%})' for k, v in sorted(r.morphology_counts.items(), key=lambda x: x[1], reverse=True)])}
 
 WHO GUIDELINES REFERENCE:
 {overview_txt[:500]}
@@ -386,11 +389,11 @@ Write a flowing narrative paragraph that covers:
 2. Blast cell evaluation in context of WHO thresholds (≥20% for acute leukemia, 5-19% for MDS)
 3. Myeloid:Erythroid ratio interpretation
 4. Trilineage hematopoiesis evaluation (myeloid, erythroid, megakaryocytic maturation)
-5. Any concerning patterns or notable findings
+5. Any concerning patterns or notable findings specific to THIS case
 6. Preliminary diagnostic considerations based on morphology alone
 7. Need for clinical correlation and ancillary testing
 
-Use professional medical language but avoid overly technical terms. Write as a cohesive narrative paragraph, not bullet points:"""}], 
+IMPORTANT: Be VERY specific to the exact numbers and cell distribution in THIS case ({r.case_id}). Do NOT use generic template language. Each case should have completely different clinical reasoning based on its unique cellular composition:"""}], 
             temperature=0.3, max_tokens=600)
         except Exception as e:
             print(f"LLM generation failed: {e}, using fallback")
@@ -408,24 +411,29 @@ Use professional medical language but avoid overly technical terms. Write as a c
                     # Use fast fallback for instant report generation
                     raise Exception("Using fast fallback")
                 
-                cell_txt = llm.generate([{"role": "user", "content": f"""You are a hematopathologist writing a detailed clinical report section about {ctype}. Write a comprehensive 5-7 sentence analysis in a flowing narrative paragraph WITHOUT bullet points or technical jargon.
+                cell_txt = llm.generate([{"role": "user", "content": f"""You are a hematopathologist writing a detailed clinical report section about {ctype} for Case {r.case_id}. Write a comprehensive 5-7 sentence analysis in a flowing narrative paragraph WITHOUT bullet points or technical jargon.
 
-CELL DATA:
+SPECIFIC CELL DATA FOR THIS CASE:
 - Cell type: {ctype}
-- Count: {count} cells out of {r.total_cells_detected} total
-- Percentage: {pct:.1%}
-- Overall blast percentage in sample: {r.blast_fraction:.1%}
+- Count in THIS sample: {count} cells out of {r.total_cells_detected} total
+- Percentage in THIS sample: {pct:.1%}
+- Overall blast percentage: {r.blast_fraction:.1%}
+- Other cell types present: {', '.join([f'{k} ({r.morphology_percentages.get(k, 0):.1%})' for k, v in sorted(r.morphology_counts.items(), key=lambda x: x[1], reverse=True) if k != ctype][:5])}
+
+COMPLETE CONTEXT:
+Total cell types identified: {len(r.morphology_counts)}
+This cell type ranks #{sorted(r.morphology_counts.items(), key=lambda x: x[1], reverse=True).index((ctype, count)) + 1} by frequency in this specimen.
 
 Write a unique, detailed clinical analysis covering:
 1. Normal reference range for this cell type in bone marrow
-2. Clinical interpretation of THIS specific percentage (is it normal, increased, or decreased?)
-3. What this finding suggests about hematopoiesis and marrow function
-4. Potential clinical significance if abnormal (what conditions show these patterns?)
+2. Clinical interpretation of THIS EXACT {pct:.1%} percentage (is it normal, increased, or decreased?)
+3. What THIS SPECIFIC finding suggests about hematopoiesis in THIS patient
+4. Potential clinical significance if abnormal (what conditions show EXACTLY these patterns?)
 5. What diagnostic features or morphological characteristics are clinically relevant
 6. Specific ancillary tests recommended for this cell population if applicable
-7. How this finding relates to the overall case impression
+7. How this finding relates to the overall impression for THIS SPECIFIC CASE
 
-Write as a professional clinical narrative paragraph. Be specific to this exact case - do NOT use generic text. Vary your sentence structure and clinical reasoning for each cell type:"""}],
+CRITICAL: Write as a professional clinical narrative paragraph. Be EXTREMELY specific to THIS exact case with {count} {ctype} cells at {pct:.1%} - do NOT use generic template text. Every case must have completely different analysis based on its unique cellular composition:"""}],
                 temperature=0.4, max_tokens=500)
             except Exception as e:
                 print(f"LLM generation failed for {ctype}: {e}, using fallback")
@@ -786,29 +794,25 @@ def chat():
         ev = retriever.retrieve(query=expanded_query, top_k=4)
         evtxt = "\n\n".join([f"[Reference {i+1}]:\n{e['text'][:600]}" for i, e in enumerate(ev)])
         
-        prompt = f"""You are a clinical hematopathologist providing detailed answers to questions about bone marrow analysis.
+        prompt = f"""You are a bone marrow pathology assistant. Answer the user's question directly and concisely.
 
-CURRENT CASE INFORMATION:
+CASE DATA:
 {ctx}
 
-RETRIEVED CLINICAL GUIDELINES:
-{evtxt if evtxt else "No specific guidelines retrieved"}
+CLINICAL REFERENCES:
+{evtxt[:800] if evtxt else "None"}
 
-QUESTION: {q}
+USER QUESTION: {q}
 
-Please provide a comprehensive, detailed clinical answer:
-- Address all aspects of the question
-- Reference the case data when relevant
-- Cite WHO 2022 guidelines where applicable
-- Explain the clinical significance
-- Discuss differential diagnoses if relevant
-- Mention any limitations or caveats
-- Use professional medical terminology
-- Provide 4-8 sentences with full explanations
+Provide a brief, focused answer (2-4 sentences):
+- Answer the specific question asked
+- Reference actual numbers from this case when relevant  
+- Be precise and factual
+- Skip background unless asked
 
 Answer:"""
         
-        ans = llm.generate([{"role": "user", "content": prompt}], temperature=0.2, max_tokens=800)
+        ans = llm.generate([{"role": "user", "content": prompt}], temperature=0.2, max_tokens=300)
         
         entry = {'q': q, 'a': ans, 'time': datetime.now().isoformat()}
         db_chats[aid].append(entry)
