@@ -1,0 +1,21 @@
+{
+  "num_chunks": 12,
+  "embedding_model": "BAAI/bge-small-en-v1.5",
+  "dimension": 384,
+  "similarity_metric": "cosine",
+  "created_at": "2026-10-06 07:28:43",
+  "chunk_ids": [
+    "WHO2022_BALL_001",
+    "WHO2022_TALL_002",
+    "WHO2022_BURKITT_003",
+    "WHO2022_AML_DEF_004",
+    "WHO2022_AML_SUB_005",
+    "WHO2022_AML_MAT_006",
+    "WHO2022_CML_CP_007",
+    "WHO2022_CML_ADV_008",
+    "WHO2022_HAEMATOGONES_009",
+    "WHO2022_REACTIVE_010",
+    "WHO2022_MPAL_011",
+    "DISCLAIMER_MONOLAYER_012"
+  ]
+}

@@ -1,0 +1,34 @@
+================================================================================
+YOLO CELL DETECTION DATASET - METADATA SUMMARY
+================================================================================
+
+SOURCE DATA:
+  Metadata CSV: data/processed/cell_metadata.csv
+  Total valid annotations: 20852
+
+PATIENT SPLITS:
+  Train patients: 79
+  Val patients: 17
+  Test patients: 17
+  VERIFIED: Zero patient overlap
+
+ANNOTATION SPLITS:
+  train: 14563 annotations
+  val: 2951 annotations
+  test: 3338 annotations
+
+DETECTION TASK:
+  Classes: 1 (cell)
+  Format: YOLO (normalized bounding boxes)
+  Class ID mapping: {'cell': 0}
+
+COORDINATE CONVENTION:
+  Input format: (x1, y1, x2, y2) absolute pixels
+  YOLO format: (class_id, x_center, y_center, width, height) normalized [0,1]
+  Coordinate system: Original WSI coordinates from DICOM annotations
+
+NOTES:
+  - Ground-truth annotations from consensus expert labels
+  - Patient-level split ensures no data leakage
+  - Single detection class: do NOT classify morphology
+  - Morphology classification is a separate downstream task

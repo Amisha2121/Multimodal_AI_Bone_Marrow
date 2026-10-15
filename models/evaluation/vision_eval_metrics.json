@@ -1,0 +1,164 @@
+{
+  "total_samples": 3338,
+  "accuracy": 0.8448,
+  "macro_precision": 0.7195,
+  "macro_recall": 0.8293,
+  "macro_f1": 0.753,
+  "weighted_f1": 0.8536,
+  "rare_classes_macro_recall": 0.8099,
+  "per_class": {
+    "Blast": {
+      "precision": 0.9734,
+      "recall": 0.8886,
+      "f1_score": 0.9291,
+      "support": 1275,
+      "is_rare_class": false
+    },
+    "Granulocyte (Mature/Band)": {
+      "precision": 0.9335,
+      "recall": 0.8654,
+      "f1_score": 0.8982,
+      "support": 795,
+      "is_rare_class": false
+    },
+    "Megakaryocyte / Platelet": {
+      "precision": 0.9937,
+      "recall": 0.9662,
+      "f1_score": 0.9797,
+      "support": 325,
+      "is_rare_class": false
+    },
+    "Myeloid (Maturing)": {
+      "precision": 0.6769,
+      "recall": 0.6029,
+      "f1_score": 0.6378,
+      "support": 476,
+      "is_rare_class": false
+    },
+    "Promyelocyte": {
+      "precision": 0.6806,
+      "recall": 0.8814,
+      "f1_score": 0.7681,
+      "support": 295,
+      "is_rare_class": false
+    },
+    "Lymphoid Series": {
+      "precision": 0.3876,
+      "recall": 0.7353,
+      "f1_score": 0.5076,
+      "support": 68,
+      "is_rare_class": true
+    },
+    "Other Morphological": {
+      "precision": 0.7797,
+      "recall": 0.902,
+      "f1_score": 0.8364,
+      "support": 51,
+      "is_rare_class": true
+    },
+    "Monocyte Series": {
+      "precision": 0.3307,
+      "recall": 0.7925,
+      "f1_score": 0.4667,
+      "support": 53,
+      "is_rare_class": true
+    }
+  },
+  "confusion_matrix": [
+    [
+      1133,
+      2,
+      0,
+      24,
+      14,
+      68,
+      4,
+      30
+    ],
+    [
+      5,
+      688,
+      0,
+      67,
+      3,
+      4,
+      4,
+      24
+    ],
+    [
+      0,
+      1,
+      314,
+      2,
+      2,
+      2,
+      4,
+      0
+    ],
+    [
+      8,
+      44,
+      1,
+      287,
+      101,
+      5,
+      0,
+      30
+    ],
+    [
+      0,
+      1,
+      0,
+      33,
+      260,
+      0,
+      0,
+      1
+    ],
+    [
+      13,
+      0,
+      0,
+      4,
+      0,
+      50,
+      1,
+      0
+    ],
+    [
+      3,
+      0,
+      1,
+      0,
+      1,
+      0,
+      46,
+      0
+    ],
+    [
+      2,
+      1,
+      0,
+      7,
+      1,
+      0,
+      0,
+      42
+    ]
+  ],
+  "class_names": [
+    "Blast",
+    "Granulocyte (Mature/Band)",
+    "Megakaryocyte / Platelet",
+    "Myeloid (Maturing)",
+    "Promyelocyte",
+    "Lymphoid Series",
+    "Other Morphological",
+    "Monocyte Series"
+  ],
+  "rare_classes": [
+    "Monocyte Series",
+    "Lymphoid Series",
+    "Other Morphological"
+  ]
+}

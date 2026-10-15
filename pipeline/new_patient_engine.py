@@ -80,7 +80,9 @@ CKPT_PATH = REPO_ROOT / "models" / "checkpoints" / "best_vit_lora_morphology.pt"
 CACHE_DIR  = REPO_ROOT / "data" / "new_patient_cache"
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
-LOW_EVIDENCE_THRESHOLD = 50   # cells; configurable
+LOW_EVIDENCE_THRESHOLD = 50
+MIN_CLASSIFICATION_CONFIDENCE = 0.60  # Reject low-confidence predictions
+   # cells; configurable
 
 # ── Global singletons (loaded once per process) ───────────────────────────────
 _GLOBAL_MODEL: Optional[BoneMarrowViT] = None

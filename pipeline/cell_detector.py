@@ -41,13 +41,13 @@ from PIL import Image, ImageDraw, ImageFont
 logger = logging.getLogger("cell_detector")
 
 # ── Tunable parameters (in original image coordinates) ────────────────────────
-MIN_CELL_AREA_PX = 350         # Minimum individual cell body area in original pixels
-MAX_CELL_AREA_PX = 22_000      # Maximum individual cell area (reject giant tissue chunks)
-MIN_DIM_PX = 20                # Minimum width/height (reject fragments < 20px)
-MAX_DIM_PX = 130               # Maximum width/height for an individual cell
-MIN_NUCLEUS_PIXELS = 100       # Minimum Azure B stained nuclear pixels inside cell
+MIN_CELL_AREA_PX = 250         # Minimum individual cell body area in original pixels
+MAX_CELL_AREA_PX = 30_000      # Maximum individual cell area (reject giant tissue chunks)
+MIN_DIM_PX = 15                # Minimum width/height (reject fragments < 20px)
+MAX_DIM_PX = 180               # Maximum width/height for an individual cell
+MIN_NUCLEUS_PIXELS = 80       # Minimum Azure B stained nuclear pixels inside cell
 MAX_COVERAGE_PCT = 3.5         # Maximum percentage of total image area (reject multi-cell clumps)
-NMS_IOU_THRESHOLD = 0.35       # IoU threshold for suppressing overlapping duplicate boxes
+NMS_IOU_THRESHOLD = 0.40       # IoU threshold for suppressing overlapping duplicate boxes
 MARGIN_RATIO = 0.15            # Contextual padding around cell bbox
 CROP_SIZE = 224                # ViT input size
 MAX_CELLS_PER_IMAGE = 600      # Guard against runaway processing

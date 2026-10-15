@@ -1,16 +1,3 @@
-"""
-vision/model.py
-─────────────────────────────────────────────────────────────────────────────
-ViT-Small/16 + LoRA Cell Classifier for BoneMarrowWSI-PediatricLeukemia.
-
-Architecture:
-  - Backbone: vit_small_patch16_224 (pre-trained on ImageNet-21k via timm)
-  - PEFT:     LoRA applied to Q and V projection matrices of all attention blocks
-  - Output:   8-class morphology head (MORPH_CLASSES from vision.taxonomy)
-
-The backbone classifier head is replaced with a fresh linear layer sized to
-num_classes.  Only LoRA adapters + the new head are updated during training.
-"""
 
 from pathlib import Path
 from typing import Dict, List, Optional, Union

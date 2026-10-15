@@ -29,10 +29,10 @@ Unlike initial secondary literature claims, exhaustive inspection of the 245 pat
 | Patient Diagnosis | **242 / 245** | DICOM tag `AdmittingDiagnosesDescription` (3 missing) |
 | Patient Age | **245 / 245** | DICOM tag `PatientAge` (range 18–204 months, median 114m) |
 | Patient Sex | **245 / 245** | DICOM tag `PatientSex` (129 M, 110 F, 6 O) |
-| Complete Blood Count (CBC) | ❌ **UNAVAILABLE** | Verified absent from all DICOM headers |
-| Cytogenetics / Karyotype | ❌ **UNAVAILABLE** | Verified absent from all DICOM headers |
-| Molecular Genetics (FISH/PCR) | ❌ **UNAVAILABLE** | Verified absent from all DICOM headers |
-| Adult MDS Patients | ❌ **ZERO CASES** | Entire cohort is pediatric leukemia (ALL, AML, CML, MPAL) |
+| Complete Blood Count (CBC) |  **UNAVAILABLE** | Verified absent from all DICOM headers |
+| Cytogenetics / Karyotype |  **UNAVAILABLE** | Verified absent from all DICOM headers |
+| Molecular Genetics (FISH/PCR) |  **UNAVAILABLE** | Verified absent from all DICOM headers |
+| Adult MDS Patients |  **ZERO CASES** | Entire cohort is pediatric leukemia (ALL, AML, CML, MPAL) |
 
 ---
 
@@ -65,11 +65,11 @@ Cell crops inherit their patient's partition membership, completely eliminating 
 ## 3. Strict Rules for Data Integrity & Scientific Validity
 
 1. **Real Data Only for Core Pipeline:** Model parameters are optimized and evaluated strictly on verified real biomedical data.
-2. **Quarantine of Synthetic Fixtures:** The 14 mock cases in `synthetic/` exist solely for CI unit testing of code syntax. They are isolated in `data/synthetic/README.md` and explicitly forbidden from model training or reported results.
+2. **No Synthetic Data:** The `synthetic/` and `data/synthetic/` directories have been permanently removed. No synthetic, mock, or rule-generated patient cases exist in the repository. Only real data from the BoneMarrowWSI-PediatricLeukemia cohort is used.
 3. **No Cross-Modal Fabrication:** Because CBC and cytogenetics are absent from the DICOM files, the pipeline strictly sets `cbc_values = null` and `cytogenetics = null`. We never impute or fabricate laboratory data.
 4. **Distinction of Annotated-Cell Blast Fraction:** The blast fraction extracted from consensus bounding boxes represents the proportion of blasts among *annotated* cells within sampled monolayer fields. It must be described as `annotated-cell blast fraction` and not conflated with exhaustive whole-slide clinical differential counts.
 5. **Preservation of Raw Annotations:** Raw consensus cell labels (e.g. `myelocytic_blast`, `technically_unfit`) and original diagnoses are preserved verbatim in all manifests alongside high-level groupings.
 
 ---
 
-*Verified by direct inspection on 2026-10-05.*
+*Verified by direct inspection on 2026-10-06.*

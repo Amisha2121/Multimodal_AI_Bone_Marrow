@@ -20,6 +20,7 @@ transformers>=4.40.0
 accelerate>=0.28.0
 bitsandbytes>=0.43.0           # 4-bit quantisation on CUDA
 sentencepiece>=0.1.99          # Mistral tokeniser
+groq>=0.11.0                   # Groq API for Llama 3.3 / Mixtral (RECOMMENDED for RAG)
 
 # ── RAG / Retrieval ───────────────────────────────────────────────────────────
 faiss-cpu>=1.8.0               # Use faiss-gpu if GPU FAISS is desired

@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bone Marrow Cytomorphology Analysis</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #f5f7fa;
+            color: #2d3748;
+        }
+        
+        /* App Layout */
+        .app {
+            display: flex;
+            height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #1a202c;
+            color: white;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-header h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .sidebar-header p {
+            font-size: 0.875rem;
+            color: #a0aec0;
+        }
+        
+        .sidebar-nav {
+            flex: 1;
+            padding: 1rem 0;
+        }
+        
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .nav-item.active {
+            background: rgba(59, 130, 246, 0.15);
+            border-left-color: #3b82f6;
+        }
+        
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .topbar {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .topbar h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1a202c;
+        }
+        
+        .content-area {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+        
+        .content-main {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        
+        .content-main.chat-view {
+            padding: 0;
+            background: #ffffff;
+        }
+        
+        .content-sidebar {
+            width: 320px;
+            background: white;
+            border-left: 1px solid #e2e8f0;
+            overflow-y: auto;
+        }
+        
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1a202c;
+        }
+        
+        /* Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.25rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .metric-label {
+            font-size: 0.875rem;
+            color: #718096;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a202c;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+        
+        /* Upload Zone */
+        .upload-zone {
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .upload-zone:hover {
+            border-color: #3b82f6;
+            background: #f7fafc;
+        }
+        
+        .upload-zone i {
+            font-size: 3rem;
+            color: #a0aec0;
+            margin-bottom: 1rem;
+        }
+        
+        /* Chat - ChatGPT Style */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: #ffffff;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem 0;
+        }
+        
+        .chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 4px;
+        }
+        
+        .chat-message-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 1rem 1rem;
+        }
+        
+        .chat-message-wrapper.user {
+            background: #f7f7f8;
+        }
+        
+        .chat-message-wrapper.assistant {
+            background: #ffffff;
+        }
+        
+        .chat-message {
+            max-width: 768px;
+            width: 100%;
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .chat-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .chat-avatar.user {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .chat-avatar.assistant {
+            background: #10a37f;
+            color: white;
+        }
+        
+        .chat-content {
+            flex: 1;
+            padding-top: 0.25rem;
+            line-height: 1.75;
+            color: #374151;
+        }
+        
+        .chat-content p {
+            margin-bottom: 0.75rem;
+        }
+        
+        .chat-empty {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            padding: 2rem;
+        }
+        
+        .chat-empty h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1f2937;
+        }
+        
+        .chat-input-container {
+            padding: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+            background: white;
+        }
+        
+        .chat-input-wrapper {
+            max-width: 768px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .chat-input {
+            width: 100%;
+            padding: 1rem 3rem 1rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            resize: none;
+            font-family: inherit;
+            font-size: 1rem;
+            line-height: 1.5;
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+        }
+        
+        .chat-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .chat-send-btn {
+            position: absolute;
+            right: 0.5rem;
+            bottom: 0.5rem;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            background: #3b82f6;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .chat-send-btn:hover:not(:disabled) {
+            background: #2563eb;
+        }
+        
+        .chat-send-btn:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+        }
+        
+        /* Cell Grid */
+        .cell-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        
+        .cell-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 0.75rem;
+            text-align: center;
+        }
+        
+        .cell-card img {
+            width: 100%;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .cell-name {
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .cell-desc {
+            font-size: 0.75rem;
+            color: #718096;
+        }
+        
+        /* History */
+        .history-item {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .history-item:hover {
+            background: #f7fafc;
+        }
+        
+        .history-item.active {
+            background: #eff6ff;
+            border-left: 3px solid #3b82f6;
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        function App() {
+            const [activeTab, setActiveTab] = useState('upload');
+            const [analyses, setAnalyses] = useState([]);
+            const [selectedAnalysis, setSelectedAnalysis] = useState(null);
+            const [loading, setLoading] = useState(false);
+            
+            // Fetch analyses on load
+            useEffect(() => {
+                fetchAnalyses();
+            }, []);
+            
+            const fetchAnalyses = async () => {
+                try {
+                    const res = await fetch('/api/analyses');
+                    const data = await res.json();
+                    setAnalyses(data.analyses);
+                } catch (err) {
+                    console.error('Failed to fetch analyses:', err);
+                }
+            };
+            
+            const handleUpload = async (files) => {
+                setLoading(true);
+                const formData = new FormData();
+                Array.from(files).forEach(file => {
+                    formData.append('files', file);
+                });
+                
+                try {
+                    const res = await fetch('/api/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        await fetchAnalyses();
+                        setSelectedAnalysis(data.analysis_id);
+                        return data.analysis_id; // Return for UploadTab to use
+                    }
+                } catch (err) {
+                    console.error('Upload failed:', err);
+                    alert('Upload failed: ' + err.message);
+                } finally {
+                    setLoading(false);
+                }
+            };
+            
+            return (
+                <div className="app">
+                    <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+                    <div className="main-content">
+                        <Topbar activeTab={activeTab} />
+                        <div className="content-area">
+                            <div className={`content-main ${activeTab === 'chat' ? 'chat-view' : ''}`}>
+                                {activeTab === 'upload' && (
+                                    <UploadTab onUpload={handleUpload} loading={loading} />
+                                )}
+                                {activeTab === 'chat' && (
+                                    <ChatTab analysisId={selectedAnalysis} />
+                                )}
+                                {activeTab === 'details' && (
+                                    <DetailsTab analysisId={selectedAnalysis} />
+                                )}
+                                {activeTab === 'cells' && (
+                                    <CellsTab analysisId={selectedAnalysis} />
+                                )}
+                            </div>
+                            <div className="content-sidebar">
+                                <History 
+                                    analyses={analyses} 
+                                    selected={selectedAnalysis}
+                                    onSelect={setSelectedAnalysis}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+        
+        function Sidebar({ activeTab, setActiveTab }) {
+            const tabs = [
+                { id: 'upload', icon: 'fa-upload', label: 'Upload & Analyze' },
+                { id: 'chat', icon: 'fa-comments', label: 'Ask Questions' },
+                { id: 'details', icon: 'fa-chart-bar', label: 'View Details' },
+                { id: 'cells', icon: 'fa-microscope', label: 'Cell Explorer' }
+            ];
+            
+            return (
+                <div className="sidebar">
+                    <div className="sidebar-header">
+                        <h1>🔬 Bone Marrow Analysis</h1>
+                        <p>Cytomorphology Assistant</p>
+                    </div>
+                    <div className="sidebar-nav">
+                        {tabs.map(tab => (
+                            <div
+                                key={tab.id}
+                                className={`nav-item ${activeTab === tab.id ? 'active' : ''}`}
+                                onClick={() => setActiveTab(tab.id)}
+                            >
+                                <i className={`fas ${tab.icon}`}></i>
+                                <span>{tab.label}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+        
+        function Topbar({ activeTab }) {
+            const titles = {
+                upload: 'Upload & Analyze',
+                chat: 'Ask Questions',
+                details: 'Analysis Details',
+                cells: 'Cell Explorer'
+            };
+            
+            return (
+                <div className="topbar">
+                    <h2>{titles[activeTab]}</h2>
+                </div>
+            );
+        }
+        
+        function UploadTab({ onUpload, loading }) {
+            const [currentAnalysis, setCurrentAnalysis] = useState(null);
+            const [selectedAnalysisId, setSelectedAnalysisId] = useState(null);
+            
+            // Fetch current analysis when selected
+            useEffect(() => {
+                if (selectedAnalysisId) {
+                    fetch(`/api/analysis/${selectedAnalysisId}`)
+                        .then(res => res.json())
+                        .then(setCurrentAnalysis);
+                }
+            }, [selectedAnalysisId]);
+            
+            const handleFileSelect = (e) => {
+                const files = e.target.files;
+                if (files.length > 0) {
+                    onUpload(files).then(analysisId => {
+                        setSelectedAnalysisId(analysisId);
+                    });
+                }
+            };
+            
+            return (
+                <div>
+                    <div className="card">
+                        <h3 className="card-title">Upload Bone Marrow Images</h3>
+                        <label htmlFor="file-upload">
+                            <div className="upload-zone">
+                                <i className="fas fa-cloud-upload-alt"></i>
+                                <h3>{loading ? 'Analyzing...' : 'Click to upload images'}</h3>
+                                <p>PNG, JPG, JPEG, TIFF supported</p>
+                            </div>
+                        </label>
+                        <input
+                            id="file-upload"
+                            type="file"
+                            multiple
+                            accept=".png,.jpg,.jpeg,.tiff"
+                            onChange={handleFileSelect}
+                            disabled={loading}
+                        />
+                    </div>
+                    
+                    {currentAnalysis && (
+                        <div>
+                            <div className="metrics-grid">
+                                <div className="metric-card">
+                                    <div className="metric-label">Images Analyzed</div>
+                                    <div className="metric-value">{currentAnalysis.metrics.images_processed}</div>
+                                </div>
+                                <div className="metric-card">
+                                    <div className="metric-label">Cells Detected</div>
+                                    <div className="metric-value">{currentAnalysis.metrics.cells_detected}</div>
+                                </div>
+                                <div className="metric-card">
+                                    <div className="metric-label">Cells Classified</div>
+                                    <div className="metric-value">{currentAnalysis.metrics.cells_classified}</div>
+                                </div>
+                                <div className="metric-card">
+                                    <div className="metric-label">Blast %</div>
+                                    <div className="metric-value">{(currentAnalysis.metrics.blast_fraction * 100).toFixed(1)}%</div>
+                                </div>
+                            </div>
+                            
+                            <div className="card">
+                                <h3 className="card-title">Detection Image</h3>
+                                {currentAnalysis.images && currentAnalysis.images[0] && currentAnalysis.images[0].filtered_path && (
+                                    <img 
+                                        src={`/api/image/${encodeURIComponent(currentAnalysis.images[0].filtered_path)}`}
+                                        alt="Detection"
+                                        style={{width: '100%', borderRadius: '8px'}}
+                                        onError={(e) => {
+                                            console.error('Image load error:', e);
+                                            e.target.style.display = 'none';
+                                        }}
+                                    />
+                                )}
+                            </div>
+                            
+                            <div className="card">
+                                <h3 className="card-title">Cell Distribution</h3>
+                                <table style={{width: '100%', borderCollapse: 'collapse'}}>
+                                    <thead>
+                                        <tr style={{borderBottom: '2px solid #e2e8f0'}}>
+                                            <th style={{textAlign: 'left', padding: '0.75rem'}}>Cell Type</th>
+                                            <th style={{textAlign: 'center', padding: '0.75rem'}}>Count</th>
+                                            <th style={{textAlign: 'center', padding: '0.75rem'}}>Percentage</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {currentAnalysis.morphology && currentAnalysis.morphology.map(m => (
+                                            <tr key={m.type} style={{borderBottom: '1px solid #e2e8f0'}}>
+                                                <td style={{padding: '0.75rem'}}>{m.type}</td>
+                                                <td style={{textAlign: 'center', padding: '0.75rem', fontWeight: 600}}>{m.count}</td>
+                                                <td style={{textAlign: 'center', padding: '0.75rem'}}>{(m.percentage * 100).toFixed(1)}%</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+        
+        function ChatTab({ analysisId }) {
+            const [messages, setMessages] = useState([]);
+            const [question, setQuestion] = useState('');
+            const [loading, setLoading] = useState(false);
+            const messagesEndRef = React.useRef(null);
+            
+            const scrollToBottom = () => {
+                messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+            };
+            
+            React.useEffect(() => {
+                scrollToBottom();
+            }, [messages]);
+            
+            // Load existing chat history
+            React.useEffect(() => {
+                if (analysisId) {
+                    fetch(`/api/chat/${analysisId}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.history) {
+                                setMessages(data.history.map(h => ({
+                                    question: h.q,
+                                    answer: h.a,
+                                    timestamp: h.time
+                                })));
+                            }
+                        })
+                        .catch(err => console.error('Failed to load chat:', err));
+                }
+            }, [analysisId]);
+            
+            const sendMessage = async () => {
+                if (!question.trim() || !analysisId || loading) return;
+                
+                const userMsg = { question, answer: '', timestamp: new Date().toISOString() };
+                setMessages([...messages, userMsg]);
+                setQuestion('');
+                setLoading(true);
+                
+                try {
+                    const res = await fetch('/api/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: analysisId, q: question })
+                    });
+                    const data = await res.json();
+                    
+                    setMessages(prev => [
+                        ...prev.slice(0, -1),
+                        { question, answer: data.a || data.answer || 'No response', timestamp: new Date().toISOString() }
+                    ]);
+                } catch (err) {
+                    console.error('Chat failed:', err);
+                    setMessages(prev => [
+                        ...prev.slice(0, -1),
+                        { question, answer: 'Error: Failed to get response', timestamp: new Date().toISOString() }
+                    ]);
+                } finally {
+                    setLoading(false);
+                }
+            };
+            
+            const handleKeyDown = (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            };
+            
+            if (!analysisId) {
+                return (
+                    <div className="chat-container" style={{height: 'calc(100vh - 120px)'}}>
+                        <div className="chat-empty">
+                            <h2>No Analysis Selected</h2>
+                            <p>Please upload and analyze a bone marrow image first, then come back here to ask questions.</p>
+                        </div>
+                    </div>
+                );
+            }
+            
+            return (
+                <div className="chat-container" style={{height: 'calc(100vh - 120px)'}}>
+                        <div className="chat-messages">
+                            {messages.length === 0 ? (
+                                <div className="chat-empty">
+                                    <h2>Ask Questions</h2>
+                                    <p>Ask questions about this bone marrow analysis</p>
+                                </div>
+                            ) : (
+                                <>
+                                    {messages.map((msg, i) => (
+                                        <React.Fragment key={i}>
+                                            <div className="chat-message-wrapper user">
+                                                <div className="chat-message">
+                                                    <div className="chat-avatar user">You</div>
+                                                    <div className="chat-content">
+                                                        {msg.question}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {msg.answer && (
+                                                <div className="chat-message-wrapper assistant">
+                                                    <div className="chat-message">
+                                                        <div className="chat-avatar assistant">🔬</div>
+                                                        <div className="chat-content">
+                                                            {msg.answer}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </React.Fragment>
+                                    ))}
+                                    {loading && (
+                                        <div className="chat-message-wrapper assistant">
+                                            <div className="chat-message">
+                                                <div className="chat-avatar assistant">🔬</div>
+                                                <div className="chat-content" style={{color: '#9ca3af'}}>
+                                                    Thinking...
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                    <div ref={messagesEndRef} />
+                                </>
+                            )}
+                        </div>
+                        <div className="chat-input-container">
+                            <div className="chat-input-wrapper">
+                                <textarea
+                                    className="chat-input"
+                                    rows="1"
+                                    placeholder="Ask a question about this analysis..."
+                                    value={question}
+                                    onChange={(e) => setQuestion(e.target.value)}
+                                    onKeyDown={handleKeyDown}
+                                    disabled={loading}
+                                    style={{minHeight: '52px', maxHeight: '200px'}}
+                                    onInput={(e) => {
+                                        e.target.style.height = 'auto';
+                                        e.target.style.height = Math.min(e.target.scrollHeight, 200) + 'px';
+                                    }}
+                                />
+                                <button 
+                                    className="chat-send-btn" 
+                                    onClick={sendMessage}
+                                    disabled={!question.trim() || loading}
+                                    title="Send message"
+                                >
+                                    <i className="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                </div>
+            );
+        }
+        
+        function DetailsTab({ analysisId }) {
+            const [details, setDetails] = useState(null);
+            
+            useEffect(() => {
+                if (analysisId) {
+                    fetch(`/api/analysis/${analysisId}`)
+                        .then(res => res.json())
+                        .then(setDetails);
+                }
+            }, [analysisId]);
+            
+            if (!details) {
+                return <div className="card">Select an analysis from history</div>;
+            }
+            
+            return (
+                <div>
+                    <div className="metrics-grid">
+                        <div className="metric-card">
+                            <div className="metric-label">Images</div>
+                            <div className="metric-value">{details.metrics.images_processed}</div>
+                        </div>
+                        <div className="metric-card">
+                            <div className="metric-label">Cells Detected</div>
+                            <div className="metric-value">{details.metrics.cells_detected}</div>
+                        </div>
+                        <div className="metric-card">
+                            <div className="metric-label">Classified</div>
+                            <div className="metric-value">{details.metrics.cells_classified}</div>
+                        </div>
+                        <div className="metric-card">
+                            <div className="metric-label">Blast %</div>
+                            <div className="metric-value">{(details.metrics.blast_fraction * 100).toFixed(1)}%</div>
+                        </div>
+                    </div>
+                    
+                    <div className="card">
+                        <h3 className="card-title">Cell Distribution</h3>
+                        <table style={{width: '100%'}}>
+                            <thead>
+                                <tr>
+                                    <th style={{textAlign: 'left'}}>Cell Type</th>
+                                    <th>Count</th>
+                                    <th>Percentage</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {details.morphology.map(m => (
+                                    <tr key={m.type}>
+                                        <td>{m.type}</td>
+                                        <td style={{textAlign: 'center'}}>{m.count}</td>
+                                        <td style={{textAlign: 'center'}}>{(m.percentage * 100).toFixed(1)}%</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            );
+        }
+        
+        function CellsTab({ analysisId }) {
+            const [cells, setCells] = useState([]);
+            const [filter, setFilter] = useState('All');
+            
+            useEffect(() => {
+                if (analysisId) {
+                    fetch(`/api/cells/${analysisId}`)
+                        .then(res => res.json())
+                        .then(data => setCells(data.cells));
+                }
+            }, [analysisId]);
+            
+            if (!analysisId) {
+                return <div className="card">Select an analysis from history</div>;
+            }
+            
+            const cellTypes = ['All', ...new Set(cells.map(c => c.class))];
+            const filteredCells = filter === 'All' ? cells : cells.filter(c => c.class === filter);
+            
+            const getCellDesc = (cellClass) => {
+                const descs = {
+                    "Blast": "Immature cell",
+                    "Lymphoid Series": "Mature lymphocyte",
+                    "Granulocyte (Mature)": "Mature neutrophil",
+                    "Granulocyte (Immature)": "Early myeloid",
+                    "Erythroid Precursor": "RBC precursor",
+                    "Monocyte": "Large phagocyte",
+                    "Megakaryocyte/Platelet": "Platelet producer"
+                };
+                return descs[cellClass] || "BM cell";
+            };
+            
+            return (
+                <div className="card">
+                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem'}}>
+                        <h3 className="card-title" style={{margin: 0}}>{filteredCells.length} Cells</h3>
+                        <select 
+                            value={filter} 
+                            onChange={(e) => setFilter(e.target.value)}
+                            style={{padding: '0.5rem', borderRadius: '4px', border: '1px solid #e2e8f0'}}
+                        >
+                            {cellTypes.map(type => (
+                                <option key={type} value={type}>{type}</option>
+                            ))}
+                        </select>
+                    </div>
+                    
+                    <div className="cell-grid">
+                        {filteredCells.slice(0, 60).map(cell => (
+                            <div key={cell.id} className="cell-card">
+                                {cell.image_path && (
+                                    <img 
+                                        src={`/api/image/${encodeURIComponent(cell.image_path)}`}
+                                        alt={cell.class}
+                                        onError={(e) => {
+                                            console.error('Cell image load error:', cell.image_path);
+                                            e.target.style.display = 'none';
+                                        }}
+                                    />
+                                )}
+                                <div className="cell-name">{cell.class}</div>
+                                <div className="cell-desc">{getCellDesc(cell.class)}</div>
+                                <div style={{fontSize: '0.7rem', color: '#999', marginTop: '0.25rem'}}>
+                                    {(cell.confidence * 100).toFixed(0)}%
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+        
+        function History({ analyses, selected, onSelect }) {
+            return (
+                <div style={{padding: '1rem'}}>
+                    <h3 style={{marginBottom: '1rem', fontWeight: 600}}>History</h3>
+                    {analyses.length === 0 ? (
+                        <p style={{color: '#718096', fontSize: '0.875rem'}}>No analyses yet</p>
+                    ) : (
+                        analyses.map(a => (
+                            <div
+                                key={a.id}
+                                className={`history-item ${selected === a.id ? 'active' : ''}`}
+                                onClick={() => onSelect(a.id)}
+                            >
+                                <div style={{fontWeight: 600, marginBottom: '0.25rem'}}>{a.case_id.substring(0, 15)}</div>
+                                <div style={{fontSize: '0.875rem', color: '#718096'}}>
+                                    {a.cells} cells • {(a.blasts * 100).toFixed(0)}% blasts
+                                </div>
+                                <div style={{fontSize: '0.75rem', color: '#a0aec0', marginTop: '0.25rem'}}>
+                                    {new Date(a.timestamp).toLocaleString()}
+                                </div>
+                                {a.thumbnail && (
+                                    <img 
+                                        src={`/api/image/${encodeURIComponent(a.thumbnail)}`}
+                                        alt="Thumbnail"
+                                        style={{width: '100%', borderRadius: '4px', marginTop: '0.5rem'}}
+                                        onError={(e) => {
+                                            console.error('Thumbnail load error:', a.thumbnail);
+                                            e.target.style.display = 'none';
+                                        }}
+                                    />
+                                )}
+                            </div>
+                        ))
+                    )}
+                </div>
+            );
+        }
+        
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>

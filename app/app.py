@@ -25,13 +25,25 @@ from retrieval.retrieve import HybridRetriever
 from agents.llm_provider import get_llm_provider
 
 app = Flask(__name__, static_folder='static', static_url_path='')
-CORS(app)
+
+# Enhanced CORS configuration
+CORS(app, resources={
+    r"/api/*": {
+        "origins": "*",
+        "methods": ["GET", "POST", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type"],
+        "max_age": 3600
+    }
+})
 
 UPLOAD_FOLDER = REPO_ROOT / 'data' / 'uploads'
 UPLOAD_FOLDER.mkdir(parents=True, exist_ok=True)
 STORAGE_FOLDER = REPO_ROOT / 'data' / 'app_storage'
 STORAGE_FOLDER.mkdir(parents=True, exist_ok=True)
-app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
+
+# Increase limits for large image uploads
+app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # Disable caching for development
 
 # Optimize LLM settings for faster generation
 LLM_TEMP_FAST = 0.1  # Faster, more deterministic
@@ -100,34 +112,42 @@ db_analyses, db_chats = load_storage()
 def index():
     return send_from_directory(app.static_folder, 'index.html')
 
-@app.route('/api/upload', methods=['POST'])
+@app.route('/api/upload', methods=['POST', 'OPTIONS'])
 def upload():
-    print("Upload endpoint called")
-    print("Request files:", request.files)
-    print("Request form:", request.form)
-    
-    if 'files' not in request.files:
-        print("ERROR: No 'files' in request.files")
-        return jsonify({'error': 'No files in request'}), 400
-    
-    files = request.files.getlist('files')
-    print(f"Files list: {len(files)} files")
-    
-    if not files or not files[0].filename:
-        print("ERROR: Empty files or no filename")
-        return jsonify({'error': 'No files selected'}), 400
-    
-    saved = []
-    for f in files:
-        fname = secure_filename(f.filename)
-        fpath = UPLOAD_FOLDER / fname
-        print(f"Saving file: {fname} to {fpath}")
-        f.save(fpath)
-        saved.append(fpath)
-    
-    print(f"Saved {len(saved)} files, starting analysis...")
+    # Handle CORS preflight
+    if request.method == 'OPTIONS':
+        return '', 200
     
     try:
+        print("=" * 80)
+        print("Upload endpoint called")
+        print(f"Request method: {request.method}")
+        print(f"Content type: {request.content_type}")
+        print(f"Content length: {request.content_length}")
+        print(f"Request files: {request.files}")
+        print(f"Request form: {request.form}")
+        
+        if 'files' not in request.files:
+            print("ERROR: No 'files' in request.files")
+            return jsonify({'error': 'No files in request'}), 400
+        
+        files = request.files.getlist('files')
+        print(f"Files list: {len(files)} files")
+        
+        if not files or not files[0].filename:
+            print("ERROR: Empty files or no filename")
+            return jsonify({'error': 'No files selected'}), 400
+        
+        saved = []
+        for f in files:
+            fname = secure_filename(f.filename)
+            fpath = UPLOAD_FOLDER / fname
+            print(f"Saving file: {fname} to {fpath}")
+            f.save(fpath)
+            saved.append(fpath)
+        
+        print(f"Saved {len(saved)} files, starting analysis...")
+        
         result = analyze_new_case(uploaded_files=saved, age_years=None, sex=None, sample_site=None)
         print(f"Analysis complete: {result.case_id}, {result.total_cells_detected} cells")
         
@@ -160,6 +180,7 @@ def upload():
         save_storage(db_analyses, db_chats)
         
         print(f"Analysis stored with ID: {aid}")
+        print("=" * 80)
         
         return jsonify({
             'success': True,
@@ -168,10 +189,12 @@ def upload():
             'cells': result.total_cells_detected,
             'blasts': result.blast_fraction
         })
+    
     except Exception as e:
-        print(f"ERROR during analysis: {e}")
+        print(f"ERROR during upload/analysis: {e}")
         import traceback
         traceback.print_exc()
+        print("=" * 80)
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/analyses')
@@ -183,6 +206,7 @@ def get_analyses():
             'time': a['time'],
             'timestamp': a['time'],
             'cells': a['cells'],
+            'cells_detected': a['cells'],  # Frontend expects this field name
             'blasts': a['blasts'],
             'thumbnail': a.get('thumb')
         }

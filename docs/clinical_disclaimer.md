@@ -14,7 +14,7 @@ This system — "An Agentic Multimodal Explainable RAG Framework for Personalize
 
 - **Vision model:** Trained on the Matek et al. 2021 Bone Marrow Cytomorphology dataset (TCIA, CC BY 4.0). Performance is bounded by the characteristics of this training data. Generalisation to other staining protocols, scanner types, or patient populations is not guaranteed.
 - **Knowledge base:** Derived from publicly available open-access literature and WHO guideline summaries. It may not reflect the most current clinical guidelines at the time of use.
-- **Synthetic patient data:** All patient profiles, lab values, and clinical notes used in demonstrations are synthetically generated and do not correspond to any real individual.
+- **Patient data:** All patient case data used in this research is sourced exclusively from the BoneMarrowWSI-PediatricLeukemia open-access cohort (NCI IDC). Complete Blood Count (CBC), cytogenetics, and molecular genetics data are absent from this dataset and are represented as `null` throughout the pipeline.
 
 ## Classification Standard
 

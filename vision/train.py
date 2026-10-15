@@ -1,27 +1,4 @@
-"""
-vision/train.py
-─────────────────────────────────────────────────────────────────────────────
-Phase 1 — Cell Morphology Baseline Training Pipeline.
 
-Architecture: ViT-Small/16 (frozen) + LoRA adapters + 8-class linear head.
-Taxonomy:     8 morphology categories from BoneMarrowWSI-PediatricLeukemia
-              consensus annotations (see vision/taxonomy.py for details).
-
-Key guarantees:
-  - Patient-level split isolation enforced via data/processed/splits.json.
-    Validation and test patients are NEVER touched during training.
-  - Cell labels inherited from patient split — no independent cell-level splits.
-  - Class imbalance addressed via WeightedRandomSampler (default) or
-    class-weighted CrossEntropyLoss (if use_weighted_sampler=false in config).
-  - Full taxonomy printed and saved before any gradient steps.
-  - Mixed precision (bf16/fp16) and early stopping on validation macro F1.
-
-Usage:
-  python -m vision.train [--config configs/colab.yaml]
-
-Prerequisites:
-  Run vision/run_extraction.py to pre-extract all cell crops before training.
-"""
 
 import argparse
 import json

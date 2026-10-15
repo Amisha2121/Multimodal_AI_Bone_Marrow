@@ -1,0 +1,1810 @@
+{
+  "02522A2B2726FB0A03BB19F2D8D9524D": {
+    "patient_id": "02522A2B2726FB0A03BB19F2D8D9524D",
+    "split": "train",
+    "true_class": "AML",
+    "predicted_class": "ALL",
+    "confidence_score": 0.37775140903702575,
+    "class_probabilities": {
+      "ALL": 0.37775140903702575,
+      "AML": 0.25717027637886963,
+      "CML": 0.06693491732666042,
+      "Other": 0.29814339725744426
+    },
+    "n_cells": 104,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.8461538461538461
+  },
+  "02E74F10E0327AD868D138F2B4FDD6F0": {
+    "patient_id": "02E74F10E0327AD868D138F2B4FDD6F0",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.6682774982908639,
+    "class_probabilities": {
+      "ALL": 0.04531628142595392,
+      "AML": 0.18066766284786903,
+      "CML": 0.6682774982908639,
+      "Other": 0.10573855743531306
+    },
+    "n_cells": 183,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.00546448087431694
+  },
+  "0A09C8844BA8F0936C20BD791130D6B6": {
+    "patient_id": "0A09C8844BA8F0936C20BD791130D6B6",
+    "split": "train",
+    "true_class": "AML",
+    "predicted_class": "ALL",
+    "confidence_score": 0.36410124700809154,
+    "class_probabilities": {
+      "ALL": 0.36410124700809154,
+      "AML": 0.251711960009917,
+      "CML": 0.06594713733524296,
+      "Other": 0.3182396556467484
+    },
+    "n_cells": 71,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.8028169014084507
+  },
+  "14BFA6BB14875E45BBA028A21ED38046": {
+    "patient_id": "14BFA6BB14875E45BBA028A21ED38046",
+    "split": "train",
+    "true_class": "ALL",
+    "predicted_class": "ALL",
+    "confidence_score": 0.45208326995475023,
+    "class_probabilities": {
+      "ALL": 0.45208326995475023,
+      "AML": 0.20455689724665252,
+      "CML": 0.03158707108473215,
+      "Other": 0.31177276171386514
+    },
+    "n_cells": 170,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.9411764705882353
+  },
+  "17E62166FC8586DFA4D1BC0E1742C08B": {
+    "patient_id": "17E62166FC8586DFA4D1BC0E1742C08B",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.7339985908323557,
+    "class_probabilities": {
+      "ALL": 0.0372580151888271,
+      "AML": 0.12369065981407376,
+      "CML": 0.7339985908323557,
+      "Other": 0.10505273416474338
+    },
+    "n_cells": 328,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.003048780487804878
+  },
+  "19CA14E7EA6328A42E0EB13D585E4C22": {
+    "patient_id": "19CA14E7EA6328A42E0EB13D585E4C22",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.6803594773706344,
+    "class_probabilities": {
+      "ALL": 0.04458454593977791,
+      "AML": 0.16663351265321202,
+      "CML": 0.6803594773706344,
+      "Other": 0.10842246403637573
+    },
+    "n_cells": 301,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.016611295681063124
+  },
+  "202CB962AC59075B964B07152D234B70": {
+    "patient_id": "202CB962AC59075B964B07152D234B70",
+    "split": "train",
+    "true_class": "AML",
+    "predicted_class": "AML",
+    "confidence_score": 0.4262188289708236,
+    "class_probabilities": {
+      "ALL": 0.18674140469432396,
+      "AML": 0.4262188289708236,
+      "CML": 0.18797762834573237,
+      "Other": 0.19906213798912017
+    },
+    "n_cells": 117,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.39316239316239315
+  },
+  "26657D5FF9020D2ABEFE558796B99584": {
+    "patient_id": "26657D5FF9020D2ABEFE558796B99584",
+    "split": "train",
+    "true_class": "ALL",
+    "predicted_class": "Other",
+    "confidence_score": 0.36459610680951654,
+    "class_probabilities": {
+      "ALL": 0.2932334827980148,
+      "AML": 0.2686657881944935,
+      "CML": 0.07350462219797503,
+      "Other": 0.36459610680951654
+    },
+    "n_cells": 18,
+    "is_low_evidence": true,
+    "annotated_blast_fraction": 0.5555555555555556
+  },
+  "2A38A4A9316C49E5A833517C45D31070": {
+    "patient_id": "2A38A4A9316C49E5A833517C45D31070",
+    "split": "train",
+    "true_class": "ALL",
+    "predicted_class": "ALL",
+    "confidence_score": 0.45017424340662304,
+    "class_probabilities": {
+      "ALL": 0.45017424340662304,
+      "AML": 0.20583721939691,
+      "CML": 0.032084589391239336,
+      "Other": 0.31190394780522757
+    },
+    "n_cells": 211,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.9620853080568721
+  },
+  "2B24D495052A8CE66358EB576B8912C8": {
+    "patient_id": "2B24D495052A8CE66358EB576B8912C8",
+    "split": "train",
+    "true_class": "Other",
+    "predicted_class": "CML",
+    "confidence_score": 0.46098519398332305,
+    "class_probabilities": {
+      "ALL": 0.10327707696343585,
+      "AML": 0.1842286561174881,
+      "CML": 0.46098519398332305,
+      "Other": 0.2515090729357531
+    },
+    "n_cells": 2,
+    "is_low_evidence": true,
+    "annotated_blast_fraction": 0.5
+  },
+  "3416A75F4CEA9109507CACD8E2F2AEFC": {
+    "patient_id": "3416A75F4CEA9109507CACD8E2F2AEFC",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.7256594697681119,
+    "class_probabilities": {
+      "ALL": 0.03955667071812161,
+      "AML": 0.12722945820572834,
+      "CML": 0.7256594697681119,
+      "Other": 0.10755440130803819
+    },
+    "n_cells": 259,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.04247104247104247
+  },
+  "34173CB38F07F89DDBEBC2AC9128303F": {
+    "patient_id": "34173CB38F07F89DDBEBC2AC9128303F",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.6520573915891188,
+    "class_probabilities": {
+      "ALL": 0.04768199142617448,
+      "AML": 0.1838889042806161,
+      "CML": 0.6520573915891188,
+      "Other": 0.11637171270409044
+    },
+    "n_cells": 163,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.018404907975460124
+  },
+  "37693CFC748049E45D87B8C7D8B9AACD": {
+    "patient_id": "37693CFC748049E45D87B8C7D8B9AACD",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.689774359878489,
+    "class_probabilities": {
+      "ALL": 0.04282683750925698,
+      "AML": 0.16610357711013074,
+      "CML": 0.689774359878489,
+      "Other": 0.10129522550212317
+    },
+    "n_cells": 203,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.014778325123152709
+  },
+  "38B3EFF8BAF56627478EC76A704E9B52": {
+    "patient_id": "38B3EFF8BAF56627478EC76A704E9B52",
+    "split": "train",
+    "true_class": "ALL",
+    "predicted_class": "AML",
+    "confidence_score": 0.31784134124342367,
+    "class_probabilities": {
+      "ALL": 0.31275945997200605,
+      "AML": 0.31784134124342367,
+      "CML": 0.08898455055665522,
+      "Other": 0.2804146482279151
+    },
+    "n_cells": 97,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.6494845360824743
+  },
+  "3C59DC048E8850243BE8079A5C74D079": {
+    "patient_id": "3C59DC048E8850243BE8079A5C74D079",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.6819174659154137,
+    "class_probabilities": {
+      "ALL": 0.043145061930969765,
+      "AML": 0.15837647563110252,
+      "CML": 0.6819174659154137,
+      "Other": 0.11656099652251396
+    },
+    "n_cells": 227,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.013215859030837005
+  },
+  "3DEF184AD8F4755FF269862EA77393DD": {
+    "patient_id": "3DEF184AD8F4755FF269862EA77393DD",
+    "split": "train",
+    "true_class": "AML",
+    "predicted_class": "AML",
+    "confidence_score": 0.38754690499463923,
+    "class_probabilities": {
+      "ALL": 0.26546504647653335,
+      "AML": 0.38754690499463923,
+      "CML": 0.11428143420017334,
+      "Other": 0.23270661432865417
+    },
+    "n_cells": 120,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.5666666666666667
+  },
+  "43EC517D68B6EDD3015B3EDC9A11367B": {
+    "patient_id": "43EC517D68B6EDD3015B3EDC9A11367B",
+    "split": "train",
+    "true_class": "ALL",
+    "predicted_class": "ALL",
+    "confidence_score": 0.4399455231424626,
+    "class_probabilities": {
+      "ALL": 0.4399455231424626,
+      "AML": 0.20987374605956627,
+      "CML": 0.033526297514990734,
+      "Other": 0.3166544332829805
+    },
+    "n_cells": 263,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.9239543726235742
+  },
+  "4443AEE183B279F76A95C13C7F5BCA0D": {
+    "patient_id": "4443AEE183B279F76A95C13C7F5BCA0D",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "AML",
+    "confidence_score": 0.33852044173154966,
+    "class_probabilities": {
+      "ALL": 0.15444779263184283,
+      "AML": 0.33852044173154966,
+      "CML": 0.22709852765491967,
+      "Other": 0.27993323798168784
+    },
+    "n_cells": 39,
+    "is_low_evidence": true,
+    "annotated_blast_fraction": 0.15384615384615385
+  },
+  "44F683A84163B3523AFE57C2E008BC8C": {
+    "patient_id": "44F683A84163B3523AFE57C2E008BC8C",
+    "split": "train",
+    "true_class": "ALL",
+    "predicted_class": "ALL",
+    "confidence_score": 0.4210327463902361,
+    "class_probabilities": {
+      "ALL": 0.4210327463902361,
+      "AML": 0.21820030790810627,
+      "CML": 0.0414509401557389,
+      "Other": 0.31931600554591866
+    },
+    "n_cells": 159,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.8867924528301887
+  },
+  "4E732CED3463D06DE0CA9A15B6153677": {
+    "patient_id": "4E732CED3463D06DE0CA9A15B6153677",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.6146527043061673,
+    "class_probabilities": {
+      "ALL": 0.05297159178203767,
+      "AML": 0.2170166838989332,
+      "CML": 0.6146527043061673,
+      "Other": 0.11535902001286186
+    },
+    "n_cells": 342,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.03508771929824561
+  },
+  "5EF059938BA799AAA845E1C2E8A762BD": {
+    "patient_id": "5EF059938BA799AAA845E1C2E8A762BD",
+    "split": "train",
+    "true_class": "ALL",
+    "predicted_class": "ALL",
+    "confidence_score": 0.3998360125257557,
+    "class_probabilities": {
+      "ALL": 0.3998360125257557,
+      "AML": 0.2612624375898213,
+      "CML": 0.04810570107128421,
+      "Other": 0.2907958488131388
+    },
+    "n_cells": 204,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.8333333333333334
+  },
+  "5F93F983524DEF3DCA464469D2CF9F3E": {
+    "patient_id": "5F93F983524DEF3DCA464469D2CF9F3E",
+    "split": "train",
+    "true_class": "Other",
+    "predicted_class": "ALL",
+    "confidence_score": 0.36133413449413826,
+    "class_probabilities": {
+      "ALL": 0.36133413449413826,
+      "AML": 0.257110311638395,
+      "CML": 0.0559643591624026,
+      "Other": 0.32559119470506415
+    },
+    "n_cells": 29,
+    "is_low_evidence": true,
+    "annotated_blast_fraction": 0.7586206896551724
+  },
+  "5FD0B37CD7DBBB00F97BA6CE92BF5ADD": {
+    "patient_id": "5FD0B37CD7DBBB00F97BA6CE92BF5ADD",
+    "split": "train",
+    "true_class": "ALL",
+    "predicted_class": "ALL",
+    "confidence_score": 0.440059421397127,
+    "class_probabilities": {
+      "ALL": 0.440059421397127,
+      "AML": 0.2094984541077981,
+      "CML": 0.03421837162178538,
+      "Other": 0.31622375287328963
+    },
+    "n_cells": 231,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.9567099567099567
+  },
+  "6364D3F0F495B6AB9DCF8D3B5C6E0B01": {
+    "patient_id": "6364D3F0F495B6AB9DCF8D3B5C6E0B01",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.6899312246310274,
+    "class_probabilities": {
+      "ALL": 0.04546226784788283,
+      "AML": 0.15155320485267643,
+      "CML": 0.6899312246310274,
+      "Other": 0.11305330266841328
+    },
+    "n_cells": 164,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.036585365853658534
+  },
+  "65DED5353C5EE48D0B7D48C591B8F430": {
+    "patient_id": "65DED5353C5EE48D0B7D48C591B8F430",
+    "split": "train",
+    "true_class": "AML",
+    "predicted_class": "ALL",
+    "confidence_score": 0.3865903836683255,
+    "class_probabilities": {
+      "ALL": 0.3865903836683255,
+      "AML": 0.24569241777972786,
+      "CML": 0.05933615694861994,
+      "Other": 0.30838104160332674
+    },
+    "n_cells": 35,
+    "is_low_evidence": true,
+    "annotated_blast_fraction": 0.8571428571428571
+  },
+  "67C6A1E7CE56D3D6FA748AB6D9AF3FD7": {
+    "patient_id": "67C6A1E7CE56D3D6FA748AB6D9AF3FD7",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.7106856906999088,
+    "class_probabilities": {
+      "ALL": 0.0405171683254104,
+      "AML": 0.1354049224857706,
+      "CML": 0.7106856906999088,
+      "Other": 0.11339221848891025
+    },
+    "n_cells": 531,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.007532956685499058
+  },
+  "6974CE5AC660610B44D9B9FED0FF9548": {
+    "patient_id": "6974CE5AC660610B44D9B9FED0FF9548",
+    "split": "train",
+    "true_class": "ALL",
+    "predicted_class": "ALL",
+    "confidence_score": 0.4545633172243169,
+    "class_probabilities": {
+      "ALL": 0.4545633172243169,
+      "AML": 0.2103209863860316,
+      "CML": 0.034342876033319904,
+      "Other": 0.3007728203563314
+    },
+    "n_cells": 129,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.9767441860465116
+  },
+  "698D51A19D8A121CE581499D7B701668": {
+    "patient_id": "698D51A19D8A121CE581499D7B701668",
+    "split": "train",
+    "true_class": "ALL",
+    "predicted_class": "Other",
+    "confidence_score": 0.32827743194238407,
+    "class_probabilities": {
+      "ALL": 0.2749655980867259,
+      "AML": 0.29953352056396243,
+      "CML": 0.09722344940692751,
+      "Other": 0.32827743194238407
+    },
+    "n_cells": 29,
+    "is_low_evidence": true,
+    "annotated_blast_fraction": 0.4827586206896552
+  },
+  "6C8349CC7260AE62E3B1396831A8398F": {
+    "patient_id": "6C8349CC7260AE62E3B1396831A8398F",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.7199463608976362,
+    "class_probabilities": {
+      "ALL": 0.03902144455804489,
+      "AML": 0.12702314809964643,
+      "CML": 0.7199463608976362,
+      "Other": 0.11400904644467257
+    },
+    "n_cells": 280,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.014285714285714285
+  },
+  "6F4922F45568161A8CDF4AD2299F6D23": {
+    "patient_id": "6F4922F45568161A8CDF4AD2299F6D23",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.5491714096220902,
+    "class_probabilities": {
+      "ALL": 0.06627113564041674,
+      "AML": 0.24761113243748836,
+      "CML": 0.5491714096220902,
+      "Other": 0.13694632230000467
+    },
+    "n_cells": 139,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.07913669064748201
+  },
+  "70EFDF2EC9B086079795C442636B55FB": {
+    "patient_id": "70EFDF2EC9B086079795C442636B55FB",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.546243274521618,
+    "class_probabilities": {
+      "ALL": 0.05762825708810848,
+      "AML": 0.2900323219874362,
+      "CML": 0.546243274521618,
+      "Other": 0.1060961464028372
+    },
+    "n_cells": 417,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.026378896882494004
+  },
+  "7647966B7343C29048673252E490F736": {
+    "patient_id": "7647966B7343C29048673252E490F736",
+    "split": "train",
+    "true_class": "ALL",
+    "predicted_class": "ALL",
+    "confidence_score": 0.4472068085185386,
+    "class_probabilities": {
+      "ALL": 0.4472068085185386,
+      "AML": 0.21012538963342411,
+      "CML": 0.033527381540476124,
+      "Other": 0.30914042030756106
+    },
+    "n_cells": 137,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.9343065693430657
+  },
+  "7EF605FC8DBA5425D6965FBD4C8FBE1F": {
+    "patient_id": "7EF605FC8DBA5425D6965FBD4C8FBE1F",
+    "split": "train",
+    "true_class": "Other",
+    "predicted_class": "CML",
+    "confidence_score": 0.35625951530076794,
+    "class_probabilities": {
+      "ALL": 0.1272195374324902,
+      "AML": 0.2196969637556276,
+      "CML": 0.35625951530076794,
+      "Other": 0.2968239835111142
+    },
+    "n_cells": 6,
+    "is_low_evidence": true,
+    "annotated_blast_fraction": 0.3333333333333333
+  },
+  "7F1DE29E6DA19D22B51C68001E7E0E54": {
+    "patient_id": "7F1DE29E6DA19D22B51C68001E7E0E54",
+    "split": "train",
+    "true_class": "AML",
+    "predicted_class": "ALL",
+    "confidence_score": 0.3582323935368715,
+    "class_probabilities": {
+      "ALL": 0.3582323935368715,
+      "AML": 0.2681061427519273,
+      "CML": 0.05969652078790981,
+      "Other": 0.31396494292329136
+    },
+    "n_cells": 89,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.8426966292134831
+  },
+  "7F39F8317FBDB1988EF4C628EBA02591": {
+    "patient_id": "7F39F8317FBDB1988EF4C628EBA02591",
+    "split": "train",
+    "true_class": "ALL",
+    "predicted_class": "ALL",
+    "confidence_score": 0.42491568744116087,
+    "class_probabilities": {
+      "ALL": 0.42491568744116087,
+      "AML": 0.21340556996272278,
+      "CML": 0.04075695487494268,
+      "Other": 0.32092178772117375
+    },
+    "n_cells": 394,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.9111675126903553
+  },
+  "7F6FFAA6BB0B408017B62254211691B5": {
+    "patient_id": "7F6FFAA6BB0B408017B62254211691B5",
+    "split": "train",
+    "true_class": "Other",
+    "predicted_class": "ALL",
+    "confidence_score": 0.40183069796929255,
+    "class_probabilities": {
+      "ALL": 0.40183069796929255,
+      "AML": 0.2280774203602096,
+      "CML": 0.044199813248181216,
+      "Other": 0.3258920684223165
+    },
+    "n_cells": 96,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.90625
+  },
+  "8613985EC49EB8F757AE6439E879BB2A": {
+    "patient_id": "8613985EC49EB8F757AE6439E879BB2A",
+    "split": "train",
+    "true_class": "ALL",
+    "predicted_class": "ALL",
+    "confidence_score": 0.31368574486130185,
+    "class_probabilities": {
+      "ALL": 0.31368574486130185,
+      "AML": 0.2966015232194649,
+      "CML": 0.08047728157508427,
+      "Other": 0.3092354503441489
+    },
+    "n_cells": 333,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.6846846846846847
+  },
+  "8D5E957F297893487BD98FA830FA6413": {
+    "patient_id": "8D5E957F297893487BD98FA830FA6413",
+    "split": "train",
+    "true_class": "AML",
+    "predicted_class": "Other",
+    "confidence_score": 0.3401111009972954,
+    "class_probabilities": {
+      "ALL": 0.22062284945083646,
+      "AML": 0.2782504459930262,
+      "CML": 0.161015603558842,
+      "Other": 0.3401111009972954
+    },
+    "n_cells": 33,
+    "is_low_evidence": true,
+    "annotated_blast_fraction": 0.45454545454545453
+  },
+  "8E296A067A37563370DED05F5A3BF3EC": {
+    "patient_id": "8E296A067A37563370DED05F5A3BF3EC",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.6899545859663944,
+    "class_probabilities": {
+      "ALL": 0.04475958477253828,
+      "AML": 0.14986885913510464,
+      "CML": 0.6899545859663944,
+      "Other": 0.11541697012596273
+    },
+    "n_cells": 297,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.04713804713804714
+  },
+  "8F14E45FCEEA167A5A36DEDD4BEA2543": {
+    "patient_id": "8F14E45FCEEA167A5A36DEDD4BEA2543",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.357575380702704,
+    "class_probabilities": {
+      "ALL": 0.11552135029257274,
+      "AML": 0.34399794302786624,
+      "CML": 0.357575380702704,
+      "Other": 0.18290532597685713
+    },
+    "n_cells": 76,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.2236842105263158
+  },
+  "92CC227532D17E56E07902B254DFAD10": {
+    "patient_id": "92CC227532D17E56E07902B254DFAD10",
+    "split": "train",
+    "true_class": "ALL",
+    "predicted_class": "ALL",
+    "confidence_score": 0.39802713509038984,
+    "class_probabilities": {
+      "ALL": 0.39802713509038984,
+      "AML": 0.24559165344446943,
+      "CML": 0.045923899822501044,
+      "Other": 0.3104573116426396
+    },
+    "n_cells": 91,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.8021978021978022
+  },
+  "98DCE83DA57B0395E163467C9DAE521B": {
+    "patient_id": "98DCE83DA57B0395E163467C9DAE521B",
+    "split": "train",
+    "true_class": "ALL",
+    "predicted_class": "ALL",
+    "confidence_score": 0.420953237947114,
+    "class_probabilities": {
+      "ALL": 0.420953237947114,
+      "AML": 0.21917344203835562,
+      "CML": 0.037575947380318844,
+      "Other": 0.32229737263421177
+    },
+    "n_cells": 241,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.9087136929460581
+  },
+  "98F13708210194C475687BE6106A3B84": {
+    "patient_id": "98F13708210194C475687BE6106A3B84",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.631870914686567,
+    "class_probabilities": {
+      "ALL": 0.05688733008729756,
+      "AML": 0.1651399100007163,
+      "CML": 0.631870914686567,
+      "Other": 0.14610184522541922
+    },
+    "n_cells": 241,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.07053941908713693
+  },
+  "9B8619251A19057CFF70779273E95AA6": {
+    "patient_id": "9B8619251A19057CFF70779273E95AA6",
+    "split": "train",
+    "true_class": "AML",
+    "predicted_class": "AML",
+    "confidence_score": 0.386872165461221,
+    "class_probabilities": {
+      "ALL": 0.2404430815151372,
+      "AML": 0.386872165461221,
+      "CML": 0.13181961391088887,
+      "Other": 0.24086513911275298
+    },
+    "n_cells": 186,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.5376344086021505
+  },
+  "9BF31C7FF062936A96D3C8BD1F8F2FF3": {
+    "patient_id": "9BF31C7FF062936A96D3C8BD1F8F2FF3",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.5880229335778894,
+    "class_probabilities": {
+      "ALL": 0.05766338033145597,
+      "AML": 0.2243704590837513,
+      "CML": 0.5880229335778894,
+      "Other": 0.1299432270069033
+    },
+    "n_cells": 300,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.03666666666666667
+  },
+  "9FC3D7152BA9336A670E36D0ED79BC43": {
+    "patient_id": "9FC3D7152BA9336A670E36D0ED79BC43",
+    "split": "train",
+    "true_class": "AML",
+    "predicted_class": "Other",
+    "confidence_score": 0.3090883106860455,
+    "class_probabilities": {
+      "ALL": 0.2656223616384133,
+      "AML": 0.3078889956201931,
+      "CML": 0.11740033205534812,
+      "Other": 0.3090883106860455
+    },
+    "n_cells": 122,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.6147540983606558
+  },
+  "A1D0C6E83F027327D8461063F4AC58A6": {
+    "patient_id": "A1D0C6E83F027327D8461063F4AC58A6",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.7160519054479366,
+    "class_probabilities": {
+      "ALL": 0.04046851684408874,
+      "AML": 0.12545125975172444,
+      "CML": 0.7160519054479366,
+      "Other": 0.11802831795625018
+    },
+    "n_cells": 593,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.013490725126475547
+  },
+  "A3F390D88E4C41F2747BFA2F1B5F87DB": {
+    "patient_id": "A3F390D88E4C41F2747BFA2F1B5F87DB",
+    "split": "train",
+    "true_class": "ALL",
+    "predicted_class": "ALL",
+    "confidence_score": 0.34956344224780206,
+    "class_probabilities": {
+      "ALL": 0.34956344224780206,
+      "AML": 0.2542568835267546,
+      "CML": 0.0631996658953103,
+      "Other": 0.3329800083301331
+    },
+    "n_cells": 47,
+    "is_low_evidence": true,
+    "annotated_blast_fraction": 0.7659574468085106
+  },
+  "A5771BCE93E200C36F7CD9DFD0E5DEAA": {
+    "patient_id": "A5771BCE93E200C36F7CD9DFD0E5DEAA",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.7179599848366464,
+    "class_probabilities": {
+      "ALL": 0.04156906768769015,
+      "AML": 0.11788235974295583,
+      "CML": 0.7179599848366464,
+      "Other": 0.12258858773270774
+    },
+    "n_cells": 270,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.037037037037037035
+  },
+  "A6BBC91AE73DD21C0533F735470A9CD0": {
+    "patient_id": "A6BBC91AE73DD21C0533F735470A9CD0",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.658621022856765,
+    "class_probabilities": {
+      "ALL": 0.050715521724433735,
+      "AML": 0.15752840588047284,
+      "CML": 0.658621022856765,
+      "Other": 0.1331350495383285
+    },
+    "n_cells": 241,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.058091286307053944
+  },
+  "A87FF679A2F3E71D9181A67B7542122C": {
+    "patient_id": "A87FF679A2F3E71D9181A67B7542122C",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.65241234353344,
+    "class_probabilities": {
+      "ALL": 0.05126005156142083,
+      "AML": 0.18052449331380352,
+      "CML": 0.65241234353344,
+      "Other": 0.11580311159133563
+    },
+    "n_cells": 304,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.05592105263157895
+  },
+  "A8F15EDA80C50ADB0E71943ADC8015CF": {
+    "patient_id": "A8F15EDA80C50ADB0E71943ADC8015CF",
+    "split": "train",
+    "true_class": "Other",
+    "predicted_class": "AML",
+    "confidence_score": 0.31169109683921903,
+    "class_probabilities": {
+      "ALL": 0.22653612132623477,
+      "AML": 0.31169109683921903,
+      "CML": 0.152164297324336,
+      "Other": 0.3096084845102103
+    },
+    "n_cells": 26,
+    "is_low_evidence": true,
+    "annotated_blast_fraction": 0.5769230769230769
+  },
+  "AAB3238922BCC25A6F606EB525FFDC56": {
+    "patient_id": "AAB3238922BCC25A6F606EB525FFDC56",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.6490991299822697,
+    "class_probabilities": {
+      "ALL": 0.05033139476086919,
+      "AML": 0.18349900622503812,
+      "CML": 0.6490991299822697,
+      "Other": 0.1170704690318231
+    },
+    "n_cells": 291,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.041237113402061855
+  },
+  "B6D767D2F8ED5D21A44B0E5886680CB9": {
+    "patient_id": "B6D767D2F8ED5D21A44B0E5886680CB9",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.7080536776028385,
+    "class_probabilities": {
+      "ALL": 0.040779016838043726,
+      "AML": 0.14002502103014483,
+      "CML": 0.7080536776028385,
+      "Other": 0.11114228452897291
+    },
+    "n_cells": 262,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.003816793893129771
+  },
+  "C0C7C76D30BD3DCAEFC96F40275BDC0A": {
+    "patient_id": "C0C7C76D30BD3DCAEFC96F40275BDC0A",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.738866933125254,
+    "class_probabilities": {
+      "ALL": 0.0368589861471391,
+      "AML": 0.109142934956504,
+      "CML": 0.738866933125254,
+      "Other": 0.11513114577110302
+    },
+    "n_cells": 224,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.013392857142857142
+  },
+  "C4CA4238A0B923820DCC509A6F75849B": {
+    "patient_id": "C4CA4238A0B923820DCC509A6F75849B",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.641383585274982,
+    "class_probabilities": {
+      "ALL": 0.05000743936495451,
+      "AML": 0.1922034514100751,
+      "CML": 0.641383585274982,
+      "Other": 0.1164055239499884
+    },
+    "n_cells": 109,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.027522935779816515
+  },
+  "C51CE410C124A10E0DB5E4B97FC2AF39": {
+    "patient_id": "C51CE410C124A10E0DB5E4B97FC2AF39",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.6093712584608235,
+    "class_probabilities": {
+      "ALL": 0.05488226456837934,
+      "AML": 0.2127775352421582,
+      "CML": 0.6093712584608235,
+      "Other": 0.12296894172863906
+    },
+    "n_cells": 174,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.034482758620689655
+  },
+  "C74D97B01EAE257E44AA9D5BADE97BAF": {
+    "patient_id": "C74D97B01EAE257E44AA9D5BADE97BAF",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.5671798536047004,
+    "class_probabilities": {
+      "ALL": 0.06730894145290729,
+      "AML": 0.21452043248519936,
+      "CML": 0.5671798536047004,
+      "Other": 0.150990772457193
+    },
+    "n_cells": 139,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.06474820143884892
+  },
+  "C7E1249FFC03EB9DED908C236BD1996D": {
+    "patient_id": "C7E1249FFC03EB9DED908C236BD1996D",
+    "split": "train",
+    "true_class": "ALL",
+    "predicted_class": "ALL",
+    "confidence_score": 0.41943126499162686,
+    "class_probabilities": {
+      "ALL": 0.41943126499162686,
+      "AML": 0.22103201423370195,
+      "CML": 0.041366024352464795,
+      "Other": 0.3181706964222065
+    },
+    "n_cells": 106,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.8773584905660378
+  },
+  "C8FFE9A587B126F152ED3D89A146B445": {
+    "patient_id": "C8FFE9A587B126F152ED3D89A146B445",
+    "split": "train",
+    "true_class": "AML",
+    "predicted_class": "AML",
+    "confidence_score": 0.43471622107947155,
+    "class_probabilities": {
+      "ALL": 0.11995173344610915,
+      "AML": 0.43471622107947155,
+      "CML": 0.2873212853475407,
+      "Other": 0.15801076012687854
+    },
+    "n_cells": 94,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.2127659574468085
+  },
+  "C9F0F895FB98AB9159F51FD0297E236D": {
+    "patient_id": "C9F0F895FB98AB9159F51FD0297E236D",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.6107075713106036,
+    "class_probabilities": {
+      "ALL": 0.051912117674069176,
+      "AML": 0.22780821304465798,
+      "CML": 0.6107075713106036,
+      "Other": 0.10957209797066939
+    },
+    "n_cells": 236,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.012711864406779662
+  },
+  "D09BF41544A3365A46C9077EBB5E35C3": {
+    "patient_id": "D09BF41544A3365A46C9077EBB5E35C3",
+    "split": "train",
+    "true_class": "ALL",
+    "predicted_class": "ALL",
+    "confidence_score": 0.44867940971725523,
+    "class_probabilities": {
+      "ALL": 0.44867940971725523,
+      "AML": 0.20993294416755623,
+      "CML": 0.03373155615278034,
+      "Other": 0.3076560899624083
+    },
+    "n_cells": 75,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.96
+  },
+  "D1F491A404D6854880943E5C3CD9CA25": {
+    "patient_id": "D1F491A404D6854880943E5C3CD9CA25",
+    "split": "train",
+    "true_class": "AML",
+    "predicted_class": "AML",
+    "confidence_score": 0.3571402106485712,
+    "class_probabilities": {
+      "ALL": 0.17360982057152863,
+      "AML": 0.3571402106485712,
+      "CML": 0.2489313972629126,
+      "Other": 0.22031857151698767
+    },
+    "n_cells": 28,
+    "is_low_evidence": true,
+    "annotated_blast_fraction": 0.39285714285714285
+  },
+  "D1FE173D08E959397ADF34B1D77E88D7": {
+    "patient_id": "D1FE173D08E959397ADF34B1D77E88D7",
+    "split": "train",
+    "true_class": "ALL",
+    "predicted_class": "Other",
+    "confidence_score": 0.3449953722192605,
+    "class_probabilities": {
+      "ALL": 0.3388163254958417,
+      "AML": 0.25682967024300796,
+      "CML": 0.059358632041889875,
+      "Other": 0.3449953722192605
+    },
+    "n_cells": 85,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.6705882352941176
+  },
+  "D2DDEA18F00665CE8623E36BD4E3C7C5": {
+    "patient_id": "D2DDEA18F00665CE8623E36BD4E3C7C5",
+    "split": "train",
+    "true_class": "ALL",
+    "predicted_class": "AML",
+    "confidence_score": 0.34283664637851735,
+    "class_probabilities": {
+      "ALL": 0.32792043159995127,
+      "AML": 0.34283664637851735,
+      "CML": 0.0771369248707237,
+      "Other": 0.25210599715080756
+    },
+    "n_cells": 258,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.686046511627907
+  },
+  "D3D9446802A44259755D38E6D163E820": {
+    "patient_id": "D3D9446802A44259755D38E6D163E820",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.676235175187778,
+    "class_probabilities": {
+      "ALL": 0.04618182567698025,
+      "AML": 0.1592890314304017,
+      "CML": 0.676235175187778,
+      "Other": 0.11829396770484017
+    },
+    "n_cells": 288,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.034722222222222224
+  },
+  "D67D8AB4F4C10BF22AA353E27879133C": {
+    "patient_id": "D67D8AB4F4C10BF22AA353E27879133C",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.7067928570804688,
+    "class_probabilities": {
+      "ALL": 0.04127077697064461,
+      "AML": 0.13790753035014525,
+      "CML": 0.7067928570804688,
+      "Other": 0.11402883559874137
+    },
+    "n_cells": 216,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.009259259259259259
+  },
+  "D9D4F495E875A2E075A1A4A6E1B9770F": {
+    "patient_id": "D9D4F495E875A2E075A1A4A6E1B9770F",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.6590289928002708,
+    "class_probabilities": {
+      "ALL": 0.053099987511367346,
+      "AML": 0.13743905232706327,
+      "CML": 0.6590289928002708,
+      "Other": 0.15043196736129866
+    },
+    "n_cells": 178,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.08426966292134831
+  },
+  "DA4FB5C6E93E74D3DF8527599FA62642": {
+    "patient_id": "DA4FB5C6E93E74D3DF8527599FA62642",
+    "split": "train",
+    "true_class": "Other",
+    "predicted_class": "ALL",
+    "confidence_score": 0.3674136758116532,
+    "class_probabilities": {
+      "ALL": 0.3674136758116532,
+      "AML": 0.2818108926795678,
+      "CML": 0.05857977530281467,
+      "Other": 0.2921956562059644
+    },
+    "n_cells": 258,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.7751937984496124
+  },
+  "E2EF524FBF3D9FE611D5A8E90FEFDC9C": {
+    "patient_id": "E2EF524FBF3D9FE611D5A8E90FEFDC9C",
+    "split": "train",
+    "true_class": "ALL",
+    "predicted_class": "ALL",
+    "confidence_score": 0.41093908245212313,
+    "class_probabilities": {
+      "ALL": 0.41093908245212313,
+      "AML": 0.2244082420031702,
+      "CML": 0.04174618677350738,
+      "Other": 0.3229064887711992
+    },
+    "n_cells": 244,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.8811475409836066
+  },
+  "E4DA3B7FBBCE2345D7772B0674A318D5": {
+    "patient_id": "E4DA3B7FBBCE2345D7772B0674A318D5",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.6907603601103274,
+    "class_probabilities": {
+      "ALL": 0.046195873260736875,
+      "AML": 0.13640004440372594,
+      "CML": 0.6907603601103274,
+      "Other": 0.12664372222520995
+    },
+    "n_cells": 273,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.05128205128205128
+  },
+  "EC5DECCA5ED3D6B8079E2E7E7BACC9F2": {
+    "patient_id": "EC5DECCA5ED3D6B8079E2E7E7BACC9F2",
+    "split": "train",
+    "true_class": "AML",
+    "predicted_class": "AML",
+    "confidence_score": 0.29440566157412384,
+    "class_probabilities": {
+      "ALL": 0.16718871119046425,
+      "AML": 0.29440566157412384,
+      "CML": 0.2742463945851798,
+      "Other": 0.2641592326502322
+    },
+    "n_cells": 83,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.37349397590361444
+  },
+  "EC8956637A99787BD197EACD77ACCE5E": {
+    "patient_id": "EC8956637A99787BD197EACD77ACCE5E",
+    "split": "train",
+    "true_class": "ALL",
+    "predicted_class": "ALL",
+    "confidence_score": 0.426473334893542,
+    "class_probabilities": {
+      "ALL": 0.426473334893542,
+      "AML": 0.21900999781300282,
+      "CML": 0.038838554264440384,
+      "Other": 0.3156781130290147
+    },
+    "n_cells": 180,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.8833333333333333
+  },
+  "ECCBC87E4B5CE2FE28308FD9F2A7BAF3": {
+    "patient_id": "ECCBC87E4B5CE2FE28308FD9F2A7BAF3",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.5933899644893477,
+    "class_probabilities": {
+      "ALL": 0.057309754752654894,
+      "AML": 0.23082818117082154,
+      "CML": 0.5933899644893477,
+      "Other": 0.11847209958717589
+    },
+    "n_cells": 231,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.047619047619047616
+  },
+  "ED3D2C21991E3BEF5E069713AF9FA6CA": {
+    "patient_id": "ED3D2C21991E3BEF5E069713AF9FA6CA",
+    "split": "train",
+    "true_class": "ALL",
+    "predicted_class": "ALL",
+    "confidence_score": 0.4845211771226954,
+    "class_probabilities": {
+      "ALL": 0.4845211771226954,
+      "AML": 0.18980958902270845,
+      "CML": 0.025421065151508992,
+      "Other": 0.3002481687030872
+    },
+    "n_cells": 197,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.9695431472081218
+  },
+  "F4B9EC30AD9F68F89B29639786CB62EF": {
+    "patient_id": "F4B9EC30AD9F68F89B29639786CB62EF",
+    "split": "train",
+    "true_class": "ALL",
+    "predicted_class": "ALL",
+    "confidence_score": 0.4667627873733293,
+    "class_probabilities": {
+      "ALL": 0.4667627873733293,
+      "AML": 0.19579970475496342,
+      "CML": 0.028780716862938246,
+      "Other": 0.308656791008769
+    },
+    "n_cells": 267,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.9438202247191011
+  },
+  "F7177163C833DFF4B38FC8D2872F1EC6": {
+    "patient_id": "F7177163C833DFF4B38FC8D2872F1EC6",
+    "split": "train",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.7186753132377797,
+    "class_probabilities": {
+      "ALL": 0.04052763433873396,
+      "AML": 0.12513228297182322,
+      "CML": 0.7186753132377797,
+      "Other": 0.11566476945166311
+    },
+    "n_cells": 238,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.01680672268907563
+  },
+  "F899139DF5E1059396431415E770C6DD": {
+    "patient_id": "F899139DF5E1059396431415E770C6DD",
+    "split": "train",
+    "true_class": "ALL",
+    "predicted_class": "Other",
+    "confidence_score": 0.3282843986958068,
+    "class_probabilities": {
+      "ALL": 0.32763896798491887,
+      "AML": 0.2568724496673305,
+      "CML": 0.08720418365194384,
+      "Other": 0.3282843986958068
+    },
+    "n_cells": 73,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.6712328767123288
+  },
+  "FBD7939D674997CDB4692D34DE8633C4": {
+    "patient_id": "FBD7939D674997CDB4692D34DE8633C4",
+    "split": "train",
+    "true_class": "ALL",
+    "predicted_class": "AML",
+    "confidence_score": 0.3359984566521192,
+    "class_probabilities": {
+      "ALL": 0.2866283424132532,
+      "AML": 0.3359984566521192,
+      "CML": 0.09778579946220146,
+      "Other": 0.27958740147242617
+    },
+    "n_cells": 68,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.5735294117647058
+  },
+  "069059B7EF840F0C74A814EC9237B6EC": {
+    "patient_id": "069059B7EF840F0C74A814EC9237B6EC",
+    "split": "val",
+    "true_class": "AML",
+    "predicted_class": "AML",
+    "confidence_score": 0.4776755941515299,
+    "class_probabilities": {
+      "ALL": 0.12550418085980442,
+      "AML": 0.4776755941515299,
+      "CML": 0.25216689303835926,
+      "Other": 0.14465333195030639
+    },
+    "n_cells": 106,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.22641509433962265
+  },
+  "1679091C5A880FAF6FB5E6087EB1B2DC": {
+    "patient_id": "1679091C5A880FAF6FB5E6087EB1B2DC",
+    "split": "val",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.5658052636533349,
+    "class_probabilities": {
+      "ALL": 0.057543627546967235,
+      "AML": 0.26081040907869246,
+      "CML": 0.5658052636533349,
+      "Other": 0.11584069972100526
+    },
+    "n_cells": 284,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.035211267605633804
+  },
+  "182BE0C5CDCD5072BB1864CDEE4D3D6E": {
+    "patient_id": "182BE0C5CDCD5072BB1864CDEE4D3D6E",
+    "split": "val",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.7054869409914042,
+    "class_probabilities": {
+      "ALL": 0.04272532869946841,
+      "AML": 0.13263729627866533,
+      "CML": 0.7054869409914042,
+      "Other": 0.11915043403046202
+    },
+    "n_cells": 291,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.024054982817869417
+  },
+  "1C383CD30B7C298AB50293ADFECB7B18": {
+    "patient_id": "1C383CD30B7C298AB50293ADFECB7B18",
+    "split": "val",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.6758803822141555,
+    "class_probabilities": {
+      "ALL": 0.05028515344659551,
+      "AML": 0.13670436920957776,
+      "CML": 0.6758803822141555,
+      "Other": 0.13713009512967125
+    },
+    "n_cells": 145,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.0896551724137931
+  },
+  "1F0E3DAD99908345F7439F8FFABDFFC4": {
+    "patient_id": "1F0E3DAD99908345F7439F8FFABDFFC4",
+    "split": "val",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.7272434155017298,
+    "class_probabilities": {
+      "ALL": 0.037873905576847056,
+      "AML": 0.11218970442209586,
+      "CML": 0.7272434155017298,
+      "Other": 0.12269297449932726
+    },
+    "n_cells": 174,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.005747126436781609
+  },
+  "2B44928AE11FB9384C4CF38708677C48": {
+    "patient_id": "2B44928AE11FB9384C4CF38708677C48",
+    "split": "val",
+    "true_class": "Other",
+    "predicted_class": "ALL",
+    "confidence_score": 0.43454132421300123,
+    "class_probabilities": {
+      "ALL": 0.43454132421300123,
+      "AML": 0.20749169755693647,
+      "CML": 0.03450933078632038,
+      "Other": 0.323457647443742
+    },
+    "n_cells": 81,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.9506172839506173
+  },
+  "45C48CCE2E2D7FBDEA1AFC51C7C6AD26": {
+    "patient_id": "45C48CCE2E2D7FBDEA1AFC51C7C6AD26",
+    "split": "val",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.5809363523633415,
+    "class_probabilities": {
+      "ALL": 0.058604001833071635,
+      "AML": 0.24070648456736593,
+      "CML": 0.5809363523633415,
+      "Other": 0.11975316123622097
+    },
+    "n_cells": 251,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.0398406374501992
+  },
+  "47D1E990583C9C67424D369F3414728E": {
+    "patient_id": "47D1E990583C9C67424D369F3414728E",
+    "split": "val",
+    "true_class": "AML",
+    "predicted_class": "Other",
+    "confidence_score": 0.3440162958349823,
+    "class_probabilities": {
+      "ALL": 0.29099429406660715,
+      "AML": 0.283134575649881,
+      "CML": 0.08185483444852942,
+      "Other": 0.3440162958349823
+    },
+    "n_cells": 26,
+    "is_low_evidence": true,
+    "annotated_blast_fraction": 0.5384615384615384
+  },
+  "54229ABFCFA5649E7003B83DD4755294": {
+    "patient_id": "54229ABFCFA5649E7003B83DD4755294",
+    "split": "val",
+    "true_class": "ALL",
+    "predicted_class": "ALL",
+    "confidence_score": 0.4523802038953955,
+    "class_probabilities": {
+      "ALL": 0.4523802038953955,
+      "AML": 0.21018286370069203,
+      "CML": 0.03338063651126369,
+      "Other": 0.30405629589264865
+    },
+    "n_cells": 86,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.9418604651162791
+  },
+  "642E92EFB79421734881B53E1E1B18B6": {
+    "patient_id": "642E92EFB79421734881B53E1E1B18B6",
+    "split": "val",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.6784724302856793,
+    "class_probabilities": {
+      "ALL": 0.04594206167067802,
+      "AML": 0.1445757347811369,
+      "CML": 0.6784724302856793,
+      "Other": 0.13100977326250576
+    },
+    "n_cells": 268,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.026119402985074626
+  },
+  "6512BD43D9CAA6E02C990B0A82652DCA": {
+    "patient_id": "6512BD43D9CAA6E02C990B0A82652DCA",
+    "split": "val",
+    "true_class": "CML",
+    "predicted_class": "Other",
+    "confidence_score": 0.28714962229447616,
+    "class_probabilities": {
+      "ALL": 0.17136843288299655,
+      "AML": 0.27941749545678896,
+      "CML": 0.26206444936573825,
+      "Other": 0.28714962229447616
+    },
+    "n_cells": 167,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.3473053892215569
+  },
+  "68D30A9594728BC39AA24BE94B319D21": {
+    "patient_id": "68D30A9594728BC39AA24BE94B319D21",
+    "split": "val",
+    "true_class": "ALL",
+    "predicted_class": "Other",
+    "confidence_score": 0.3291165590331409,
+    "class_probabilities": {
+      "ALL": 0.31720260891784513,
+      "AML": 0.2812406972489942,
+      "CML": 0.07244013480001978,
+      "Other": 0.3291165590331409
+    },
+    "n_cells": 249,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.678714859437751
+  },
+  "73278A4A86960EEB576A8FD4C9EC6997": {
+    "patient_id": "73278A4A86960EEB576A8FD4C9EC6997",
+    "split": "val",
+    "true_class": "Other",
+    "predicted_class": "ALL",
+    "confidence_score": 0.469703087574114,
+    "class_probabilities": {
+      "ALL": 0.469703087574114,
+      "AML": 0.19548927045185702,
+      "CML": 0.027993094363582913,
+      "Other": 0.3068145476104461
+    },
+    "n_cells": 171,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.9590643274853801
+  },
+  "76DC611D6EBAAFC66CC0879C71B5DB5C": {
+    "patient_id": "76DC611D6EBAAFC66CC0879C71B5DB5C",
+    "split": "val",
+    "true_class": "AML",
+    "predicted_class": "AML",
+    "confidence_score": 0.4251528932410486,
+    "class_probabilities": {
+      "ALL": 0.09851821005613502,
+      "AML": 0.4251528932410486,
+      "CML": 0.3338169894812372,
+      "Other": 0.14251190722157933
+    },
+    "n_cells": 111,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.14414414414414414
+  },
+  "AC627AB1CCBDB62EC96E702F07F6425B": {
+    "patient_id": "AC627AB1CCBDB62EC96E702F07F6425B",
+    "split": "val",
+    "true_class": "ALL",
+    "predicted_class": "ALL",
+    "confidence_score": 0.4349244747174427,
+    "class_probabilities": {
+      "ALL": 0.4349244747174427,
+      "AML": 0.2093187565769664,
+      "CML": 0.034603722789152,
+      "Other": 0.3211530459164389
+    },
+    "n_cells": 125,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.936
+  },
+  "AD61AB143223EFBC24C7D2583BE69251": {
+    "patient_id": "AD61AB143223EFBC24C7D2583BE69251",
+    "split": "val",
+    "true_class": "ALL",
+    "predicted_class": "AML",
+    "confidence_score": 0.38176462714682513,
+    "class_probabilities": {
+      "ALL": 0.22421858974935274,
+      "AML": 0.38176462714682513,
+      "CML": 0.13358780184259003,
+      "Other": 0.260428981261232
+    },
+    "n_cells": 48,
+    "is_low_evidence": true,
+    "annotated_blast_fraction": 0.375
+  },
+  "EB160DE1DE89D9058FCB0B968DBBBD68": {
+    "patient_id": "EB160DE1DE89D9058FCB0B968DBBBD68",
+    "split": "val",
+    "true_class": "ALL",
+    "predicted_class": "ALL",
+    "confidence_score": 0.4495298915236196,
+    "class_probabilities": {
+      "ALL": 0.4495298915236196,
+      "AML": 0.20560301774926956,
+      "CML": 0.03194039523955186,
+      "Other": 0.31292669548755914
+    },
+    "n_cells": 368,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.9538043478260869
+  },
+  "2723D092B63885E0D7C260CC007E8B9D": {
+    "patient_id": "2723D092B63885E0D7C260CC007E8B9D",
+    "split": "test",
+    "true_class": "Other",
+    "predicted_class": "ALL",
+    "confidence_score": 0.38572300545421595,
+    "class_probabilities": {
+      "ALL": 0.38572300545421595,
+      "AML": 0.24001422985154083,
+      "CML": 0.05448113606296791,
+      "Other": 0.31978162863127524
+    },
+    "n_cells": 210,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.9047619047619048
+  },
+  "32BB90E8976AAB5298D5DA10FE66F21D": {
+    "patient_id": "32BB90E8976AAB5298D5DA10FE66F21D",
+    "split": "test",
+    "true_class": "ALL",
+    "predicted_class": "AML",
+    "confidence_score": 0.3231027170562443,
+    "class_probabilities": {
+      "ALL": 0.21774635423860506,
+      "AML": 0.3231027170562443,
+      "CML": 0.176020006537452,
+      "Other": 0.2831309221676986
+    },
+    "n_cells": 9,
+    "is_low_evidence": true,
+    "annotated_blast_fraction": 0.4444444444444444
+  },
+  "33E75FF09DD601BBE69F351039152189": {
+    "patient_id": "33E75FF09DD601BBE69F351039152189",
+    "split": "test",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.7026955513410114,
+    "class_probabilities": {
+      "ALL": 0.04295045861062447,
+      "AML": 0.1346050247828022,
+      "CML": 0.7026955513410114,
+      "Other": 0.11974896526556211
+    },
+    "n_cells": 198,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.020202020202020204
+  },
+  "3988C7F88EBCB58C6CE932B957B6F332": {
+    "patient_id": "3988C7F88EBCB58C6CE932B957B6F332",
+    "split": "test",
+    "true_class": "AML",
+    "predicted_class": "AML",
+    "confidence_score": 0.4175984132590798,
+    "class_probabilities": {
+      "ALL": 0.1278478486300916,
+      "AML": 0.4175984132590798,
+      "CML": 0.279307748833577,
+      "Other": 0.17524598927725157
+    },
+    "n_cells": 92,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.2826086956521739
+  },
+  "7CBBC409EC990F19C78C75BD1E06F215": {
+    "patient_id": "7CBBC409EC990F19C78C75BD1E06F215",
+    "split": "test",
+    "true_class": "ALL",
+    "predicted_class": "AML",
+    "confidence_score": 0.3736946971150303,
+    "class_probabilities": {
+      "ALL": 0.28509985783426894,
+      "AML": 0.3736946971150303,
+      "CML": 0.09979382625387105,
+      "Other": 0.24141161879682974
+    },
+    "n_cells": 176,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.6136363636363636
+  },
+  "93DB85ED909C13838FF95CCFA94CEBD9": {
+    "patient_id": "93DB85ED909C13838FF95CCFA94CEBD9",
+    "split": "test",
+    "true_class": "ALL",
+    "predicted_class": "ALL",
+    "confidence_score": 0.37335003316091925,
+    "class_probabilities": {
+      "ALL": 0.37335003316091925,
+      "AML": 0.25546811014555243,
+      "CML": 0.05897500644288184,
+      "Other": 0.3122068502506465
+    },
+    "n_cells": 24,
+    "is_low_evidence": true,
+    "annotated_blast_fraction": 0.7916666666666666
+  },
+  "A3C65C2974270FD093EE8A9BF8AE7D0B": {
+    "patient_id": "A3C65C2974270FD093EE8A9BF8AE7D0B",
+    "split": "test",
+    "true_class": "ALL",
+    "predicted_class": "ALL",
+    "confidence_score": 0.44343716179263953,
+    "class_probabilities": {
+      "ALL": 0.44343716179263953,
+      "AML": 0.2102372339100509,
+      "CML": 0.03416626298692066,
+      "Other": 0.31215934131038897
+    },
+    "n_cells": 335,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.9343283582089552
+  },
+  "A5BFC9E07964F8DDDEB95FC584CD965D": {
+    "patient_id": "A5BFC9E07964F8DDDEB95FC584CD965D",
+    "split": "test",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.6586095810454953,
+    "class_probabilities": {
+      "ALL": 0.05056701052537392,
+      "AML": 0.15980619270073873,
+      "CML": 0.6586095810454953,
+      "Other": 0.13101721572839217
+    },
+    "n_cells": 283,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.045936395759717315
+  },
+  "C16A5320FA475530D9583C34FD356EF5": {
+    "patient_id": "C16A5320FA475530D9583C34FD356EF5",
+    "split": "test",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.6284521034714439,
+    "class_probabilities": {
+      "ALL": 0.05642944826904611,
+      "AML": 0.165143724516305,
+      "CML": 0.6284521034714439,
+      "Other": 0.1499747237432052
+    },
+    "n_cells": 275,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.06909090909090909
+  },
+  "C20AD4D76FE97759AA27A0C99BFF6710": {
+    "patient_id": "C20AD4D76FE97759AA27A0C99BFF6710",
+    "split": "test",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.5473972769266924,
+    "class_probabilities": {
+      "ALL": 0.06256891195314643,
+      "AML": 0.2679445215901391,
+      "CML": 0.5473972769266924,
+      "Other": 0.12208928953002204
+    },
+    "n_cells": 237,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.05063291139240506
+  },
+  "C81E728D9D4C2F636F067F89CC14862C": {
+    "patient_id": "C81E728D9D4C2F636F067F89CC14862C",
+    "split": "test",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.6389916518081714,
+    "class_probabilities": {
+      "ALL": 0.050346621323821374,
+      "AML": 0.1956423069229789,
+      "CML": 0.6389916518081714,
+      "Other": 0.11501941994502829
+    },
+    "n_cells": 235,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.02553191489361702
+  },
+  "C82561EC215A6E31807CEEDF3B3BD25E": {
+    "patient_id": "C82561EC215A6E31807CEEDF3B3BD25E",
+    "split": "test",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.6780472002335142,
+    "class_probabilities": {
+      "ALL": 0.04425379094566797,
+      "AML": 0.16661906781600297,
+      "CML": 0.6780472002335142,
+      "Other": 0.11107994100481482
+    },
+    "n_cells": 213,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.0
+  },
+  "D645920E395FEDAD7BBBED0ECA3FE2E0": {
+    "patient_id": "D645920E395FEDAD7BBBED0ECA3FE2E0",
+    "split": "test",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.6267218738115672,
+    "class_probabilities": {
+      "ALL": 0.05689820718829937,
+      "AML": 0.17718414036316882,
+      "CML": 0.6267218738115672,
+      "Other": 0.13919577863696456
+    },
+    "n_cells": 161,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.06832298136645963
+  },
+  "E2C420D928D4BF8CE0FF2EC19B371514": {
+    "patient_id": "E2C420D928D4BF8CE0FF2EC19B371514",
+    "split": "test",
+    "true_class": "ALL",
+    "predicted_class": "ALL",
+    "confidence_score": 0.34636808872572883,
+    "class_probabilities": {
+      "ALL": 0.34636808872572883,
+      "AML": 0.29307676647105746,
+      "CML": 0.06959163733528953,
+      "Other": 0.29096350746792415
+    },
+    "n_cells": 278,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.7517985611510791
+  },
+  "E369853DF766FA44E1ED0FF613F563BD": {
+    "patient_id": "E369853DF766FA44E1ED0FF613F563BD",
+    "split": "test",
+    "true_class": "CML",
+    "predicted_class": "CML",
+    "confidence_score": 0.7312300064981003,
+    "class_probabilities": {
+      "ALL": 0.03832349930224393,
+      "AML": 0.1211361369170337,
+      "CML": 0.7312300064981003,
+      "Other": 0.10931035728262196
+    },
+    "n_cells": 297,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.020202020202020204
+  },
+  "F033AB37C30201F73F142449D037028D": {
+    "patient_id": "F033AB37C30201F73F142449D037028D",
+    "split": "test",
+    "true_class": "ALL",
+    "predicted_class": "ALL",
+    "confidence_score": 0.34122243545042735,
+    "class_probabilities": {
+      "ALL": 0.34122243545042735,
+      "AML": 0.3048099620191606,
+      "CML": 0.0686591017676503,
+      "Other": 0.2853085007627617
+    },
+    "n_cells": 259,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.752895752895753
+  },
+  "F2217062E9A397A1DCA429E7D70BC6CA": {
+    "patient_id": "F2217062E9A397A1DCA429E7D70BC6CA",
+    "split": "test",
+    "true_class": "AML",
+    "predicted_class": "AML",
+    "confidence_score": 0.3532494071762931,
+    "class_probabilities": {
+      "ALL": 0.19786649250832733,
+      "AML": 0.3532494071762931,
+      "CML": 0.19635412450397213,
+      "Other": 0.2525299758114074
+    },
+    "n_cells": 56,
+    "is_low_evidence": false,
+    "annotated_blast_fraction": 0.5178571428571429
+  }
+}

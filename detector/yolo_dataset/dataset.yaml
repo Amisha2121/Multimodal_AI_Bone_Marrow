@@ -1,0 +1,13 @@
+path: C:\Users\AMISHA\Desktop\Codes\Multimodal_AI_Bone_Marrow\detector\yolo_dataset
+train: train/images
+val: val/images
+test: test/images
+nc: 1
+names:
+- cell
+train_images: 79
+val_images: 17
+test_images: 17
+train_annotations: 14563
+val_annotations: 2951
+test_annotations: 3338

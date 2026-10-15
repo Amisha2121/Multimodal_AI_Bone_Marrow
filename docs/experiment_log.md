@@ -53,31 +53,29 @@ Record all experiments here chronologically. One entry per training run, retriev
 - WHO 5th edition as primary classification standard
 - 3 agents: Retriever, Synthesizer, Critic
 
-**Next:** Phase 0c & Phase 1 — Synthetic data generator, patient splits, ViT-Small LoRA baseline
+**Next:** Phase 1b & Real-Data Cohort Audit, then ViT-Small LoRA baseline on real crops
 
 ---
 
-## Phase 0c & 1 — 2026-10-05 — Synthetic Case Generator & Vision Baseline Pipeline
+## Phase 0c & 1 — 2026-10-05 — Vision Baseline Pipeline
 
 **Config:** `configs/default.yaml`  
 **Seed:** 42
 
 **What was implemented & validated:**
-1. **Synthetic Case Generator (`synthetic/`):**
-   - Implemented `synthetic/templates.py`: WHO 5th edition AML & MDS disease categories (`AML_t8_21`, `APL_PML_RARA`, `AML_inv16`, `AML_MR`, `MDS_IB1`, `MDS_IB2`, `MDS_del5q`) with 21-class morphology distributions, quantitative CBC ranges, and cytogenetics.
-   - Implemented `synthetic/sampler.py`: Hare-Niemeyer discrete cell crop sampler with fallback simulated cell descriptors.
-   - Implemented `synthetic/generate.py`: Generated balanced benchmark suite of 14 cases written to `data/synthetic/cases.json`.
-2. **Vision Baseline Pipeline (`vision/`):**
+1. **Vision Baseline Pipeline (`vision/`):**
    - Implemented `vision/dataset.py`: Patient-level stratified train/val/test splitting guaranteeing zero patient overlap across splits; class-imbalance `WeightedRandomSampler`; PyTorch `BoneMarrowCellDataset` with Wright-Giemsa augmentations.
    - Implemented `vision/model.py`: ViT-Small/16 (`vit_small_patch16_224`) wrapped with PEFT LoRA ($r=8, \alpha=16$) on attention projections. Validated only 0.68% trainable parameters (147,456 out of 21.8M params).
    - Implemented `vision/train.py`: Mixed-precision training loop, label smoothing ($\epsilon=0.1$), early stopping on macro F1.
    - Implemented `vision/evaluate.py`: Per-class recall, precision, F1, confusion matrix, and dedicated rare-class tracking (FGC, HAC, PEB, PLM, MOB).
    - Implemented `vision/aggregate.py`: Patient-level cell differential aggregation across 21 classes, WHO 5th blast percentage computation (`MYO` + `MOB`), and Wilson score 95% confidence intervals.
    - Implemented `vision/attention_rollout.py`: Abnar & Zuidema (2020) attention rollout producing 2D morphological spatial heatmaps.
-3. **Structured Context Assembler (`context/assembler.py`):**
-   - Replaced learned fusion with deterministic multimodal context assembler uniting cell-differential vector, CBC panel, cytogenetics, and clinical notes into markdown and JSON payloads.
-4. **Unit Test Suite (`tests/`):**
-   - `tests/test_vision.py` (6 tests) & `tests/test_synthetic.py` (4 tests) passing at 100% (10/10 tests green).
+2. **Structured Context Assembler (`context/assembler.py`):**
+   - Deterministic multimodal context assembler uniting cell-differential vector and real morphology data; CBC/cytogenetics strictly `null` (never fabricated).
+3. **Unit Test Suite (`tests/`):**
+   - `tests/test_vision.py` (13 tests) passing at 100% on real data schema.
+
+**Note:** A synthetic case generator (`synthetic/`) was created and subsequently deleted. No synthetic data remains in the repository.
 
 **Next:** Phase 2 — RAG Layer: Literature ingest script, FAISS + BM25 hybrid indexing, and BGE reranker.
 

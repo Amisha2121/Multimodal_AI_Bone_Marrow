@@ -14,15 +14,23 @@ Rules:
   - Never infer age, sex, or diagnosis from morphology alone.
   - Never assert CBC / cytogenetics / molecular data that was not provided.
   - Distinguish MORPHOLOGY OBSERVATION from DISEASE DIAGNOSIS.
+
+Mode:
+  - LLM_POWERED (default): Uses Groq Llama for dynamic RAG-based generation
+  - DETERMINISTIC: Uses rule-based template generation (legacy mode)
 """
 
 import logging
+import os
 from typing import Dict, Any, List
 
 from agents.state import AgentState
 from agents.tools import evaluate_blast_cutoffs
 
 logger = logging.getLogger("agent_synthesizer")
+
+# Configuration: Set to True to use LLM-powered generation
+USE_LLM = os.getenv("SYNTHESIZER_USE_LLM", "true").lower() == "true"
 
 
 def _age_context(age_years: float | None, age_months: float | None) -> str:
@@ -47,6 +55,127 @@ def _is_pediatric(age_years: float | None, age_months: float | None) -> bool | N
     if age_months is not None:
         return age_months < 216   # 18 × 12
     return None   # unknown
+
+
+def build_llm_powered_synthesis(state: AgentState) -> Dict[str, Any]:
+    """
+    LLM-powered clinical synthesis using Groq Llama with retrieved evidence.
+    """
+    from agents.llm_provider import get_llm_provider
+
+    pid = state.get("patient_id", "UNKNOWN")
+    cls = state.get("predicted_class", "Other")
+    probs = state.get("class_probabilities", {})
+    blast_fraction = state.get("annotated_blast_fraction", 0.0)
+    total_cells = state.get("total_cells", 0)
+    evidence = state.get("retrieved_evidence", [])
+    age_months = state.get("age_months", None)
+    age_years = state.get("age_years", None)
+    sex = state.get("sex", None)
+    low_ev = state.get("low_evidence_flag", False)
+    formatted_context = state.get("formatted_guidelines_context", "")
+    cell_counts = state.get("cell_counts_by_category", {})
+
+    age_str = _age_context(age_years, age_months)
+    pediatric = _is_pediatric(age_years, age_months)
+    blast_eval = evaluate_blast_cutoffs(blast_fraction, cls)
+
+    sorted_probs = sorted(probs.items(), key=lambda x: x[1], reverse=True)
+    primary_dx = sorted_probs[0][0] if sorted_probs else cls
+    primary_conf = sorted_probs[0][1] if sorted_probs else 0.0
+    secondary_dx = sorted_probs[1][0] if len(sorted_probs) > 1 else "—"
+
+    sex_str = sex if sex else "Not provided"
+
+    # Build cell distribution summary
+    cell_distribution = "\n".join([f"  - {cat}: {count} cells" for cat, count in sorted(cell_counts.items(), key=lambda x: x[1], reverse=True)])
+
+    # Construct prompt for LLM
+    system_prompt = """You are a clinical pathology AI assistant specialized in bone marrow cytomorphology assessment.
+
+Your role is to synthesize evidence from:
+1. Automated image analysis (cell detection and classification)
+2. Retrieved WHO 5th Edition / ICC 2022 clinical guidelines
+3. Patient demographics (if provided)
+
+CRITICAL RULES:
+- Use ONLY information provided in the context
+- NEVER fabricate CBC, cytogenetics, molecular, or flow cytometry results
+- Distinguish between IMAGE OBSERVATIONS and DISEASE DIAGNOSIS
+- Cite retrieved guideline chunks using their [chunk_id] tags
+- If age is not provided, do NOT assume pediatric or adult context
+- If age < 18 is confirmed, consider pediatric-specific contexts (e.g., haematogones)
+- Mark limitations clearly (sampling size, missing ancillary tests)
+
+OUTPUT FORMAT:
+Generate a professional cytomorphology assessment report with these sections:
+1. Evidence Provenance (what data sources were used)
+2. Image-Derived Morphological Findings (what was observed)
+3. Clinical Context (NOT a diagnosis - morphology interpretation with guideline citations)
+4. Limitations (what cannot be determined)
+5. Recommended Confirmatory Workup
+"""
+
+    user_prompt = f"""Generate a cytomorphology assessment for Case {pid}.
+
+## Case Data
+
+**Patient Demographics:**
+- Age: {age_str}
+- Sex: {sex_str}
+
+**Image Analysis Results:**
+- Total cells detected: {total_cells}
+- Predicted morphology class: {primary_dx} (confidence: {primary_conf:.1%})
+- Secondary class: {secondary_dx}
+- Annotated blast fraction: {blast_fraction:.1%}
+- Cell distribution:
+{cell_distribution}
+
+**Blast Evaluation:**
+{blast_eval['rules_matched'][0]}
+Clinical flags: {'; '.join(blast_eval['clinical_flags']) if blast_eval['clinical_flags'] else 'None'}
+
+**Evidence Quality:**
+- Low evidence flag: {low_ev}
+- Retrieved guideline passages: {len(evidence)}
+
+## Retrieved Clinical Guidelines
+
+{formatted_context}
+
+## Task
+
+Generate a comprehensive cytomorphology assessment report following the output format and critical rules.
+Focus on evidence-based interpretation, cite guidelines appropriately, and clearly distinguish observations from diagnoses.
+"""
+
+    try:
+        llm = get_llm_provider()
+        logger.info(f"[{pid}] Generating LLM-powered synthesis using {llm.provider}/{llm.model_name}...")
+
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+
+        draft_text = llm.generate(messages, temperature=0.1, max_tokens=2048)
+
+        logger.info(f"[{pid}] LLM synthesis completed ({len(draft_text)} chars)")
+
+        return {
+            "draft_differential": draft_text,
+            "differential_diagnosis_hierarchy": [primary_dx, secondary_dx],
+            "morphological_justification": (
+                f"LLM-generated assessment based on {total_cells} detected cells, "
+                f"{blast_fraction:.1%} blast fraction, and {len(evidence)} retrieved guideline passages."
+            ),
+        }
+
+    except Exception as e:
+        logger.error(f"[{pid}] LLM synthesis failed: {e}. Falling back to deterministic mode.")
+        # Fallback to deterministic synthesis
+        return build_deterministic_synthesis(state)
 
 
 def build_deterministic_synthesis(state: AgentState) -> Dict[str, Any]:
@@ -216,8 +345,13 @@ def build_deterministic_synthesis(state: AgentState) -> Dict[str, Any]:
 
 
 def synthesizer_node(state: AgentState) -> AgentState:
-    logger.info(f"[{state.get('patient_id')}] Synthesizer drafting assessment...")
-    synthesis = build_deterministic_synthesis(state)
+    logger.info(f"[{state.get('patient_id')}] Synthesizer drafting assessment (mode: {'LLM' if USE_LLM else 'DETERMINISTIC'})...")
+    
+    if USE_LLM:
+        synthesis = build_llm_powered_synthesis(state)
+    else:
+        synthesis = build_deterministic_synthesis(state)
+    
     state["draft_differential"] = synthesis["draft_differential"]
     state["differential_diagnosis_hierarchy"] = synthesis["differential_diagnosis_hierarchy"]
     state["morphological_justification"] = synthesis["morphological_justification"]

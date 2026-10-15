@@ -9,13 +9,13 @@ See individual dataset cards in `data/dataset_cards/` for full details.
 
 | Field | Detail |
 |---|---|
-| **Modality** | ✅ Bone marrow aspirate (single-cell) |
+| **Modality** |  Bone marrow aspirate (single-cell) |
 | **License** | **CC BY 4.0** |
 | **DOI** | https://doi.org/10.7937/TCIA.AXH3-T579 |
 | **Use in this project** | Vision model training (cell classification, 21 classes) |
 | **Restrictions** | Attribution required. No patient re-identification. |
 
-**⚠️ Dropped datasets (wrong modality — peripheral blood, not bone marrow):**
+** Dropped datasets (wrong modality — peripheral blood, not bone marrow):**
 - Matek et al. 2019 Munich AML Morphology (peripheral blood smear, 15 classes)
 - Acevedo et al. 2020 (peripheral blood smear, 8 classes)
 
@@ -52,18 +52,7 @@ See individual dataset cards in `data/dataset_cards/` for full details.
 
 ---
 
-## 5. Synthetic Patient Data
-
-| Field | Detail |
-|---|---|
-| **Source** | Self-generated via rule-based templates (`synthetic/templates.py`) |
-| **License** | MIT (created by project authors) |
-| **Use in this project** | End-to-end pipeline evaluation; not used to train the vision model |
-| **Restrictions** | Not paired with real patient identifiers. Entirely synthetic. |
-
----
-
-## 6. User-Provided Reference List
+## 5. User-Provided Reference List
 
 | Field | Detail |
 |---|---|
@@ -74,4 +63,4 @@ See individual dataset cards in `data/dataset_cards/` for full details.
 
 ---
 
-*Provenance last verified: 2026-10-05*
+*Provenance last verified: 2026-10-06*

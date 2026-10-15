@@ -38,6 +38,10 @@ class ViTAttentionRollout:
         self.head_fusion = head_fusion
         self.attentions: List[torch.Tensor] = []
         self.hooks = []
+        # Ensure timm attention modules compute explicit attention matrices rather than SDPA kernel
+        for m in self.model.modules():
+            if hasattr(m, "fused_attn"):
+                m.fused_attn = False
         self._register_hooks()
 
     def _register_hooks(self):

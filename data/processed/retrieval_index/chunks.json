@@ -1,0 +1,246 @@
+[
+  {
+    "chunk_id": "WHO2022_BALL_001",
+    "disease_category": "ALL",
+    "specific_entity": "B-Lymphoblastic Leukemia/Lymphoma (B-ALL)",
+    "title": "B-ALL Cytomorphology and Diagnostic Criteria",
+    "text": "B-lymphoblastic leukemia/lymphoma (B-ALL) is a neoplasm of precursor cells committed to the B-cell lineage. In bone marrow aspirates, lymphoblasts are typically small to medium-sized with high nuclear-to-cytoplasmic (N:C) ratios, finely dispersed or condensed nuclear chromatin, inconspicuous or absent nucleoli, and scant, agranular, light blue to basophilic cytoplasm. Occasional cytoplasmic vacuolization may occur. The diagnosis of acute lymphoblastic leukemia requires >=20% lymphoblasts in the bone marrow or peripheral blood according to classical WHO criteria, although in pediatric settings the presence of clonal B-cell precursors with clinical features warrants full genetic and flow cytometric workup even at lower percentages. B-ALL accounts for approximately 80-85% of pediatric acute leukemias.",
+    "source": "WHO 5th Edition (2022) / ICC (2022)",
+    "morphological_keywords": [
+      "lymphoblast",
+      "high N:C ratio",
+      "scant cytoplasm",
+      "agranular",
+      "condensed chromatin",
+      "inconspicuous nucleoli"
+    ],
+    "blast_threshold_rule": {
+      "min_blast_pct": 20,
+      "condition": "WHO standard blast cutoff in bone marrow aspirate"
+    },
+    "embedding_text": "Entity: B-Lymphoblastic Leukemia/Lymphoma (B-ALL) | Category: ALL | B-ALL Cytomorphology and Diagnostic Criteria: B-lymphoblastic leukemia/lymphoma (B-ALL) is a neoplasm of precursor cells committed to the B-cell lineage. In bone marrow aspirates, lymphoblasts are typically small to medium-sized with high nuclear-to-cytoplasmic (N:C) ratios, finely dispersed or condensed nuclear chromatin, inconspicuous or absent nucleoli, and scant, agranular, light blue to basophilic cytoplasm. Occasional cytoplasmic vacuolization may occur. The diagnosis of acute lymphoblastic leukemia requires >=20% lymphoblasts in the bone marrow or peripheral blood according to classical WHO criteria, although in pediatric settings the presence of clonal B-cell precursors with clinical features warrants full genetic and flow cytometric workup even at lower percentages. B-ALL accounts for approximately 80-85% of pediatric acute leukemias."
+  },
+  {
+    "chunk_id": "WHO2022_TALL_002",
+    "disease_category": "ALL",
+    "specific_entity": "T-Lymphoblastic Leukemia/Lymphoma (T-ALL)",
+    "title": "T-ALL Cytomorphology and Differential Characteristics",
+    "text": "T-lymphoblastic leukemia/lymphoma (T-ALL) comprises approximately 15% of pediatric acute leukemias. Morphologically, T-lymphoblasts often exhibit greater pleomorphism and size variation compared to B-ALL. Blasts range from medium to large with moderately high N:C ratios, irregular nuclear contours, indented or convoluted nuclei, dispersed chromatin, and one or two distinct nucleoli. Cytoplasm is typically scant to moderate, mildly basophilic, and usually agranular, though occasional azurophilic granules can rarely be present. Mediastinal (thymic) mass and marked leukocytosis are frequent clinical correlates. Lineage assignment requires cytoplasmic CD3 expression by flow cytometry or immunohistochemistry.",
+    "source": "WHO 5th Edition (2022) / ICC (2022)",
+    "morphological_keywords": [
+      "pleomorphic blasts",
+      "convoluted nuclei",
+      "indented nuclear contours",
+      "distinct nucleoli",
+      "mediastinal mass"
+    ],
+    "blast_threshold_rule": {
+      "min_blast_pct": 20,
+      "condition": "Standard acute lymphoblastic leukemia threshold"
+    },
+    "embedding_text": "Entity: T-Lymphoblastic Leukemia/Lymphoma (T-ALL) | Category: ALL | T-ALL Cytomorphology and Differential Characteristics: T-lymphoblastic leukemia/lymphoma (T-ALL) comprises approximately 15% of pediatric acute leukemias. Morphologically, T-lymphoblasts often exhibit greater pleomorphism and size variation compared to B-ALL. Blasts range from medium to large with moderately high N:C ratios, irregular nuclear contours, indented or convoluted nuclei, dispersed chromatin, and one or two distinct nucleoli. Cytoplasm is typically scant to moderate, mildly basophilic, and usually agranular, though occasional azurophilic granules can rarely be present. Mediastinal (thymic) mass and marked leukocytosis are frequent clinical correlates. Lineage assignment requires cytoplasmic CD3 expression by flow cytometry or immunohistochemistry."
+  },
+  {
+    "chunk_id": "WHO2022_BURKITT_003",
+    "disease_category": "ALL",
+    "specific_entity": "Burkitt Leukemia / Mature B-cell ALL",
+    "title": "Burkitt Leukemia Cytomorphological Triad and Starry-Sky Pattern",
+    "text": "Burkitt leukemia (formerly FAB L3 ALL) represents the leukemic manifestation of Burkitt lymphoma. The cytomorphological hallmark consists of medium-sized, round to oval, monomorphic blast cells with intensely basophilic, royal blue cytoplasm containing prominent, round lipid vacuoles that often overlay the nucleus. Nuclei are round or oval with moderately coarse, clumped chromatin and 2 to 5 distinct basophilic nucleoli. Bone marrow exhibits a high mitotic index and widespread apoptosis with 'starry-sky' macrophage phagocytosis of apoptotic debris. Driven by MYC gene translocations (primarily t(8;14)(q24;q32)), Burkitt leukemia represents an oncologic emergency requiring rapid high-intensity pulse chemotherapy rather than standard ALL protocols.",
+    "source": "WHO 5th Edition (2022) / FAB Classification (L3)",
+    "morphological_keywords": [
+      "intensely basophilic cytoplasm",
+      "prominent lipid vacuoles",
+      "coarse chromatin",
+      "starry sky",
+      "high mitotic index",
+      "MYC translocation"
+    ],
+    "blast_threshold_rule": {
+      "min_blast_pct": 20,
+      "condition": "Bone marrow involvement by mature B-cell Burkitt blasts"
+    },
+    "embedding_text": "Entity: Burkitt Leukemia / Mature B-cell ALL | Category: ALL | Burkitt Leukemia Cytomorphological Triad and Starry-Sky Pattern: Burkitt leukemia (formerly FAB L3 ALL) represents the leukemic manifestation of Burkitt lymphoma. The cytomorphological hallmark consists of medium-sized, round to oval, monomorphic blast cells with intensely basophilic, royal blue cytoplasm containing prominent, round lipid vacuoles that often overlay the nucleus. Nuclei are round or oval with moderately coarse, clumped chromatin and 2 to 5 distinct basophilic nucleoli. Bone marrow exhibits a high mitotic index and widespread apoptosis with 'starry-sky' macrophage phagocytosis of apoptotic debris. Driven by MYC gene translocations (primarily t(8;14)(q24;q32)), Burkitt leukemia represents an oncologic emergency requiring rapid high-intensity pulse chemotherapy rather than standard ALL protocols."
+  },
+  {
+    "chunk_id": "WHO2022_AML_DEF_004",
+    "disease_category": "AML",
+    "specific_entity": "Acute Myeloid Leukemia (AML) General Diagnostic Criteria",
+    "title": "AML Definition and Blast Cutoffs in Pediatric Patients",
+    "text": "Acute Myeloid Leukemia (AML) is defined as a clonal expansion of myeloid blasts in the bone marrow, blood, or other tissue. The standard diagnostic threshold is >=20% myeloid blasts among nucleated marrow cells. However, both the WHO 5th edition and ICC 2022 recognize that patients harboring specific recurrent genetic abnormalities—notably t(8;21)(q22;q22.1) RUNX1::RUNX1T1, inv(16)(p13.1q22) CBFB::MYH11, and PML::RARA—are diagnosed with AML regardless of the blast percentage. Myeloid blasts are characteristically larger than lymphoblasts, with round to oval nuclei, delicate reticular chromatin, prominent nucleoli, and moderate amounts of gray-blue cytoplasm often containing fine azurophilic granules.",
+    "source": "WHO 5th Edition (2022) / ICC (2022)",
+    "morphological_keywords": [
+      "myeloblast",
+      "delicate chromatin",
+      "prominent nucleoli",
+      "azurophilic granules",
+      "20% cutoff exception"
+    ],
+    "blast_threshold_rule": {
+      "min_blast_pct": 20,
+      "condition": "Standard blast cutoff, waived for defining genetic abnormalities like PML::RARA, RUNX1::RUNX1T1"
+    },
+    "embedding_text": "Entity: Acute Myeloid Leukemia (AML) General Diagnostic Criteria | Category: AML | AML Definition and Blast Cutoffs in Pediatric Patients: Acute Myeloid Leukemia (AML) is defined as a clonal expansion of myeloid blasts in the bone marrow, blood, or other tissue. The standard diagnostic threshold is >=20% myeloid blasts among nucleated marrow cells. However, both the WHO 5th edition and ICC 2022 recognize that patients harboring specific recurrent genetic abnormalities—notably t(8;21)(q22;q22.1) RUNX1::RUNX1T1, inv(16)(p13.1q22) CBFB::MYH11, and PML::RARA—are diagnosed with AML regardless of the blast percentage. Myeloid blasts are characteristically larger than lymphoblasts, with round to oval nuclei, delicate reticular chromatin, prominent nucleoli, and moderate amounts of gray-blue cytoplasm often containing fine azurophilic granules."
+  },
+  {
+    "chunk_id": "WHO2022_AML_SUB_005",
+    "disease_category": "AML",
+    "specific_entity": "AML with Recurrent Cytogenetics & APL t(15;17)",
+    "title": "Acute Promyelocytic Leukemia (APL) and Distinct Morphological Clues",
+    "text": "Acute Promyelocytic Leukemia (APL) with PML::RARA is characterized by abnormal hypergranular promyelocytes with kidney-shaped or bilobed nuclei and dense, coarse azurophilic granules covering the cytoplasm and obscuring nuclear borders. Multiple Auer rods arranged in bundles ('faggot cells') are pathognomonic. In microgranular variant APL, granules are submicroscopic, with distinct butterfly-shaped or reniform folded nuclei. Prompt recognition is critical because APL frequently presents with severe disseminated intravascular coagulation (DIC); immediate administration of all-trans retinoic acid (ATRA) and arsenic trioxide (ATO) is lifesaving before molecular confirmation. Auer rods in myeloblasts generally indicate myeloid lineage commitment.",
+    "source": "WHO 5th Edition (2022) / ELN (2022)",
+    "morphological_keywords": [
+      "Auer rods",
+      "faggot cells",
+      "hypergranular promyelocytes",
+      "bilobed nucleus",
+      "DIC risk",
+      "ATRA emergency"
+    ],
+    "blast_threshold_rule": {
+      "min_blast_pct": 0,
+      "condition": "Presence of PML::RARA defines APL regardless of blast count"
+    },
+    "embedding_text": "Entity: AML with Recurrent Cytogenetics & APL t(15;17) | Category: AML | Acute Promyelocytic Leukemia (APL) and Distinct Morphological Clues: Acute Promyelocytic Leukemia (APL) with PML::RARA is characterized by abnormal hypergranular promyelocytes with kidney-shaped or bilobed nuclei and dense, coarse azurophilic granules covering the cytoplasm and obscuring nuclear borders. Multiple Auer rods arranged in bundles ('faggot cells') are pathognomonic. In microgranular variant APL, granules are submicroscopic, with distinct butterfly-shaped or reniform folded nuclei. Prompt recognition is critical because APL frequently presents with severe disseminated intravascular coagulation (DIC); immediate administration of all-trans retinoic acid (ATRA) and arsenic trioxide (ATO) is lifesaving before molecular confirmation. Auer rods in myeloblasts generally indicate myeloid lineage commitment."
+  },
+  {
+    "chunk_id": "WHO2022_AML_MAT_006",
+    "disease_category": "AML",
+    "specific_entity": "AML with Maturation & Myelomonocytic Differentiation",
+    "title": "AML with Maturation (FAB M2) and Acute Myelomonocytic Leukemia (FAB M4)",
+    "text": "In AML with maturation, bone marrow blasts constitute >=20% of non-erythroid cells, and maturing granulocytes (promyelocytes, myelocytes, metamyelocytes, neutrophils) exceed 10%. Neutrophilic maturation often displays dysplastic features including hypogranulation and pseudo-Pelger-Huet nuclear hypolobulation. In Acute Myelomonocytic Leukemia (AMMoL), bone marrow exhibits both myeloblasts and monoblasts/promonocytes, each comprising >=20% of the differential, with peripheral monocytosis >=1.0x10^9/L. Monoblasts are large with abundant weakly basophilic cytoplasm, round nuclei, delicate chromatin, and large vesicular nucleoli.",
+    "source": "WHO 5th Edition (2022)",
+    "morphological_keywords": [
+      "maturing granulocytes >10%",
+      "pseudo-Pelger-Huet",
+      "monoblasts",
+      "promonocytes",
+      "myelomonocytic differentiation"
+    ],
+    "blast_threshold_rule": {
+      "min_blast_pct": 20,
+      "condition": "Blasts >=20% with evidence of myeloid maturation"
+    },
+    "embedding_text": "Entity: AML with Maturation & Myelomonocytic Differentiation | Category: AML | AML with Maturation (FAB M2) and Acute Myelomonocytic Leukemia (FAB M4): In AML with maturation, bone marrow blasts constitute >=20% of non-erythroid cells, and maturing granulocytes (promyelocytes, myelocytes, metamyelocytes, neutrophils) exceed 10%. Neutrophilic maturation often displays dysplastic features including hypogranulation and pseudo-Pelger-Huet nuclear hypolobulation. In Acute Myelomonocytic Leukemia (AMMoL), bone marrow exhibits both myeloblasts and monoblasts/promonocytes, each comprising >=20% of the differential, with peripheral monocytosis >=1.0x10^9/L. Monoblasts are large with abundant weakly basophilic cytoplasm, round nuclei, delicate chromatin, and large vesicular nucleoli."
+  },
+  {
+    "chunk_id": "WHO2022_CML_CP_007",
+    "disease_category": "CML",
+    "specific_entity": "Chronic Myeloid Leukemia (CML) - Chronic Phase",
+    "title": "CML Chronic Phase Cytomorphology and the 'Myelocyte Bulge'",
+    "text": "Chronic Myeloid Leukemia (CML), BCR::ABL1-positive, is a myeloproliferative neoplasm originating in a pluripotent hematopoietic stem cell. In the chronic phase (CML-CP), bone marrow aspirates are markedly hypercellular with extreme granulocytic hyperplasia and a high myeloid-to-erythroid (M:E) ratio (frequently 10:1 to 30:1). A diagnostic cytomorphological hallmark is the 'myelocyte bulge', where intermediate granulocytic precursors (myelocytes and metamyelocytes) outnumber more immature promyelocytes and myeloblasts. Blast percentage remains strictly <10% in marrow and peripheral blood. Absolute basophilia and eosinophilia are consistently present. Megakaryocytes are typically increased in number but smaller than normal with hypolobated nuclei ('dwarf megakaryocytes').",
+    "source": "WHO 5th Edition (2022) / ICC (2022)",
+    "morphological_keywords": [
+      "myelocyte bulge",
+      "high M:E ratio",
+      "blasts <10%",
+      "dwarf megakaryocytes",
+      "basophilia",
+      "granulocytic hyperplasia"
+    ],
+    "blast_threshold_rule": {
+      "max_blast_pct": 9.9,
+      "condition": "Blasts must be strictly <10% to meet Chronic Phase criteria"
+    },
+    "embedding_text": "Entity: Chronic Myeloid Leukemia (CML) - Chronic Phase | Category: CML | CML Chronic Phase Cytomorphology and the 'Myelocyte Bulge': Chronic Myeloid Leukemia (CML), BCR::ABL1-positive, is a myeloproliferative neoplasm originating in a pluripotent hematopoietic stem cell. In the chronic phase (CML-CP), bone marrow aspirates are markedly hypercellular with extreme granulocytic hyperplasia and a high myeloid-to-erythroid (M:E) ratio (frequently 10:1 to 30:1). A diagnostic cytomorphological hallmark is the 'myelocyte bulge', where intermediate granulocytic precursors (myelocytes and metamyelocytes) outnumber more immature promyelocytes and myeloblasts. Blast percentage remains strictly <10% in marrow and peripheral blood. Absolute basophilia and eosinophilia are consistently present. Megakaryocytes are typically increased in number but smaller than normal with hypolobated nuclei ('dwarf megakaryocytes')."
+  },
+  {
+    "chunk_id": "WHO2022_CML_ADV_008",
+    "disease_category": "CML",
+    "specific_entity": "CML Accelerated and Blast Phases",
+    "title": "CML Progression: Accelerated Phase vs. Blast Phase Criteria",
+    "text": "Progression of CML signifies treatment failure or resistance. Under WHO 5th edition and ICC criteria: Accelerated Phase (CML-AP) is defined by 10-19% blasts in bone marrow or blood, persistent basophilia >=20%, persistent thrombocytopenia (<100x10^9/L) or thrombocytosis (>1000x10^9/L) unresponsive to therapy, and additional clonal cytogenetic abnormalities. Blast Phase (CML-BP) is defined by >=20% blasts in the bone marrow or peripheral blood, or extramedullary blastic proliferation. Notably, in pediatric CML-BP, approximately 70% of blast transformations are myeloid in phenotype, while 30% are lymphoid (B-ALL phenotype), requiring distinct lineage-targeted therapeutic strategies alongside tyrosine kinase inhibitors (TKIs).",
+    "source": "WHO 5th Edition (2022) / ICC (2022)",
+    "morphological_keywords": [
+      "blasts 10-19% (accelerated)",
+      "blasts >=20% (blast phase)",
+      "lymphoid vs myeloid blast transformation",
+      "clonal evolution"
+    ],
+    "blast_threshold_rule": {
+      "min_blast_pct": 20,
+      "condition": ">=20% blasts defines CML Blast Phase"
+    },
+    "embedding_text": "Entity: CML Accelerated and Blast Phases | Category: CML | CML Progression: Accelerated Phase vs. Blast Phase Criteria: Progression of CML signifies treatment failure or resistance. Under WHO 5th edition and ICC criteria: Accelerated Phase (CML-AP) is defined by 10-19% blasts in bone marrow or blood, persistent basophilia >=20%, persistent thrombocytopenia (<100x10^9/L) or thrombocytosis (>1000x10^9/L) unresponsive to therapy, and additional clonal cytogenetic abnormalities. Blast Phase (CML-BP) is defined by >=20% blasts in the bone marrow or peripheral blood, or extramedullary blastic proliferation. Notably, in pediatric CML-BP, approximately 70% of blast transformations are myeloid in phenotype, while 30% are lymphoid (B-ALL phenotype), requiring distinct lineage-targeted therapeutic strategies alongside tyrosine kinase inhibitors (TKIs)."
+  },
+  {
+    "chunk_id": "WHO2022_HAEMATOGONES_009",
+    "disease_category": "Differential_Diagnosis",
+    "specific_entity": "Haematogones vs. Leukemic Lymphoblasts in Children",
+    "title": "Distinguishing Benign Haematogones from Malignant B-ALL Blasts",
+    "text": "A critical diagnostic pitfall in pediatric bone marrow cytomorphology is distinguishing benign B-cell precursor hyperplasia (haematogones) from residual or emerging B-ALL lymphoblasts. Haematogones can normally constitute up to 5-15% (and occasionally >20% following viral infections, immune reconstitution, or chemotherapy) of bone marrow nucleated cells in young children. Cytomorphologically, haematogones exhibit a continuous spectrum of maturation from small immature cells (scant cytoplasm, round condensed nuclei, indistinct nucleoli) to intermediate and mature lymphocytes. In contrast, B-ALL lymphoblasts display a sharp 'maturational arrest' presenting as a monomorphic clone with abnormal chromatin, irregular nuclear clefts, and distinct immunophenotypic aberrancies (e.g., aberrant CD10/CD20/CD34 co-expression and CD58 upregulation).",
+    "source": "Clinical Pediatric Haematology Guidelines / WHO 2022",
+    "morphological_keywords": [
+      "haematogones",
+      "maturational spectrum",
+      "maturational arrest",
+      "monomorphic clone",
+      "benign B-cell precursors",
+      "pediatric viral reactive"
+    ],
+    "blast_threshold_rule": {
+      "warning": "Haematogones must not be misclassified as leukemic blasts without flow cytometric confirmation"
+    },
+    "embedding_text": "Entity: Haematogones vs. Leukemic Lymphoblasts in Children | Category: Differential_Diagnosis | Distinguishing Benign Haematogones from Malignant B-ALL Blasts: A critical diagnostic pitfall in pediatric bone marrow cytomorphology is distinguishing benign B-cell precursor hyperplasia (haematogones) from residual or emerging B-ALL lymphoblasts. Haematogones can normally constitute up to 5-15% (and occasionally >20% following viral infections, immune reconstitution, or chemotherapy) of bone marrow nucleated cells in young children. Cytomorphologically, haematogones exhibit a continuous spectrum of maturation from small immature cells (scant cytoplasm, round condensed nuclei, indistinct nucleoli) to intermediate and mature lymphocytes. In contrast, B-ALL lymphoblasts display a sharp 'maturational arrest' presenting as a monomorphic clone with abnormal chromatin, irregular nuclear clefts, and distinct immunophenotypic aberrancies (e.g., aberrant CD10/CD20/CD34 co-expression and CD58 upregulation)."
+  },
+  {
+    "chunk_id": "WHO2022_REACTIVE_010",
+    "disease_category": "Other",
+    "specific_entity": "Reactive Bone Marrow and Non-Malignant Marrow Responses",
+    "title": "Reactive Granulocytic Hyperplasia, Infection, and Normal Pediatric Cellularity",
+    "text": "Normal pediatric bone marrow cellularity is age-dependent, typically approximating 80-90% in young infants, declining to 60-70% in older children. In systemic infections or severe inflammatory stress, reactive granulocytic hyperplasia may produce marked myeloid expansion and high M:E ratios that superficially resemble CML. However, reactive leukemoid responses demonstrate normal or elevated leukocyte alkaline phosphatase (LAP) scores, toxic granulation, Dohle bodies, cytoplasmic vacuolation in mature neutrophils, and lack the severe 'myelocyte bulge' and prominent basophilia typical of CML. Blasts remain normal (<5%). Reactive erythroid hyperplasia occurs in hemolytic conditions, while transient erythroblastopenia of childhood (TEC) shows temporary erythroid hypoplasia with spontaneous recovery.",
+    "source": "Pediatric Bone Marrow Pathology Handbook (WHO 2022)",
+    "morphological_keywords": [
+      "reactive hyperplasia",
+      "toxic granulation",
+      "Dohle bodies",
+      "blasts <5%",
+      "leukemoid reaction",
+      "age-dependent cellularity"
+    ],
+    "blast_threshold_rule": {
+      "max_blast_pct": 5,
+      "condition": "Normal and reactive bone marrow maintains <5% blasts"
+    },
+    "embedding_text": "Entity: Reactive Bone Marrow and Non-Malignant Marrow Responses | Category: Other | Reactive Granulocytic Hyperplasia, Infection, and Normal Pediatric Cellularity: Normal pediatric bone marrow cellularity is age-dependent, typically approximating 80-90% in young infants, declining to 60-70% in older children. In systemic infections or severe inflammatory stress, reactive granulocytic hyperplasia may produce marked myeloid expansion and high M:E ratios that superficially resemble CML. However, reactive leukemoid responses demonstrate normal or elevated leukocyte alkaline phosphatase (LAP) scores, toxic granulation, Dohle bodies, cytoplasmic vacuolation in mature neutrophils, and lack the severe 'myelocyte bulge' and prominent basophilia typical of CML. Blasts remain normal (<5%). Reactive erythroid hyperplasia occurs in hemolytic conditions, while transient erythroblastopenia of childhood (TEC) shows temporary erythroid hypoplasia with spontaneous recovery."
+  },
+  {
+    "chunk_id": "WHO2022_MPAL_011",
+    "disease_category": "Other",
+    "specific_entity": "Mixed Phenotype Acute Leukemia (MPAL)",
+    "title": "Mixed Phenotype Acute Leukemia Diagnostic Lineage Criteria",
+    "text": "Mixed Phenotype Acute Leukemia (MPAL) is a rare acute leukemia comprising approximately 2-3% of pediatric leukemias where the blast population meets definitive lineage criteria for more than one hematopoietic lineage (either a single biphenotypic population or two distinct blast populations, bilineal). Criteria require strong lineage assignment: for B-lineage, strong CD19 with bright expression of at least one other B-marker (CD79a, cCD22, CD10); for T-lineage, bright cytoplasmic or surface CD3; for Myeloid, myeloperoxidase (MPO) positivity or unequivocal monocytic differentiation (at least 2 markers: NSE, CD11c, CD14, CD64). Morphology alone cannot reliably establish MPAL, making comprehensive multiparameter flow cytometry essential.",
+    "source": "WHO 5th Edition (2022) / ICC (2022)",
+    "morphological_keywords": [
+      "biphenotypic",
+      "bilineal",
+      "myeloperoxidase",
+      "CD3",
+      "CD19",
+      "lineage ambiguity"
+    ],
+    "blast_threshold_rule": {
+      "min_blast_pct": 20,
+      "condition": ">=20% acute leukemia blasts with dual or multiple lineage commitment"
+    },
+    "embedding_text": "Entity: Mixed Phenotype Acute Leukemia (MPAL) | Category: Other | Mixed Phenotype Acute Leukemia Diagnostic Lineage Criteria: Mixed Phenotype Acute Leukemia (MPAL) is a rare acute leukemia comprising approximately 2-3% of pediatric leukemias where the blast population meets definitive lineage criteria for more than one hematopoietic lineage (either a single biphenotypic population or two distinct blast populations, bilineal). Criteria require strong lineage assignment: for B-lineage, strong CD19 with bright expression of at least one other B-marker (CD79a, cCD22, CD10); for T-lineage, bright cytoplasmic or surface CD3; for Myeloid, myeloperoxidase (MPO) positivity or unequivocal monocytic differentiation (at least 2 markers: NSE, CD11c, CD14, CD64). Morphology alone cannot reliably establish MPAL, making comprehensive multiparameter flow cytometry essential."
+  },
+  {
+    "chunk_id": "DISCLAIMER_MONOLAYER_012",
+    "disease_category": "Differential_Diagnosis",
+    "specific_entity": "Monolayer ROI Sampling vs. Clinical Aspirate Differentials",
+    "title": "Scientific Limitation: Annotated-Cell Fraction vs. Whole-Slide Clinical Blast Differential",
+    "text": "In digital pathology datasets of whole slide bone marrow aspirates (such as BoneMarrowWSI-PediatricLeukemia), annotations are typically collected from pre-selected high-power monolayer fields optimized for cell morphology assessment. Consequently, the 'annotated-cell blast fraction' calculated from consensus boxes represents the proportion of blasts within these specific sampling regions, NOT an exhaustive 500-cell clinical aspirate differential count from the entire slide. Furthermore, spicules, macroscopic tissue particles, and technically damaged cells are excluded from single-cell analysis. Decision support systems must transparently distinguish between local monolayer blast densities and true whole-slide clinical differentials.",
+    "source": "Computational Pathology Methodology Standards",
+    "morphological_keywords": [
+      "monolayer sampling",
+      "sampling bias",
+      "annotated blast fraction",
+      "spicule exclusion",
+      "clinical aspirate differential"
+    ],
+    "blast_threshold_rule": {
+      "warning": "Annotated blast fraction is a localized computational metric and cannot substitute for an exhaustive clinical differential"
+    },
+    "embedding_text": "Entity: Monolayer ROI Sampling vs. Clinical Aspirate Differentials | Category: Differential_Diagnosis | Scientific Limitation: Annotated-Cell Fraction vs. Whole-Slide Clinical Blast Differential: In digital pathology datasets of whole slide bone marrow aspirates (such as BoneMarrowWSI-PediatricLeukemia), annotations are typically collected from pre-selected high-power monolayer fields optimized for cell morphology assessment. Consequently, the 'annotated-cell blast fraction' calculated from consensus boxes represents the proportion of blasts within these specific sampling regions, NOT an exhaustive 500-cell clinical aspirate differential count from the entire slide. Furthermore, spicules, macroscopic tissue particles, and technically damaged cells are excluded from single-cell analysis. Decision support systems must transparently distinguish between local monolayer blast densities and true whole-slide clinical differentials."
+  }
+]

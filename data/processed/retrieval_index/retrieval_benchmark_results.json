@@ -1,0 +1,599 @@
+{
+  "timestamp": "2026-10-06 07:30:00",
+  "num_test_queries": 10,
+  "summary": {
+    "dense": {
+      "recall@1": 0.9,
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "mrr": 0.95,
+      "map@5": 0.95
+    },
+    "sparse": {
+      "recall@1": 1.0,
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "mrr": 1.0,
+      "map@5": 1.0
+    },
+    "hybrid": {
+      "recall@1": 1.0,
+      "recall@3": 1.0,
+      "recall@5": 1.0,
+      "mrr": 1.0,
+      "map@5": 1.0
+    }
+  },
+  "details": [
+    {
+      "query_id": "Q01_BALL_CRITERIA",
+      "query": "What are the diagnostic blast criteria and cytomorphological blast features for pediatric B-ALL?",
+      "ground_truth": [
+        "WHO2022_BALL_001"
+      ],
+      "rankings": {
+        "dense": {
+          "retrieved": [
+            "WHO2022_BALL_001",
+            "WHO2022_TALL_002",
+            "WHO2022_HAEMATOGONES_009",
+            "DISCLAIMER_MONOLAYER_012",
+            "WHO2022_BURKITT_003"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        },
+        "sparse": {
+          "retrieved": [
+            "WHO2022_BALL_001",
+            "WHO2022_MPAL_011",
+            "WHO2022_CML_CP_007",
+            "WHO2022_BURKITT_003",
+            "WHO2022_CML_ADV_008"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        },
+        "hybrid": {
+          "retrieved": [
+            "WHO2022_BALL_001",
+            "WHO2022_BURKITT_003",
+            "WHO2022_MPAL_011",
+            "WHO2022_TALL_002",
+            "WHO2022_HAEMATOGONES_009"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "Q02_HAEMATOGONES",
+      "query": "How to differentiate benign haematogones from leukemic lymphoblasts in children?",
+      "ground_truth": [
+        "WHO2022_HAEMATOGONES_009"
+      ],
+      "rankings": {
+        "dense": {
+          "retrieved": [
+            "WHO2022_HAEMATOGONES_009",
+            "WHO2022_TALL_002",
+            "WHO2022_REACTIVE_010",
+            "WHO2022_BALL_001",
+            "DISCLAIMER_MONOLAYER_012"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        },
+        "sparse": {
+          "retrieved": [
+            "WHO2022_HAEMATOGONES_009",
+            "WHO2022_BALL_001",
+            "WHO2022_REACTIVE_010",
+            "DISCLAIMER_MONOLAYER_012",
+            "WHO2022_BURKITT_003"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        },
+        "hybrid": {
+          "retrieved": [
+            "WHO2022_HAEMATOGONES_009",
+            "WHO2022_REACTIVE_010",
+            "WHO2022_BALL_001",
+            "WHO2022_TALL_002",
+            "DISCLAIMER_MONOLAYER_012"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "Q03_BURKITT",
+      "query": "Burkitt leukemia starry sky cytomorphology lipid vacuoles and MYC translocation",
+      "ground_truth": [
+        "WHO2022_BURKITT_003"
+      ],
+      "rankings": {
+        "dense": {
+          "retrieved": [
+            "WHO2022_BURKITT_003",
+            "WHO2022_CML_CP_007",
+            "WHO2022_AML_SUB_005",
+            "WHO2022_AML_DEF_004",
+            "WHO2022_HAEMATOGONES_009"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        },
+        "sparse": {
+          "retrieved": [
+            "WHO2022_BURKITT_003",
+            "WHO2022_TALL_002",
+            "WHO2022_CML_CP_007",
+            "WHO2022_BALL_001",
+            "WHO2022_AML_MAT_006"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        },
+        "hybrid": {
+          "retrieved": [
+            "WHO2022_BURKITT_003",
+            "WHO2022_CML_CP_007",
+            "WHO2022_AML_SUB_005",
+            "WHO2022_AML_DEF_004",
+            "WHO2022_HAEMATOGONES_009"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "Q04_APL_EMERGENCY",
+      "query": "Auer rods faggot cells acute promyelocytic leukemia APL PML-RARA ATRA emergency treatment",
+      "ground_truth": [
+        "WHO2022_AML_SUB_005"
+      ],
+      "rankings": {
+        "dense": {
+          "retrieved": [
+            "WHO2022_AML_SUB_005",
+            "WHO2022_BURKITT_003",
+            "WHO2022_AML_MAT_006",
+            "WHO2022_AML_DEF_004",
+            "WHO2022_REACTIVE_010"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        },
+        "sparse": {
+          "retrieved": [
+            "WHO2022_AML_SUB_005",
+            "WHO2022_BURKITT_003",
+            "WHO2022_CML_ADV_008",
+            "WHO2022_BALL_001",
+            "WHO2022_AML_MAT_006"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        },
+        "hybrid": {
+          "retrieved": [
+            "WHO2022_AML_SUB_005",
+            "WHO2022_BURKITT_003",
+            "WHO2022_AML_MAT_006",
+            "WHO2022_AML_DEF_004",
+            "WHO2022_BALL_001"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "Q05_CML_CHRONIC",
+      "query": "CML chronic phase myelocyte bulge high ME ratio and blast percentage cutoff under 10%",
+      "ground_truth": [
+        "WHO2022_CML_CP_007"
+      ],
+      "rankings": {
+        "dense": {
+          "retrieved": [
+            "WHO2022_CML_CP_007",
+            "WHO2022_CML_ADV_008",
+            "WHO2022_REACTIVE_010",
+            "WHO2022_AML_MAT_006",
+            "WHO2022_AML_DEF_004"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        },
+        "sparse": {
+          "retrieved": [
+            "WHO2022_CML_CP_007",
+            "WHO2022_CML_ADV_008",
+            "WHO2022_REACTIVE_010",
+            "WHO2022_AML_DEF_004",
+            "WHO2022_AML_MAT_006"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        },
+        "hybrid": {
+          "retrieved": [
+            "WHO2022_CML_CP_007",
+            "WHO2022_CML_ADV_008",
+            "WHO2022_REACTIVE_010",
+            "WHO2022_AML_MAT_006",
+            "WHO2022_AML_DEF_004"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "Q06_TALL",
+      "query": "T-ALL cytomorphology pleomorphic blasts convoluted nuclei and mediastinal mass",
+      "ground_truth": [
+        "WHO2022_TALL_002"
+      ],
+      "rankings": {
+        "dense": {
+          "retrieved": [
+            "DISCLAIMER_MONOLAYER_012",
+            "WHO2022_TALL_002",
+            "WHO2022_HAEMATOGONES_009",
+            "WHO2022_BURKITT_003",
+            "WHO2022_BALL_001"
+          ],
+          "metrics": {
+            "r1": 0.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 0.5,
+            "ap": 0.5
+          }
+        },
+        "sparse": {
+          "retrieved": [
+            "WHO2022_TALL_002",
+            "WHO2022_CML_CP_007",
+            "WHO2022_HAEMATOGONES_009",
+            "WHO2022_AML_DEF_004",
+            "WHO2022_AML_MAT_006"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        },
+        "hybrid": {
+          "retrieved": [
+            "WHO2022_TALL_002",
+            "WHO2022_HAEMATOGONES_009",
+            "WHO2022_AML_DEF_004",
+            "WHO2022_BURKITT_003",
+            "WHO2022_BALL_001"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "Q07_REACTIVE",
+      "query": "Reactive granulocytic hyperplasia infection and normal pediatric bone marrow cellularity",
+      "ground_truth": [
+        "WHO2022_REACTIVE_010"
+      ],
+      "rankings": {
+        "dense": {
+          "retrieved": [
+            "WHO2022_REACTIVE_010",
+            "WHO2022_HAEMATOGONES_009",
+            "WHO2022_AML_MAT_006",
+            "WHO2022_CML_CP_007",
+            "WHO2022_AML_DEF_004"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        },
+        "sparse": {
+          "retrieved": [
+            "WHO2022_REACTIVE_010",
+            "WHO2022_CML_CP_007",
+            "WHO2022_HAEMATOGONES_009",
+            "WHO2022_BALL_001",
+            "WHO2022_CML_ADV_008"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        },
+        "hybrid": {
+          "retrieved": [
+            "WHO2022_REACTIVE_010",
+            "WHO2022_HAEMATOGONES_009",
+            "WHO2022_CML_CP_007",
+            "WHO2022_AML_MAT_006",
+            "WHO2022_AML_DEF_004"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "Q08_SAMPLING_BIAS",
+      "query": "Monolayer ROI sampling bias vs clinical aspirate differential count limitation",
+      "ground_truth": [
+        "DISCLAIMER_MONOLAYER_012"
+      ],
+      "rankings": {
+        "dense": {
+          "retrieved": [
+            "DISCLAIMER_MONOLAYER_012",
+            "WHO2022_MPAL_011",
+            "WHO2022_CML_ADV_008",
+            "WHO2022_REACTIVE_010",
+            "WHO2022_TALL_002"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        },
+        "sparse": {
+          "retrieved": [
+            "DISCLAIMER_MONOLAYER_012",
+            "WHO2022_TALL_002",
+            "WHO2022_CML_ADV_008",
+            "WHO2022_AML_MAT_006",
+            "WHO2022_BALL_001"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        },
+        "hybrid": {
+          "retrieved": [
+            "DISCLAIMER_MONOLAYER_012",
+            "WHO2022_CML_ADV_008",
+            "WHO2022_TALL_002",
+            "WHO2022_MPAL_011",
+            "WHO2022_REACTIVE_010"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "Q09_MPAL",
+      "query": "Mixed phenotype acute leukemia MPAL diagnostic lineage criteria biphenotypic",
+      "ground_truth": [
+        "WHO2022_MPAL_011"
+      ],
+      "rankings": {
+        "dense": {
+          "retrieved": [
+            "WHO2022_MPAL_011",
+            "WHO2022_AML_DEF_004",
+            "WHO2022_AML_SUB_005",
+            "WHO2022_TALL_002",
+            "DISCLAIMER_MONOLAYER_012"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        },
+        "sparse": {
+          "retrieved": [
+            "WHO2022_MPAL_011",
+            "WHO2022_CML_ADV_008",
+            "WHO2022_BALL_001",
+            "WHO2022_AML_DEF_004",
+            "WHO2022_TALL_002"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        },
+        "hybrid": {
+          "retrieved": [
+            "WHO2022_MPAL_011",
+            "WHO2022_AML_DEF_004",
+            "WHO2022_AML_SUB_005",
+            "WHO2022_TALL_002",
+            "WHO2022_BALL_001"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "Q10_CML_ACCELERATED",
+      "query": "CML accelerated phase blast cutoff 10 to 19 percent persistent basophilia",
+      "ground_truth": [
+        "WHO2022_CML_ADV_008"
+      ],
+      "rankings": {
+        "dense": {
+          "retrieved": [
+            "WHO2022_CML_ADV_008",
+            "WHO2022_CML_CP_007",
+            "WHO2022_REACTIVE_010",
+            "WHO2022_AML_DEF_004",
+            "DISCLAIMER_MONOLAYER_012"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        },
+        "sparse": {
+          "retrieved": [
+            "WHO2022_CML_ADV_008",
+            "WHO2022_CML_CP_007",
+            "WHO2022_REACTIVE_010",
+            "WHO2022_AML_DEF_004",
+            "WHO2022_AML_MAT_006"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        },
+        "hybrid": {
+          "retrieved": [
+            "WHO2022_CML_ADV_008",
+            "WHO2022_CML_CP_007",
+            "WHO2022_REACTIVE_010",
+            "WHO2022_AML_DEF_004",
+            "WHO2022_AML_MAT_006"
+          ],
+          "metrics": {
+            "r1": 1.0,
+            "r3": 1.0,
+            "r5": 1.0,
+            "rr": 1.0,
+            "ap": 1.0
+          }
+        }
+      }
+    }
+  ]
+}

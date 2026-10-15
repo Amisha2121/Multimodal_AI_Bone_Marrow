@@ -24,4 +24,4 @@ dependencies = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["vision*", "synthetic*", "retrieval*", "context*", "agents*", "explain*", "eval*", "app*", "configs*"]
+include = ["vision*", "retrieval*", "context*", "agents*", "app*", "configs*"]
