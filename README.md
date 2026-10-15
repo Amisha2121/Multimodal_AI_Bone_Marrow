@@ -1,4 +1,4 @@
-# An Agentic Multimodal Explainable RAG Framework for Personalized Pediatric Leukemia Assessment
+# An Agentic Multimodal Explainable RAG Framework for Personalized Assessment
 
 > ** RESEARCH & DECISION-SUPPORT PROTOTYPE ONLY**  
 > This software is an academic research prototype designed for computational pathology investigation. Outputs do **not** constitute medical advice or a clinical diagnosis. All outputs must be evaluated by a certified haematologist or pathologist.
