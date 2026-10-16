@@ -1,0 +1,71 @@
+{
+  "taxonomy": {
+    "Blast": {
+      "label_index": 0,
+      "train_cells": 5170,
+      "val_cells": 1204,
+      "test_cells": 1275,
+      "is_rare": false
+    },
+    "Granulocyte (Mature/Band)": {
+      "label_index": 1,
+      "train_cells": 3691,
+      "val_cells": 636,
+      "test_cells": 795,
+      "is_rare": false
+    },
+    "Megakaryocyte / Platelet": {
+      "label_index": 2,
+      "train_cells": 1447,
+      "val_cells": 339,
+      "test_cells": 325,
+      "is_rare": false
+    },
+    "Myeloid (Maturing)": {
+      "label_index": 3,
+      "train_cells": 2385,
+      "val_cells": 367,
+      "test_cells": 476,
+      "is_rare": false
+    },
+    "Promyelocyte": {
+      "label_index": 4,
+      "train_cells": 1094,
+      "val_cells": 184,
+      "test_cells": 295,
+      "is_rare": false
+    },
+    "Lymphoid Series": {
+      "label_index": 5,
+      "train_cells": 327,
+      "val_cells": 120,
+      "test_cells": 68,
+      "is_rare": true
+    },
+    "Other Morphological": {
+      "label_index": 6,
+      "train_cells": 280,
+      "val_cells": 58,
+      "test_cells": 51,
+      "is_rare": true
+    },
+    "Monocyte Series": {
+      "label_index": 7,
+      "train_cells": 169,
+      "val_cells": 43,
+      "test_cells": 53,
+      "is_rare": true
+    }
+  },
+  "excluded_categories": [
+    "Ambiguous / No Consensus (Excluded)",
+    "Artefact (Excluded)",
+    "Spicule (Tissue Fragment - Excluded)"
+  ],
+  "num_classes": 8,
+  "rare_classes": [
+    "Monocyte Series",
+    "Lymphoid Series",
+    "Other Morphological"
+  ]
+}

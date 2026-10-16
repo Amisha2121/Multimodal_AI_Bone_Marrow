@@ -1,0 +1,12 @@
+{"epoch": 1, "train_loss": 1.2222, "val_loss": 1.1789, "val_accuracy": 0.6598, "val_macro_f1": 0.5389, "val_weighted_f1": 0.7122, "val_rare_recall": 0.6823, "elapsed_s": 80.0}
+{"epoch": 2, "train_loss": 0.9078, "val_loss": 0.9144, "val_accuracy": 0.7977, "val_macro_f1": 0.6572, "val_weighted_f1": 0.8129, "val_rare_recall": 0.565, "elapsed_s": 79.9}
+{"epoch": 3, "train_loss": 0.8562, "val_loss": 0.9681, "val_accuracy": 0.7597, "val_macro_f1": 0.6458, "val_weighted_f1": 0.7915, "val_rare_recall": 0.7211, "elapsed_s": 80.5}
+{"epoch": 4, "train_loss": 0.7996, "val_loss": 0.9202, "val_accuracy": 0.7923, "val_macro_f1": 0.6873, "val_weighted_f1": 0.8151, "val_rare_recall": 0.7161, "elapsed_s": 80.4}
+{"epoch": 5, "train_loss": 0.7637, "val_loss": 0.9065, "val_accuracy": 0.8014, "val_macro_f1": 0.7108, "val_weighted_f1": 0.8251, "val_rare_recall": 0.688, "elapsed_s": 80.5}
+{"epoch": 6, "train_loss": 0.7424, "val_loss": 0.8989, "val_accuracy": 0.8001, "val_macro_f1": 0.7051, "val_weighted_f1": 0.8256, "val_rare_recall": 0.6888, "elapsed_s": 80.2}
+{"epoch": 7, "train_loss": 0.7262, "val_loss": 0.8243, "val_accuracy": 0.8478, "val_macro_f1": 0.7312, "val_weighted_f1": 0.8574, "val_rare_recall": 0.6168, "elapsed_s": 80.1}
+{"epoch": 8, "train_loss": 0.7084, "val_loss": 0.9374, "val_accuracy": 0.773, "val_macro_f1": 0.692, "val_weighted_f1": 0.8077, "val_rare_recall": 0.7454, "elapsed_s": 80.0}
+{"epoch": 9, "train_loss": 0.6964, "val_loss": 0.8307, "val_accuracy": 0.8353, "val_macro_f1": 0.7205, "val_weighted_f1": 0.8464, "val_rare_recall": 0.693, "elapsed_s": 80.2}
+{"epoch": 10, "train_loss": 0.6978, "val_loss": 0.8468, "val_accuracy": 0.8292, "val_macro_f1": 0.708, "val_weighted_f1": 0.8404, "val_rare_recall": 0.6437, "elapsed_s": 79.9}
+{"epoch": 11, "train_loss": 0.6769, "val_loss": 0.8872, "val_accuracy": 0.8058, "val_macro_f1": 0.7243, "val_weighted_f1": 0.8311, "val_rare_recall": 0.7218, "elapsed_s": 79.9}
+{"epoch": 12, "train_loss": 0.6667, "val_loss": 0.8509, "val_accuracy": 0.8295, "val_macro_f1": 0.7152, "val_weighted_f1": 0.8424, "val_rare_recall": 0.6812, "elapsed_s": 80.2}

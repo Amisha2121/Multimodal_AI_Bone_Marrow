@@ -11,7 +11,8 @@
 *.pth
 *.bin
 *.safetensors
-checkpoints/
+!models/checkpoints/
+!models/checkpoints/best_vit_lora_morphology.pt
 runs/
 wandb/
 
@@ -19,6 +20,7 @@ wandb/
 *.faiss
 *.index
 retrieval/indexes/
+!data/processed/retrieval_index/dense_index.faiss
 
 # ── Python ───────────────────────────────────────────────────────────────────
 __pycache__/

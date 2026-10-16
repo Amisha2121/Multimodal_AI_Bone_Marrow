@@ -33,6 +33,7 @@ from sentence_transformers import SentenceTransformer
 from retrieval.index import (
     CHUNKS_FILE,
     FAISS_PATH,
+    EMBEDDINGS_PATH,
     BM25_PATH,
     METADATA_PATH,
     DEFAULT_MODEL_NAME,
@@ -71,6 +72,17 @@ class HybridRetriever:
 
         # 2. Load Dense Index & Embedding Model
         logger.info(f"Loading FAISS index from {FAISS_PATH}...")
+        if not FAISS_PATH.exists():
+            if EMBEDDINGS_PATH.exists():
+                emb = np.load(str(EMBEDDINGS_PATH)).astype("float32")
+                dim = emb.shape[1]
+                idx = faiss.IndexFlatIP(dim)
+                idx.add(emb)
+                faiss.write_index(idx, str(FAISS_PATH))
+                logger.info("Auto-reconstructed FAISS index from dense_embeddings.npy")
+            else:
+                from retrieval.index import build_indices
+                build_indices()
         self.faiss_index = faiss.read_index(str(FAISS_PATH))
         self.model = load_embedding_model(self.model_name)
 

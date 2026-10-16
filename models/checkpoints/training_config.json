@@ -1,0 +1,34 @@
+{
+  "backbone": "vit_small_patch16_224",
+  "pretrained": true,
+  "lora_r": 8,
+  "lora_alpha": 16,
+  "lora_dropout": 0.05,
+  "lora_target_modules": [
+    "qkv"
+  ],
+  "num_classes": 8,
+  "class_names": [
+    "Blast",
+    "Granulocyte (Mature/Band)",
+    "Megakaryocyte / Platelet",
+    "Myeloid (Maturing)",
+    "Promyelocyte",
+    "Lymphoid Series",
+    "Other Morphological",
+    "Monocyte Series"
+  ],
+  "epochs": 30,
+  "batch_size": 64,
+  "lr": 0.0003,
+  "weight_decay": 0.01,
+  "label_smoothing": 0.1,
+  "precision": "bf16",
+  "early_stopping_patience": 5,
+  "imbalance_strategy": "WeightedRandomSampler",
+  "seed": 42,
+  "train_cells": 14563,
+  "val_cells": 2951,
+  "test_cells": 3338,
+  "device": "cuda"
+}
