@@ -364,11 +364,12 @@ def get_analysis_report(analysis_id):
     if analysis_id not in analyses:
         return jsonify({'error': 'Analysis not found'}), 404
 
-    # CACHE: Return instantly if report was already generated
+    # CACHE: Return instantly if report was already generated and valid (no fallback warning)
     force_regen = request.args.get('regenerate', '') == '1'
-    if not force_regen and 'cached_report' in analyses[analysis_id]:
+    cached = analyses[analysis_id].get('cached_report')
+    if not force_regen and cached and not cached.get('warning'):
         print(f"Returning CACHED report for {analysis_id}")
-        return jsonify(analyses[analysis_id]['cached_report'])
+        return jsonify(cached)
 
     d      = analyses[analysis_id]
     result = d['analysis']
@@ -390,6 +391,8 @@ def get_analysis_report(analysis_id):
             return _report_generation_fallback(evidence), retrieved
 
         try:
+            import time
+            time.sleep(0.3)
             text = llm_provider.generate(
                 [{"role": "user", "content": full}],
                 temperature=0.1, max_tokens=max_tokens,
@@ -529,10 +532,16 @@ def get_analysis_report(analysis_id):
             ) if llm_failure else None,
         }
 
-        # Cache for instant future access
-        analyses[analysis_id]['cached_report'] = report_data
-        save_analyses(analyses)
-        print(f"Report CACHED for {analysis_id}")
+        # Cache for instant future access ONLY if generation succeeded without LLM failure
+        if not llm_failure:
+            analyses[analysis_id]['cached_report'] = report_data
+            save_analyses(analyses)
+            print(f"Report CACHED for {analysis_id}")
+        else:
+            # If there was a failure, remove any stale cached report so it doesn't persist
+            analyses[analysis_id].pop('cached_report', None)
+            save_analyses(analyses)
+            print(f"Report had LLM warning -- removed from cache so next attempt retries")
 
         return jsonify(report_data)
 

@@ -177,21 +177,31 @@ class LLMProvider:
             raise ValueError(f"Unsupported provider: {self.provider}")
 
     def _generate_groq(self, messages: list[dict[str, str]], **kwargs) -> str:
-        """Generate using Groq API."""
+        """Generate using Groq API with automatic retry on rate limits."""
+        import time
         max_tokens = kwargs.get("max_tokens", self.max_tokens)
         temperature = kwargs.get("temperature", self.temperature)
 
-        try:
-            response = self.client.chat.completions.create(
-                model=self.model_name,
-                messages=messages,
-                max_tokens=max_tokens,
-                temperature=temperature,
-            )
-            return response.choices[0].message.content
-        except Exception as e:
-            logger.error(f"Groq generation failed: {e}")
-            raise
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                response = self.client.chat.completions.create(
+                    model=self.model_name,
+                    messages=messages,
+                    max_tokens=max_tokens,
+                    temperature=temperature,
+                )
+                return response.choices[0].message.content
+            except Exception as e:
+                err_str = str(e).lower()
+                is_rate_limit = "429" in err_str or "rate limit" in err_str or "quota" in err_str
+                if is_rate_limit and attempt < max_retries - 1:
+                    wait_sec = 2.0 * (attempt + 1)
+                    logger.warning(f"Groq rate limit encountered. Retrying in {wait_sec}s (attempt {attempt+1}/{max_retries})...")
+                    time.sleep(wait_sec)
+                else:
+                    logger.error(f"Groq generation failed: {e}")
+                    raise
 
     def _generate_gemini(self, messages: list[dict[str, str]], **kwargs) -> str:
         """Generate using Google Gemini API."""
