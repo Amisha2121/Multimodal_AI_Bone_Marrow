@@ -364,6 +364,12 @@ def get_analysis_report(analysis_id):
     if analysis_id not in analyses:
         return jsonify({'error': 'Analysis not found'}), 404
 
+    # CACHE: Return instantly if report was already generated
+    force_regen = request.args.get('regenerate', '') == '1'
+    if not force_regen and 'cached_report' in analyses[analysis_id]:
+        print(f"Returning CACHED report for {analysis_id}")
+        return jsonify(analyses[analysis_id]['cached_report'])
+
     d      = analyses[analysis_id]
     result = d['analysis']
 
@@ -430,20 +436,17 @@ def get_analysis_report(analysis_id):
         sections.append({'title': 'Case Summary', 'content': text, 'cell_images': []})
         print("Report: Case Summary done")
 
-        # --- Analytical Methodology ---
-        text, ev = rag_gen(
-            query  = "automated bone marrow cell detection classification deep learning ViT methodology",
-            prompt = (
-                "Write a paragraph (3-4 sentences) describing the analytical methodology.\n\n"
-                "Pipeline: adaptive thresholding + watershed segmentation for cell detection, then Vision Transformer "
-                "(ViT-Small/16) with LoRA fine-tuning for morphology classification. The model was trained on annotated "
-                "paediatric bone marrow aspirate specimens.\n\n"
-                "Explain clearly for a referring physician."
-            ),
-        )
-        all_src_ids += [r['chunk_id'] for r in ev]
-        sections.append({'title': 'Analytical Methodology', 'content': text, 'cell_images': []})
-        print("Report: Methodology done")
+        # --- Analytical Methodology (static — no LLM call needed) ---
+        sections.append({'title': 'Analytical Methodology', 'content': (
+            "This analysis employs a two-stage automated pipeline for bone marrow cytomorphology assessment. "
+            "In the first stage, adaptive thresholding combined with watershed segmentation identifies and isolates "
+            "individual nucleated cells from the aspirate smear image. In the second stage, a Vision Transformer "
+            "(ViT-Small/16) with LoRA fine-tuning classifies each detected cell into morphological categories. "
+            "The model was trained and validated on annotated paediatric bone marrow aspirate specimens and provides "
+            "consistent, reproducible results that complement traditional manual microscopy. All results should be "
+            "interpreted in conjunction with clinical findings, complete blood count, and expert pathologist review."
+        ), 'cell_images': []})
+        print("Report: Methodology done (static — 0 LLM calls)")
 
         # --- Overall Morphological Assessment ---
         dist_full = ", ".join(
@@ -466,7 +469,7 @@ def get_analysis_report(analysis_id):
         print("Report: Morphological Assessment done")
 
         # --- Per cell-type sections ---
-        top_types = sorted(result.morphology_counts.items(), key=lambda x: x[1], reverse=True)[:5]
+        top_types = sorted(result.morphology_counts.items(), key=lambda x: x[1], reverse=True)[:3]
         for cell_type, count in top_types:
             if count == 0:
                 continue
@@ -480,7 +483,7 @@ def get_analysis_report(analysis_id):
                     "Cover: morphological characteristics, significance of this proportion, differential diagnostic "
                     "implications. Use haematopathology terminology."
                 ),
-                max_tokens=400,
+                max_tokens=300,
             )
             all_src_ids += [r['chunk_id'] for r in ev]
             imgs = [
@@ -514,7 +517,7 @@ def get_analysis_report(analysis_id):
         sections.append({'title': 'Clinical Interpretation and Recommendations', 'content': text, 'cell_images': []})
         print("Report: Clinical Interpretation done")
 
-        return jsonify({
+        report_data = {
             'sections':     sections,
             'case_id':      result.case_id,
             'generated_at': datetime.now().isoformat(),
@@ -524,7 +527,14 @@ def get_analysis_report(analysis_id):
                 'guideline evidence only and are not model-generated interpretations. Retry after the provider '
                 'rate limit clears for a fully generated report.'
             ) if llm_failure else None,
-        })
+        }
+
+        # Cache for instant future access
+        analyses[analysis_id]['cached_report'] = report_data
+        save_analyses(analyses)
+        print(f"Report CACHED for {analysis_id}")
+
+        return jsonify(report_data)
 
     except Exception as e:
         print(f"Report FAILED: {e}")
