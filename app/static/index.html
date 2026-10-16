@@ -125,14 +125,16 @@
         /* ── Heatmap & XAI ── */
         .regen-btn{background:#3b82f6;color:#fff;border:none;padding:.45rem 1rem;border-radius:6px;font-size:.8rem;cursor:pointer;font-weight:500;transition:all .15s;}
         .regen-btn:hover{background:#2563eb;box-shadow:0 2px 8px rgba(59,130,246,.3);}
-        .xai-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.25rem;margin-top:.75rem;}
-        .xai-card{background:#0a0e17;border:1px solid #1e293b;border-radius:8px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.25);transition:transform .15s,box-shadow .15s;}
-        .xai-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.35);}
-        .xai-card img{width:100%;display:block;background:#000;}
-        .xai-card-caption{padding:.75rem .9rem;font-size:.78rem;color:#cbd5e1;background:#050811;border-top:1px solid #1e293b;text-align:center;}
-        .xai-card-caption strong{color:#38bdf8;}
-        .callout-box{margin-top:1rem;padding:.85rem 1rem;border-radius:6px;background:#2d2808;border:1px solid #574c10;color:#fef08a;font-size:.82rem;line-height:1.55;}
-        .chart-box{background:#0b1120;border-radius:8px;padding:1.25rem 1rem .75rem 1rem;border:1px solid #1e293b;}
+        .xai-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem;margin-top:.75rem;}
+        .xai-card{background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.05);transition:transform .15s,box-shadow .15s;}
+        .xai-card:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.08);border-color:#cbd5e1;}
+        .xai-card img{width:100%;display:block;background:#f8fafc;}
+        .xai-card-caption{padding:.75rem .9rem;font-size:.78rem;color:#334155;background:#f8fafc;border-top:1px solid #e2e8f0;text-align:center;line-height:1.45;}
+        .xai-card-caption .cell-tag{color:#2563eb;font-weight:700;display:inline-block;margin-right:4px;}
+        .xai-card-caption .pred-tag{color:#0f172a;font-weight:600;}
+        .xai-card-caption .conf-tag{color:#64748b;font-weight:500;}
+        .callout-box{margin-top:1rem;padding:.85rem 1rem;border-radius:6px;background:#fffbeb;border:1px solid #fde68a;border-left:4px solid #f59e0b;color:#92400e;font-size:.82rem;line-height:1.55;}
+        .chart-box{background:#f8fafc;border-radius:8px;padding:1.25rem 1rem .75rem 1rem;border:1px solid #e2e8f0;}
     </style>
 </head>
 <body>
@@ -315,14 +317,14 @@ function CellMorphologySection({ analysis }) {
                     <div className="callout-box">
                         {analysis.is_low_evidence ? (
                             <>
-                                <div><strong>Observed distribution:</strong> {dominant} ({dominantCount} cells).</div>
-                                <div style={{color:'#fef9c3',opacity:.9,marginTop:'2px'}}>Insufficient visual evidence for population-level conclusions.</div>
+                                <div><strong style={{color:'#78350f'}}>Observed distribution:</strong> {dominant} ({dominantCount} cells).</div>
+                                <div style={{color:'#b45309',marginTop:'2px'}}>Insufficient visual evidence for population-level conclusions.</div>
                             </>
                         ) : (
                             <>
-                                <div><strong>Predominant observed morphology:</strong> {dominant}</div>
+                                <div><strong style={{color:'#1e40af'}}>Predominant observed morphology:</strong> {dominant}</div>
                                 <div><strong>Detected-cell blast proportion:</strong> {blastPct}%</div>
-                                <div style={{fontSize:'.74rem',color:'#fef9c3',opacity:.8,fontStyle:'italic',marginTop:'2px'}}>
+                                <div style={{fontSize:'.74rem',color:'#64748b',fontStyle:'italic',marginTop:'2px'}}>
                                     (Calculated exclusively from detected cells in this image — not a clinical blast %)
                                 </div>
                             </>
@@ -334,11 +336,11 @@ function CellMorphologySection({ analysis }) {
                 <div className="chart-box">
                     <div style={{display:'flex',height:'190px'}}>
                         {/* Y-axis */}
-                        <div style={{display:'flex',flexDirection:'column',justifyContent:'space-between',paddingRight:'10px',fontSize:'.72rem',color:'#94a3b8',fontWeight:600,textAlign:'right',width:'22px'}}>
+                        <div style={{display:'flex',flexDirection:'column',justifyContent:'space-between',paddingRight:'10px',fontSize:'.75rem',color:'#64748b',fontWeight:600,textAlign:'right',width:'22px'}}>
                             {yTicks.map(t => <span key={t}>{t}</span>)}
                         </div>
                         {/* Bars container */}
-                        <div style={{flex:1,display:'flex',alignItems:'flex-end',justifyContent:'space-around',borderLeft:'1px solid #334155',borderBottom:'1px solid #334155',position:'relative',padding:'0 6px'}}>
+                        <div style={{flex:1,display:'flex',alignItems:'flex-end',justifyContent:'space-around',borderLeft:'2px solid #cbd5e1',borderBottom:'2px solid #cbd5e1',position:'relative',padding:'0 6px'}}>
                             {/* Gridlines */}
                             {yTicks.slice(1, -1).map(t => (
                                 <div key={t} style={{
@@ -346,7 +348,7 @@ function CellMorphologySection({ analysis }) {
                                     left:0,
                                     right:0,
                                     bottom:`${(t/maxCount)*100}%`,
-                                    borderTop:'1px dashed #1e293b',
+                                    borderTop:'1px dashed #e2e8f0',
                                     pointerEvents:'none'
                                 }} />
                             ))}
@@ -360,9 +362,10 @@ function CellMorphologySection({ analysis }) {
                                                 width:'80%',
                                                 maxWidth:'36px',
                                                 height:`${Math.max(4, h)}%`,
-                                                background:'#7dd3fc',
-                                                borderTopLeftRadius:'3px',
-                                                borderTopRightRadius:'3px',
+                                                background:'linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%)',
+                                                borderTopLeftRadius:'4px',
+                                                borderTopRightRadius:'4px',
+                                                boxShadow:'0 2px 4px rgba(59,130,246,.2)',
                                                 transition:'height .5s ease'
                                             }}
                                         />
@@ -372,21 +375,22 @@ function CellMorphologySection({ analysis }) {
                         </div>
                     </div>
                     {/* X-axis labels */}
-                    <div style={{display:'flex',marginLeft:'32px',marginTop:'8px',justifyContent:'space-around'}}>
+                    <div style={{display:'flex',marginLeft:'32px',marginTop:'10px',justifyContent:'space-around'}}>
                         {filtered.map(m => (
                             <div key={m.type} style={{flex:1,textAlign:'center',padding:'0 2px'}}>
                                 <span style={{
                                     display:'inline-block',
-                                    fontSize:'.65rem',
-                                    color:'#94a3b8',
+                                    fontSize:'.7rem',
+                                    fontWeight:600,
+                                    color:'#475569',
                                     whiteSpace:'nowrap',
                                     overflow:'hidden',
                                     textOverflow:'ellipsis',
-                                    maxWidth:'55px',
+                                    maxWidth:'60px',
                                     transform:'rotate(-45deg)',
                                     transformOrigin:'top left',
                                     marginTop:'8px',
-                                    height:'52px'
+                                    height:'54px'
                                 }} title={m.type}>
                                     {m.type}
                                 </span>
@@ -421,7 +425,10 @@ function ExplainabilitySection({ xaiExamples }) {
                             onError={e => { e.target.style.display = 'none'; }}
                         />
                         <div className="xai-card-caption">
-                            <strong>{x.cell_id}</strong> Prediction: {x.predicted_class} · Cell Confidence: {(x.confidence * 100).toFixed(1)}%
+                            <span className="cell-tag">{x.cell_id}</span>
+                            <span className="pred-tag">Prediction: {x.predicted_class}</span>
+                            <span style={{margin:'0 6px',color:'#cbd5e1'}}>·</span>
+                            <span className="conf-tag">Cell Confidence: {(x.confidence * 100).toFixed(1)}%</span>
                         </div>
                     </div>
                 ))}
