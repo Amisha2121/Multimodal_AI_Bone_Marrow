@@ -1,197 +1,186 @@
-# An Agentic Multimodal Explainable RAG Framework for Personalized Assessment
+# Agentic Multimodal Explainable RAG for Bone Marrow Assessment
 
-> ** RESEARCH & DECISION-SUPPORT PROTOTYPE ONLY**  
-> This software is an academic research prototype designed for computational pathology investigation. Outputs do **not** constitute medical advice or a clinical diagnosis. All outputs must be evaluated by a certified haematologist or pathologist.
-
----
-
-## 1. Project Goal & Revised Scope
-
-The goal of this research project is to build an explainable, evidence-grounded decision-support framework for bone marrow cytomorphology analysis. Following an exhaustive audit of publicly available biomedical cohorts, the core vision research pipeline is built upon the real, multi-annotated **BoneMarrowWSI-PediatricLeukemia** cohort.
-
-### Revised Scope
-- **Domain:** Pediatric acute and chronic leukaemias (age 1.5 – 17.0 years).
-- **Primary Supervised Baseline:** 4-class patient-level classification (`ALL`, `AML`, `CML`, `Other`) derived from bone marrow aspirate cytomorphology.
-- **Architecture Pipeline (Vision Baseline):**
-  $$\text{Cell Morphology Model} \longrightarrow \text{Patient-Level Differential Aggregation} \longrightarrow \text{4-Class Baseline Classifier}$$
-- **Modular Design:** While the current real-data cytology cohort lacks CBC and cytogenetics (which must remain `null` to preserve scientific integrity), the broader system architecture remains modular to accept laboratory, clinical, and genomic streams when available from legitimate sources.
+> **Research & decision-support prototype only**  
+> This software supports computational haematopathology research. It does **not** provide medical advice or a clinical diagnosis. All outputs require review by a qualified haematologist or pathologist.
 
 ---
 
-## 2. Verified Real Dataset: BoneMarrowWSI-PediatricLeukemia
+## 1. What This Project Is
 
-| Parameter | Verified Value | Documentation |
-|---|---|---|
-| **Collection Identifier** | `bonemarrowwsi_pediatricleukemia` (NCI IDC / Zenodo) | [`docs/DATA_PROVENANCE.md`](docs/DATA_PROVENANCE.md) |
-| **Total Cohort Size** | **245 patients** | [`docs/REAL_DATA_SCHEMA.md`](docs/REAL_DATA_SCHEMA.md) |
-| **Patient Age Range** | 18 – 204 months (1.5 – 17.0 years, strictly pediatric) | Verified in DICOM metadata |
-| **WSI Microscopy** | 245 / 245 patients (DICOM SM) | May-Grünwald-Giemsa bone marrow aspirate |
-| **Monolayer ROIs** | 245 / 245 patients (DICOM ANN) | Selected monolayer scanning fields |
-| **Consensus Cell Annotations** | **113 patients** (multi-annotator consensus labels) | **Primary Supervised Cohort** |
-| **Non-Consensus Extension** | **132 patients** (WSI + diagnosis available) | **Unlabeled Extension Cohort** |
-| **Complete Blood Count (CBC)** |  **UNAVAILABLE** in dataset | Explicitly set to `null` — no fabrication |
-| **Cytogenetics / Karyotype** |  **UNAVAILABLE** in dataset | Explicitly set to `null` — no fabrication |
-| **Adult MDS** |  **ZERO CASES** | Cohort is exclusively pediatric leukaemia |
+An **explainable, evidence-grounded framework** for bone marrow **cytomorphology** and related clinical context. The pipeline combines:
+
+- **Vision:** cell detection, morphology classification, patient-level differential aggregation  
+- **Retrieval:** WHO-aligned guideline and literature RAG (dense + sparse retrieval)  
+- **Agents:** orchestrated synthesis, critique, and calibrated abstention  
+- **Interface:** interactive review of crops, counts, citations, and confidence  
+
+The design is **cohort-agnostic**: age group (pediatric, adult, geriatric), disease family (acute leukaemia, MDS/MPN, lymphoma involvement, reactive marrow, metastatic disease), and **optional modalities** (CBC, flow cytometry, cytogenetics, molecular panels) plug in when data exist—missing fields stay explicit `null` values, never imputed.
+
+**Current reference benchmark:** the public [**BoneMarrowWSI-PediatricLeukemia**](docs/DATA_PROVENANCE.md) cohort (245 patients, MGG aspirate WSIs). It is the **default training and evaluation dataset** in this repo, not a limit on what the system can target.
 
 ---
 
-## 3. Supervised Baseline Experiment: 4-Class Patient Task
+## 2. Intended Use Cases (Beyond Pediatric Leukaemia)
 
-To ensure statistical validity given small sample sizes in specific subtypes (e.g. APL $n=3$, CML-BP $n=4$), the supervised consensus cohort ($N=113$) is mapped to a 4-class target for the initial vision baseline. The original 7 granular diagnoses are permanently preserved in the master manifest:
+| Use case | Role of this framework |
+|----------|-------------------------|
+| **Acute leukaemia workup** | Blast-aware morphology summaries + WHO citation-backed narrative |
+| **MDS / MPN / CMML** | Dysplasia-aware cell typing when labels and slides are available |
+| **Reactive / regenerating marrow** | Differential patterns without over-calling malignancy |
+| **Lymphoma / metastatic marrow** | Extension via new label sets and retrieval corpora |
+| **Multimodal correlation** | Fuse CBC, immunophenotype, and genetics when provided at case upload |
+| **Teaching & QA** | Traceable evidence links and visual explanations for trainees |
 
-- **ALL ($n=37$):** B-ALL ($n=32$), T-ALL ($n=5$)
-- **AML ($n=17$):** AML with maturation, AML without maturation, Acute monocytic, Acute myelomonocytic, APL $t(15;17)$
-- **CML ($n=50$):** Chronic phase CML ($n=46$), Blast phase CML ($n=4$)
-- **Other ($n=9$):** Mixed phenotype acute leukaemia (MPAL, $n=6$), Unspecified/missing ($n=3$)
-
-### Deterministic Stratified Patient-Level Split (`data/processed/splits.json`)
-
-| Split | Patient Count | ALL | AML | CML | Other | Leakage Verification |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Train** | **79** | 26 | 12 | 35 | 6 | $\text{Train} \cap \text{Val} = \emptyset$ |
-| **Validation** | **17** | 5 | 3 | 7 | 2 | $\text{Train} \cap \text{Test} = \emptyset$ |
-| **Test** | **17** | 6 | 2 | 8 | 1 | $\text{Val} \cap \text{Test} = \emptyset$ |
-| **Total** | **113** | **37** | **17** | **50** | **9** | **Zero Patient Overlap** |
+Pediatric ALL/AML/CML remains a **strong supervised baseline** because of consensus cell labels; adult and mixed cohorts can be added as separate manifests and task heads without rewriting the core architecture.
 
 ---
 
-## 4. Key Scientific Definitions
-
-- **Annotated-Cell Blast Fraction:** The proportion of annotated blasts among valid annotated cells within pre-selected monolayer fields. It is **not** an exhaustive whole-slide clinical differential count, and no clinical assertions are drawn directly from this number in isolation.
-- **Raw Morphology Preservation:** Original consensus cell labels (`myelocytic_blast`, `promyelocyte`, etc.) and quality flags (`technically_unfit`, `artifact`, etc.) are retained verbatim to enable fine-grained morphological analysis and filtering.
-
----
-
-## 5. Development Roadmap
-
-1. **Phase 1: Real-Data Vision Baseline (CURRENT)**
-   - Extract cell crops from DICOM consensus bounding boxes.
-   - Train ViT-Small / LoRA on valid cell morphology classes.
-   - Compute patient-level differential vectors and evaluate 4-class baseline classifier.
-   - Conduct attention rollout and error analysis.
-2. **Phase 2: Medical Knowledge Retrieval (RAG)**
-   - Curate pediatric haematology literature index (WHO 5th edition).
-   - Implement hybrid dense (FAISS) + sparse (BM25) retrieval with cross-encoder reranking.
-3. **Phase 3: Agentic Orchestration & Verification**
-   - Multi-agent coordination (Retriever, Synthesizer, Critic).
-   - NLI claim-versus-evidence verification with calibrated abstention thresholds.
-4. **Phase 4: Multimodal Decision Support & Interface**
-   - Interactive Streamlit workstation displaying cell crops, attention maps, citations, and confidence scores.
-
----
-
-## 6. Project Structure
+## 3. System Pipeline
 
 ```
-bonemarrow/
-├── configs/             # Hyperparameters, paths, random seeds
-├── data/
-│   ├── patient_manifest.csv    # Master manifest (all 245 patients, splits, targets)
-│   ├── processed/splits.json   # Deterministic patient-level splits
-│   ├── patient_metadata_dicom/ # Downloaded patient DICOM metadata
-│   └── processed/              # Cell metadata, splits, retrieval index
-├── vision/              # ViT/LoRA model, aggregation, attention rollout, dataset
-├── context/             # Deterministic patient context assembler
-├── retrieval/           # RAG retrieval layer (Phase 2)
-├── agents/              # LangGraph agent orchestration (Phase 3)
-├── explain/             # Attention rollout, citation linking, calibrated confidence
-├── docs/                # REAL_DATA_SCHEMA.md, DATA_PROVENANCE.md, experiment_log.md
-└── tests/               # Unit testing suite
+Upload / cohort case
+    → Cell detection & morphology (YOLO / ViT paths)
+    → Patient-level differential & blast-related metrics
+    → Context assembly (demographics, labs, genetics — when present)
+    → RAG over curated haematology knowledge
+    → Agent synthesis + verification → structured report + citations
+    → UI review (Streamlit / Flask)
 ```
 
----
-
-## 7. Documentation
-
-All project documentation is organized in the [`docs/`](docs/) folder:
-
-- 📋 **[Documentation Index](docs/DOCUMENTATION_INDEX.md)** - Complete navigation guide
-- 🏗️ **[System Architecture](docs/SYSTEM_ARCHITECTURE.md)** - Detailed architecture documentation
-- 📊 **[Project Status](docs/PROJECT_STATUS_COMPLETE.md)** - What's done and what's next
-- 🚀 **[Quick Start](docs/QUICK_START_GROQ.md)** - Get started in 5 minutes
-- ⚙️ **[Setup Guide](docs/GROQ_LLAMA_RAG_SETUP.md)** - Complete Groq RAG setup
-
-### Clinical Disclaimer
-
-See [`docs/clinical_disclaimer.md`](docs/clinical_disclaimer.md) for full clinical and regulatory disclaimers.
-
+Modular packages: `vision/`, `context/`, `retrieval/`, `agents/`, `explain/`, `pipeline/`, `app/`.
 
 ---
 
-## 8. 📊 Project Status
+## 4. Reference Dataset (Pediatric Benchmark)
 
-**Current Status**: ✅ **95% Complete - Production Ready**
+Verified statistics for the **default** public cohort. For schema and audit trails see [`docs/REAL_DATA_SCHEMA.md`](docs/REAL_DATA_SCHEMA.md) and [`docs/DATA_PROVENANCE.md`](docs/DATA_PROVENANCE.md).
 
-For a comprehensive overview of what's been completed and future roadmap:
-- 📋 **[Complete Project Status Report](docs/PROJECT_STATUS_COMPLETE.md)** ← Detailed implementation report
-- 🚀 **Quick Start**: All core features operational (cell detection, RAG, LLM, UI)
-- ⚠️ **Note**: YOLO detector training attempted but requires WSI images (not currently available)
+| Parameter | Verified value |
+|-----------|----------------|
+| **Collection ID** | `bonemarrowwsi_pediatricleukemia` (NCI IDC / Zenodo) |
+| **Cohort size** | **245 patients** (pediatric only in this collection) |
+| **Age range** | 18–204 months (1.5–17.0 years) |
+| **Modality** | MGG bone marrow aspirate; DICOM SM + ANN |
+| **Consensus cell labels** | **113 patients** (primary supervised subset) |
+| **WSI + diagnosis, no consensus boxes** | **132 patients** (semi-supervised / weak-label extension) |
+| **CBC / cytogenetics in IDC export** | **Not available** — stored as `null` in manifests |
+
+### Supervised 4-class baseline (consensus *N* = 113)
+
+Granular ICD-O-style diagnoses are preserved in `data/patient_manifest.csv`; training uses a collapsed 4-class target for stable metrics: **ALL**, **AML**, **CML**, **Other**.
+
+| Split | Patients | ALL | AML | CML | Other |
+|------:|:--------:|:---:|:---:|:---:|:-----:|
+| Train | 79 | 26 | 12 | 35 | 6 |
+| Val | 17 | 5 | 3 | 7 | 2 |
+| Test | 17 | 6 | 2 | 8 | 1 |
+
+Splits are **patient-level** with zero overlap (`data/processed/splits.json`).
+
+### Definitions
+
+- **Annotated-cell blast fraction:** blasts among valid annotated cells in selected monolayer fields—not a full clinical slide differential.  
+- **Label fidelity:** consensus labels and quality flags are kept verbatim for filtering and fine-grained experiments.
 
 ---
 
-## 9. 🚀 NEW: Groq Llama RAG Integration
+## 5. Quick Start
 
-The system now supports **true Retrieval-Augmented Generation (RAG)** using **Groq's Llama 3.3 70B** for intelligent, LLM-powered clinical assessments.
-
-### Key Features
-
-- ✅ **State-of-the-Art LLM**: Llama 3.3 70B (70 billion parameters)
-- ✅ **Ultra-Fast Inference**: 1-2 seconds per assessment (10x faster than local models)
-- ✅ **Free Tier**: 14,400 requests/day at no cost
-- ✅ **No GPU Required**: Cloud-based inference
-- ✅ **Evidence-Grounded**: Cites retrieved WHO 5th Edition guidelines
-- ✅ **Automatic Fallback**: Gracefully falls back to deterministic mode if LLM unavailable
-
-### Quick Start (3 Steps)
+### Environment
 
 ```bash
-# 1. Get free API key from https://console.groq.com
-# 2. Add to .env file
-copy .env.example .env
-# Edit .env: GROQ_API_KEY=gsk_your_actual_key_here
+python -m venv .venv
+.venv\Scripts\activate          # Windows
+pip install -r requirements.txt
+copy .env.example .env          # add GROQ_API_KEY and/or GOOGLE_API_KEY
+```
 
-# 3. Install and verify
-pip install groq
+### Verify LLM + RAG
+
+```bash
 python setup_groq_rag.py
 ```
 
-### Documentation
+### Run the application
 
-- **Quick Start Guide**: [`docs/QUICK_START_GROQ.md`](docs/QUICK_START_GROQ.md)
-- **Complete Setup**: [`docs/GROQ_LLAMA_RAG_SETUP.md`](docs/GROQ_LLAMA_RAG_SETUP.md)
-- **Technical Details**: [`docs/GROQ_RAG_CHANGES.md`](docs/GROQ_RAG_CHANGES.md)
+See [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) for Streamlit/Flask/Docker options. Typical local entry points: `run_app.bat` or the commands documented in the deployment guide.
 
-### Architecture
+### Vision baseline (reference cohort)
 
-**Before (Deterministic)**:
-```
-Cell Detection → Rule-Based Templates → Report
-```
-
-**Now (LLM-Powered RAG)**:
-```
-Cell Detection → WHO Guidelines Retrieval → Groq Llama 3.3 70B → Report
-                                           (Evidence-based synthesis)
-```
-
-### Performance Comparison
-
-| Mode | Speed | Quality | GPU Required | Cost |
-|------|-------|---------|--------------|------|
-| **Groq Llama 3.3 70B** | ⚡ 1-2s | ⭐⭐⭐⭐⭐ | No | Free tier |
-| Deterministic | ⚡⚡ <1s | ⭐⭐ | No | Free |
-| Local Mistral-7B | 🐢 10-30s | ⭐⭐⭐ | Yes (CUDA) | Free |
-
-**RECOMMENDATION**: Use Groq Llama 3.3 70B for best balance of speed, quality, and cost.
-
-### Example Output
-
-**Old (Deterministic Template)**:
-> "The cytological image distribution falls within Non-malignant / Reactive / Other morphology..."
-
-**New (Groq Llama RAG)**:
-> "Based on automated image analysis detecting 154 cells with 5.2% blast fraction and predominant megakaryocytic morphology, this case demonstrates features consistent with reactive marrow. The blast proportion is well below the WHO 2022 threshold of ≥20% for acute leukemia [WHO2022_CML_CP_007], suggesting a non-malignant process. Correlation with complete blood count and cytogenetic studies is essential for definitive classification..."
-
-**Much more contextual, evidence-based, and clinically relevant!**
+Documented in [`docs/ML_TRAINING_CODE_GUIDE.md`](docs/ML_TRAINING_CODE_GUIDE.md) and `scripts/` (crop extraction, training, patient-level evaluation).
 
 ---
+
+## 6. LLM Modes
+
+| Mode | When to use |
+|------|-------------|
+| **Groq (Llama 3.x)** | Fast cloud inference; set `GROQ_API_KEY` |
+| **Google Gemini** | Alternative provider; set `GOOGLE_API_KEY` |
+| **Deterministic templates** | Offline demos, CI, or when no API key is configured |
+
+Setup details: [`docs/GROQ_LLAMA_RAG_SETUP.md`](docs/GROQ_LLAMA_RAG_SETUP.md).
+
+RAG retrieves from a curated index under `data/knowledge_base/` and processed chunks in `data/processed/retrieval_index/`. Extend corpora for adult MDS, ICC/WHO updates, or institutional protocols—see [`docs/RAG_WHO_SOURCES.md`](docs/RAG_WHO_SOURCES.md).
+
+---
+
+## 7. Roadmap (General Bone Marrow Scope)
+
+1. **Vision & metrics** — Robust cell detection on aspirate smears; calibration across stains and scanners; external validation cohorts (adult MDS, multi-centre).  
+2. **Multimodal context** — First-class CBC, flow, cytogenetics, and molecular JSON schemas in `context/` with validation and abstention when incomplete.  
+3. **Task registry** — Config-driven diagnosis tasks (pediatric 4-class, adult MDS risk, blast threshold flags) instead of hard-coded labels.  
+4. **RAG & agents** — Age- and entity-aware retrieval; stronger claim–evidence NLI; human-in-the-loop edits logged to `docs/experiment_log.md`.  
+5. **Governance** — Dataset cards per cohort, license tracking ([`docs/dataset_licenses.md`](docs/dataset_licenses.md)), and benchmark suites in `tests/` and `eval/`.
+
+---
+
+## 8. Project Layout
+
+```
+├── app/                 # Streamlit / Flask UI
+├── agents/              # LangGraph-style orchestration
+├── context/             # Patient context assembly (extensible modalities)
+├── data/                # Manifests, knowledge base, processed indices
+├── detector/            # YOLO training & inference utilities
+├── explain/             # Attention, SHAP, citation linking
+├── pipeline/            # End-to-end case pipeline & data models
+├── retrieval/           # Indexing and hybrid search
+├── vision/              # ViT/LoRA training and aggregation
+├── scripts/             # Data prep, audits, batch jobs
+├── docs/                # Architecture, deployment, schema, provenance
+└── tests/
+```
+
+---
+
+## 9. Documentation
+
+| Document | Purpose |
+|----------|---------|
+| [`docs/SYSTEM_ARCHITECTURE.md`](docs/SYSTEM_ARCHITECTURE.md) | Components and data flow |
+| [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) | Local and production deployment |
+| [`docs/ML_TRAINING_CODE_GUIDE.md`](docs/ML_TRAINING_CODE_GUIDE.md) | Training and evaluation |
+| [`docs/GROQ_LLAMA_RAG_SETUP.md`](docs/GROQ_LLAMA_RAG_SETUP.md) | LLM configuration |
+| [`docs/clinical_disclaimer.md`](docs/clinical_disclaimer.md) | Regulatory and clinical limits |
+| [`detector/README.md`](detector/README.md) | Object-detection submodule |
+
+---
+
+## 10. Adding a New Cohort (Adult or Mixed)
+
+1. **Provenance** — Document source, license, and IRB/status in `docs/DATA_PROVENANCE.md` (new section or sibling file).  
+2. **Manifest** — Add rows to a cohort-specific CSV mirroring `patient_manifest.csv` fields (`age`, `sex`, diagnosis, split, nullable lab/genetics columns).  
+3. **Labels** — Map ontology to a task config under `configs/` (do not overwrite pediatric splits).  
+4. **Retrieval** — Append guideline chunks and re-run indexing (`retrieval/` scripts).  
+5. **Evaluate** — Report patient-level metrics separately per cohort; do not pool pediatric and adult labels without explicit domain adaptation.
+
+---
+
+## 11. Citation & License
+
+Cite the **BoneMarrowWSI-PediatricLeukemia** dataset and this codebase as appropriate for your publication. Dataset license: **CC BY 4.0** (see dataset card in `data/dataset_cards/`).
+
+---
+
+*Default experiments use the pediatric IDC cohort; the framework is intended for broader bone marrow cytology and multimodal haematopathology research.*

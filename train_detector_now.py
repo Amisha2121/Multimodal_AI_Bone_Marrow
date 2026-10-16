@@ -4,6 +4,12 @@ Quick training script - starts YOLOv8 training immediately without prompts.
 """
 import sys
 from pathlib import Path
+import multiprocessing
+
+if __name__ == '__main__':
+    # Required for Windows multiprocessing
+    multiprocessing.freeze_support()
+    
 from ultralytics import YOLO
 
 # Configuration

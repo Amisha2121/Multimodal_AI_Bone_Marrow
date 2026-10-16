@@ -9,6 +9,12 @@ from datetime import datetime
 import hashlib
 import json
 import pickle
+import multiprocessing
+
+# Windows multiprocessing fix
+if __name__ == '__main__':
+    multiprocessing.freeze_support()
+
 from werkzeug.utils import secure_filename
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS

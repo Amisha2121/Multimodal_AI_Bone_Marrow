@@ -79,11 +79,11 @@ retrieval:
 
 # ── LLM ──────────────────────────────────────────────────────────────────────
 llm:
-  provider: gemini                    # "groq" | "gemini" | "openai" | "local"
-  model: gemini-3.5-flash-lite        # Lightweight Gemini model (should have better availability)
+  provider: groq                      # "groq" | "gemini" | "openai" | "local"
+  model: qwen/qwen3.8-27b             # Available model on this Groq account
   max_tokens: 8192                    
   temperature: 0.1
-  # Gemini settings (for when provider=gemini with valid key)
+  # Gemini settings (for when provider=gemini with valid AIza key)
   gemini_model: gemini-1.5-flash
   gemini_max_tokens: 8192
   # Legacy local model settings

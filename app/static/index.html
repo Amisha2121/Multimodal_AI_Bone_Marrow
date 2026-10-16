@@ -9,1252 +9,551 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            background: #f5f7fa;
-            color: #2d3748;
-        }
-        
-        .app { display: flex; height: 100vh; position: relative; }
-        
-        /* Sidebar */
-        .sidebar {
-            width: 280px;
-            background: #1a202c;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.3s ease;
-            z-index: 100;
-            position: relative;
-        }
-        
-        .sidebar.collapsed {
-            transform: translateX(-280px);
-        }
-        
-        .sidebar-toggle {
-            position: absolute;
-            right: 10px;
-            top: 20px;
-            width: 32px;
-            height: 32px;
-            background: rgba(255,255,255,0.1);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            z-index: 102;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-        
-        .sidebar-toggle:hover {
-            background: rgba(255,255,255,0.2);
-        }
-        
-        .sidebar.collapsed .sidebar-toggle {
-            position: fixed;
-            left: 10px;
-            top: 20px;
-            right: auto;
-            background: #1a202c;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
-        
-        .sidebar-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .sidebar-header h1 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-        
-        .sidebar-header p {
-            font-size: 0.875rem;
-            color: #a0aec0;
-        }
-        
-        .sidebar-nav {
-            flex: 1;
-            padding: 1rem 0;
-        }
-        
-        .nav-item {
-            padding: 0.75rem 1.5rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            transition: all 0.2s;
-            border-left: 3px solid transparent;
-        }
-        
-        .nav-item:hover {
-            background: rgba(255,255,255,0.05);
-        }
-        
-        .nav-item.active {
-            background: rgba(59, 130, 246, 0.15);
-            border-left-color: #3b82f6;
-        }
-        
-        .nav-item i {
-            width: 20px;
-            text-align: center;
-        }
-        
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            transition: margin-left 0.3s ease;
-        }
-        
-        .main-content.sidebar-collapsed {
-            margin-left: -280px;
-        }
-        
-        .topbar {
-            background: white;
-            border-bottom: 1px solid #e2e8f0;
-            padding: 1rem 2rem;
-        }
-        
-        .topbar h2 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #1a202c;
-        }
-        
-        .content-area {
-            flex: 1;
-            display: flex;
-            overflow: hidden;
-        }
-        
-        .content-main {
-            flex: 1;
-            padding: 2rem;
-            overflow-y: auto;
-        }
-        
-        .content-sidebar {
-            width: 320px;
-            background: white;
-            border-left: 1px solid #e2e8f0;
-            overflow-y: auto;
-            padding: 1rem;
-        }
-        
-        /* Cards */
-        .card {
-            background: white;
-            border-radius: 8px;
-            padding: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            margin-bottom: 1.5rem;
-        }
-        
-        .card-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: #1a202c;
-        }
-        
-        /* Metrics Grid */
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        
-        .metric-card {
-            background: white;
-            border-radius: 8px;
-            padding: 1.25rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        
-        .metric-label {
-            font-size: 0.875rem;
-            color: #718096;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-        
-        .metric-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #1a202c;
-        }
-        
-        /* Upload Zone */
-        .upload-zone {
-            border: 2px dashed #cbd5e0;
-            border-radius: 8px;
-            padding: 3rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: white;
-        }
-        
-        .upload-zone:hover {
-            border-color: #3b82f6;
-            background: #f7fafc;
-        }
-        
-        .upload-zone i {
-            font-size: 3rem;
-            color: #a0aec0;
-            margin-bottom: 1rem;
-        }
-        
-        .upload-button {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            background: #3b82f6;
-            color: white;
-            border-radius: 6px;
-            font-weight: 600;
-            margin-top: 1rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .upload-button:hover {
-            background: #2563eb;
-        }
-        
-        /* Cell Grid */
-        .cell-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 1rem;
-        }
-        
-        .cell-card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 0.75rem;
-            text-align: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        
-        .cell-card img {
-            width: 100%;
-            height: 120px;
-            object-fit: cover;
-            border-radius: 4px;
-            margin-bottom: 0.5rem;
-            border: 1px solid #e2e8f0;
-        }
-        
-        .cell-name {
-            font-weight: 600;
-            font-size: 0.875rem;
-            margin-bottom: 0.25rem;
-            color: #1a202c;
-        }
-        
-        .cell-confidence {
-            font-size: 0.75rem;
-            color: #3b82f6;
-            font-weight: 600;
-        }
-        
-        /* History */
-        .history-section h3 {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: #1a202c;
-        }
-        
-        .history-item {
-            padding: 0.75rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            margin-bottom: 0.75rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-        }
-        
-        .history-item:hover {
-            background: #f7fafc;
-            border-color: #3b82f6;
-        }
-        
-        .history-item.active {
-            background: #eff6ff;
-            border-color: #3b82f6;
-        }
-        
-        .history-item img {
-            width: 100%;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 4px;
-            margin-bottom: 0.5rem;
-        }
-        
-        .history-item-info {
-            font-size: 0.75rem;
-            color: #718096;
-        }
-        
-        .history-item-title {
-            font-weight: 600;
-            font-size: 0.875rem;
-            margin-bottom: 0.25rem;
-            color: #1a202c;
-        }
-        
-        .history-delete {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            width: 28px;
-            height: 28px;
-            background: #ef4444;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            opacity: 0;
-            transition: opacity 0.2s;
-            z-index: 10;
-        }
-        
-        .history-item:hover .history-delete {
-            opacity: 1;
-        }
-        
-        .history-delete:hover {
-            background: #dc2626;
-        }
-        
-        .history-delete {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            width: 24px;
-            height: 24px;
-            background: #ef4444;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        
-        .history-item:hover .history-delete {
-            opacity: 1;
-        }
-        
-        .history-delete:hover {
-            background: #dc2626;
-        }
-        
-        /* Cell Analysis Section */
-        .cell-type-section {
-            background: white;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            border: 1px solid #e2e8f0;
-        }
-        
-        .cell-type-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #e2e8f0;
-        }
-        
-        .cell-type-header h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #1a202c;
-        }
-        
-        .cell-type-badge {
-            padding: 0.25rem 0.75rem;
-            background: #eff6ff;
-            color: #3b82f6;
-            border-radius: 12px;
-            font-size: 0.875rem;
-            font-weight: 600;
-        }
-        
-        .cell-type-description {
-            line-height: 1.6;
-            color: #4a5568;
-            margin-bottom: 1rem;
-        }
-        
-        .cell-images-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-        
-        .cell-image-item {
-            text-align: center;
-        }
-        
-        .cell-image-item img {
-            width: 100%;
-            height: 120px;
-            object-fit: cover;
-            border-radius: 6px;
-            border: 1px solid #e2e8f0;
-            margin-bottom: 0.5rem;
-        }
-        
-        .cell-image-label {
-            font-size: 0.75rem;
-            color: #718096;
-            font-weight: 500;
-        }
-        
-        input[type="file"] {
-            display: none;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: #9ca3af;
-        }
-        
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-        
-        .empty-state h3 {
-            font-size: 1.25rem;
-            margin-bottom: 0.5rem;
-            color: #6b7280;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        thead {
-            background: #f7fafc;
-        }
-        
-        th {
-            text-align: left;
-            padding: 0.75rem;
-            font-weight: 600;
-            border-bottom: 2px solid #e2e8f0;
-        }
-        
-        td {
-            padding: 0.75rem;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        
-        .loading {
-            text-align: center;
-            padding: 2rem;
-            color: #3b82f6;
-        }
-        
-        .loading i {
-            font-size: 2rem;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif;background:#f5f7fa;color:#2d3748;line-height:1.6;}
+        .app{display:flex;height:100vh;}
+
+        /* ── Sidebar ── */
+        .sidebar{width:200px;min-width:200px;background:#1a202c;color:#fff;display:flex;flex-direction:column;flex-shrink:0;}
+        .sidebar-header{padding:1.25rem 1rem;border-bottom:1px solid rgba(255,255,255,.1);}
+        .sidebar-header h1{font-size:1rem;font-weight:700;margin-bottom:.2rem;}
+        .sidebar-header p{font-size:.75rem;color:#a0aec0;}
+        .sidebar-nav{flex:1;padding:.5rem 0;}
+        .nav-item{padding:.65rem 1rem;cursor:pointer;display:flex;align-items:center;gap:.6rem;font-size:.85rem;border-left:3px solid transparent;transition:all .15s;}
+        .nav-item:hover{background:rgba(255,255,255,.06);}
+        .nav-item.active{background:rgba(59,130,246,.18);border-left-color:#3b82f6;color:#fff;}
+        .nav-item i{width:16px;text-align:center;font-size:.85rem;}
+
+        /* ── Main ── */
+        .main-content{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+        .topbar{background:#fff;border-bottom:1px solid #e2e8f0;padding:.85rem 1.5rem;}
+        .topbar h2{font-size:1.3rem;font-weight:600;color:#1a202c;}
+        .content-area{flex:1;display:flex;overflow:hidden;}
+        .content-main{flex:1;padding:1.5rem;overflow-y:auto;}
+        .content-main.chat-view{padding:0;}
+        .content-sidebar{width:280px;min-width:280px;background:#fff;border-left:1px solid #e2e8f0;overflow-y:auto;}
+
+        /* ── Cards ── */
+        .card{background:#fff;border-radius:8px;padding:1.25rem;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-bottom:1.25rem;}
+        .card-title{font-size:1rem;font-weight:600;margin-bottom:.85rem;color:#1a202c;}
+
+        /* ── Metrics ── */
+        .metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.85rem;margin-bottom:1.25rem;}
+        .metric-card{background:#fff;border-radius:8px;padding:1rem;box-shadow:0 1px 3px rgba(0,0,0,.08);}
+        .metric-label{font-size:.8rem;color:#718096;margin-bottom:.35rem;font-weight:500;}
+        .metric-value{font-size:1.75rem;font-weight:700;color:#1a202c;}
+
+        /* ── Upload ── */
+        .upload-zone{border:2px dashed #cbd5e0;border-radius:8px;padding:2.5rem;text-align:center;cursor:pointer;transition:all .2s;}
+        .upload-zone:hover{border-color:#3b82f6;background:#f7fafc;}
+        .upload-zone i{font-size:2.5rem;color:#a0aec0;margin-bottom:.75rem;}
+        input[type="file"]{display:none;}
+
+        /* ── Image tabs ── */
+        .img-tabs{display:flex;gap:.25rem;margin-bottom:.85rem;border-bottom:2px solid #e2e8f0;}
+        .img-tab{padding:.6rem 1rem;background:transparent;border:none;border-bottom:3px solid transparent;cursor:pointer;font-weight:500;color:#718096;font-size:.85rem;transition:all .15s;margin-bottom:-2px;}
+        .img-tab.active{color:#3b82f6;border-bottom-color:#3b82f6;}
+        .img-tab:hover{background:#f7fafc;}
+
+        /* ── Table ── */
+        table{width:100%;border-collapse:collapse;font-size:.875rem;}
+        thead{background:#f7fafc;}
+        th{text-align:left;padding:.65rem .75rem;font-weight:600;border-bottom:2px solid #e2e8f0;}
+        td{padding:.65rem .75rem;border-bottom:1px solid #e2e8f0;}
+
+        /* ── Chat ── */
+        .chat-container{display:flex;flex-direction:column;height:100%;}
+        .chat-messages{flex:1;overflow-y:auto;padding:1.5rem 0;}
+        .chat-messages::-webkit-scrollbar{width:6px;}
+        .chat-messages::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px;}
+        .msg-wrap{width:100%;display:flex;justify-content:center;padding:1rem;}
+        .msg-wrap.user{background:#f7f7f8;}
+        .msg-wrap.assistant{background:#fff;}
+        .msg-inner{max-width:720px;width:100%;display:flex;gap:1rem;}
+        .avatar{width:32px;height:32px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:700;font-size:.8rem;}
+        .avatar.user{background:#3b82f6;color:#fff;}
+        .avatar.assistant{background:#10a37f;color:#fff;}
+        .msg-text{flex:1;padding-top:.15rem;line-height:1.75;color:#374151;font-size:.9rem;}
+        .chat-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#9ca3af;padding:2rem;text-align:center;}
+        .chat-empty h3{color:#6b7280;margin-bottom:.5rem;}
+        .chat-input-area{padding:1rem 1.5rem;border-top:1px solid #e5e7eb;background:#fff;}
+        .chat-input-row{max-width:720px;margin:0 auto;position:relative;}
+        .chat-input{width:100%;padding:.85rem 3rem .85rem 1rem;border:1px solid #d1d5db;border-radius:10px;resize:none;font-family:inherit;font-size:.9rem;line-height:1.5;}
+        .chat-input:focus{outline:none;border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.1);}
+        .send-btn{position:absolute;right:.5rem;bottom:.5rem;width:30px;height:30px;border-radius:6px;border:none;background:#3b82f6;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+        .send-btn:hover:not(:disabled){background:#2563eb;}
+        .send-btn:disabled{background:#d1d5db;cursor:not-allowed;}
+
+        /* ── Report ── */
+        .report-header{background:#fff;border-radius:8px;padding:1.5rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.08);}
+        .report-header h1{font-size:1.5rem;font-weight:700;}
+        .report-warning{background:#fffbeb;border:1px solid #fcd34d;border-radius:6px;padding:1rem;margin-bottom:1.25rem;color:#92400e;font-size:.875rem;}
+        .report-section{background:#fff;border-radius:8px;padding:1.5rem;margin-bottom:1.25rem;box-shadow:0 1px 3px rgba(0,0,0,.08);border-left:4px solid #3b82f6;}
+        .report-section h3{font-size:1.1rem;font-weight:600;margin-bottom:.85rem;color:#1a202c;}
+        .report-text{line-height:1.8;color:#4a5568;font-size:.9rem;white-space:pre-wrap;}
+        .report-imgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:.75rem;margin-top:1rem;}
+        .report-imgs img{width:100%;height:110px;object-fit:cover;border-radius:6px;border:1px solid #e2e8f0;}
+
+        /* ── Cell Explorer ── */
+        .cell-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.85rem;}
+        .cell-card{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:.65rem;text-align:center;}
+        .cell-card img{width:100%;height:110px;object-fit:cover;border-radius:4px;margin-bottom:.4rem;border:1px solid #e2e8f0;}
+        .cell-img-placeholder{width:100%;height:110px;background:#f0f0f0;border-radius:4px;margin-bottom:.4rem;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:.75rem;}
+        .cell-name{font-weight:600;font-size:.8rem;color:#1a202c;margin-bottom:.15rem;}
+        .cell-desc{font-size:.7rem;color:#718096;}
+        .cell-conf{font-size:.7rem;color:#3b82f6;font-weight:600;margin-top:.2rem;}
+
+        /* ── History ── */
+        .hist-item{padding:.85rem;border-bottom:1px solid #e2e8f0;cursor:pointer;transition:all .15s;position:relative;}
+        .hist-item:hover{background:#f7fafc;}
+        .hist-item.active{background:#eff6ff;border-left:3px solid #3b82f6;}
+        .hist-item img{width:100%;height:90px;object-fit:cover;border-radius:4px;margin-bottom:.4rem;}
+        .hist-title{font-weight:600;font-size:.8rem;color:#1a202c;margin-bottom:.2rem;}
+        .hist-meta{font-size:.72rem;color:#718096;}
+        .hist-time{font-size:.68rem;color:#a0aec0;margin-top:.15rem;}
+        .del-btn{position:absolute;top:.5rem;right:.5rem;width:22px;height:22px;background:#ef4444;color:#fff;border:none;border-radius:3px;cursor:pointer;font-size:.65rem;opacity:0;transition:opacity .15s;display:flex;align-items:center;justify-content:center;}
+        .hist-item:hover .del-btn{opacity:1;}
+
+        /* ── Util ── */
+        .loading{text-align:center;padding:3rem;color:#3b82f6;}
+        .loading i{font-size:2.5rem;animation:spin 1s linear infinite;margin-bottom:.75rem;}
+        @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+        .empty-state{text-align:center;padding:3rem;color:#9ca3af;}
+        .empty-state i{font-size:3rem;margin-bottom:1rem;opacity:.4;}
+        .error-box{background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:1rem;color:#dc2626;font-size:.875rem;}
     </style>
 </head>
 <body>
-    <div id="root"></div>
-    
-    <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
-        
-        function App() {
-            const [activeTab, setActiveTab] = useState('detection');
-            const [analyses, setAnalyses] = useState([]);
-            const [selectedAnalysis, setSelectedAnalysis] = useState(null);
-            const [loading, setLoading] = useState(false);
-            const [currentAnalysisData, setCurrentAnalysisData] = useState(null);
-            const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-            
-            useEffect(() => {
-                fetchAnalyses();
-            }, []);
-            
-            useEffect(() => {
-                if (selectedAnalysis) {
-                    fetchAnalysisDetails(selectedAnalysis);
-                }
-            }, [selectedAnalysis]);
-            
-            const fetchAnalyses = async () => {
-                try {
-                    const res = await fetch('/api/analyses');
-                    const data = await res.json();
-                    setAnalyses(data.analyses || []);
-                    if (data.analyses && data.analyses.length > 0 && !selectedAnalysis) {
-                        setSelectedAnalysis(data.analyses[0].id);
-                    }
-                } catch (err) {
-                    console.error('Failed to fetch analyses:', err);
-                }
-            };
-            
-            const fetchAnalysisDetails = async (id) => {
-                try {
-                    const res = await fetch(`/api/analysis/${id}`);
-                    const data = await res.json();
-                    setCurrentAnalysisData(data);
-                } catch (err) {
-                    console.error('Failed to fetch analysis details:', err);
-                }
-            };
-            
-            const handleUpload = async (files) => {
-                setLoading(true);
-                const formData = new FormData();
-                Array.from(files).forEach(file => {
-                    formData.append('files', file);
-                });
-                
-                try {
-                    const res = await fetch('/api/upload', {
-                        method: 'POST',
-                        body: formData
-                    });
-                    const data = await res.json();
-                    if (data.success) {
-                        await fetchAnalyses();
-                        setSelectedAnalysis(data.analysis_id);
-                        setActiveTab('detection');
-                    } else {
-                        alert('Upload failed: ' + (data.error || 'Unknown error'));
-                    }
-                } catch (err) {
-                    console.error('Upload failed:', err);
-                    alert('Upload failed: ' + err.message);
-                } finally {
-                    setLoading(false);
-                }
-            };
-            
-            const handleDelete = async (id, e) => {
-                e.stopPropagation();
-                if (!confirm('Delete this analysis?')) return;
-                
-                try {
-                    const res = await fetch(`/api/analysis/${id}`, {
-                        method: 'DELETE'
-                    });
-                    if (res.ok) {
-                        await fetchAnalyses();
-                        if (selectedAnalysis === id) {
-                            setSelectedAnalysis(null);
-                            setCurrentAnalysisData(null);
-                        }
-                    }
-                } catch (err) {
-                    console.error('Delete failed:', err);
-                    alert('Delete failed: ' + err.message);
-                }
-            };
-            
-            return (
-                <div className="app">
-                    {sidebarCollapsed && (
-                        <button 
-                            className="sidebar-toggle-external"
-                            onClick={() => setSidebarCollapsed(false)}
-                            style={{
-                                position: 'fixed',
-                                left: '10px',
-                                top: '20px',
-                                width: '32px',
-                                height: '32px',
-                                background: '#1a202c',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                zIndex: 1000,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
-                            }}
-                        >
-                            <i className="fas fa-chevron-right"></i>
-                        </button>
-                    )}
-                    <Sidebar 
-                        activeTab={activeTab} 
-                        setActiveTab={setActiveTab} 
-                        collapsed={sidebarCollapsed}
-                        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-                    />
-                    
-                    <div className={`main-content ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
-                        <Topbar activeTab={activeTab} />
-                        <div className="content-area">
-                            <div className="content-main">
-                                {activeTab === 'detection' && (
-                                    <DetectionView 
-                                        analysis={currentAnalysisData} 
-                                        onUpload={handleUpload} 
-                                        loading={loading} 
-                                    />
-                                )}
-                                {activeTab === 'questions' && (
-                                    <QuestionsView analysisId={selectedAnalysis} />
-                                )}
-                                {activeTab === 'details' && (
-                                    <DetailsView analysis={currentAnalysisData} />
-                                )}
-                                {activeTab === 'explorer' && (
-                                    <ExplorerView analysis={currentAnalysisData} />
-                                )}
-                            </div>
-                            <div className="content-sidebar">
-                                <History 
-                                    analyses={analyses} 
-                                    selected={selectedAnalysis}
-                                    onSelect={setSelectedAnalysis}
-                                    onDelete={handleDelete}
-                                />
-                            </div>
-                        </div>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+/* ═══════════════════════════════════════════════════════════ helpers */
+async function apiFetch(url, opts = {}) {
+    const res = await fetch(url, opts);
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(body.error || `HTTP ${res.status}`);
+    return body;
+}
+
+function safeConf(v) {
+    const n = parseFloat(v);
+    return isNaN(n) || !isFinite(n) ? 0 : n;
+}
+
+const CELL_DESC = {
+    "Blast":                   "Immature precursor cell",
+    "Lymphoid Series":         "Mature lymphocyte",
+    "Granulocyte (Mature)":    "Mature neutrophil",
+    "Granulocyte (Mature/Band)":"Band neutrophil",
+    "Granulocyte (Immature)":  "Early myeloid cell",
+    "Erythroid Precursor":     "RBC precursor",
+    "Monocyte":                "Large phagocyte",
+    "Monocyte Series":         "Monocytic lineage",
+    "Megakaryocyte/Platelet":  "Platelet producer",
+    "Promyelocyte":            "Early myeloid stage",
+    "Myeloid (Maturing)":      "Maturing myeloid cell",
+    "Promonocyte":             "Monocyte precursor",
+};
+
+/* ═══════════════════════════════════════════════════════════ App */
+function App() {
+    const [tab, setTab]           = useState('upload');
+    const [analyses, setAnalyses] = useState([]);
+    const [selId, setSelId]       = useState(null);
+    const [uploading, setUploading] = useState(false);
+
+    useEffect(() => { fetchList(); }, []);
+
+    async function fetchList() {
+        try {
+            const d = await apiFetch('/api/analyses');
+            const list = d.analyses || [];
+            setAnalyses(list);
+            // auto-select most-recent
+            if (list.length > 0 && !selId) setSelId(list[list.length - 1].id);
+        } catch {}
+    }
+
+    async function handleUpload(files) {
+        setUploading(true);
+        const fd = new FormData();
+        Array.from(files).forEach(f => fd.append('files', f));
+        try {
+            const d = await apiFetch('/api/upload', { method: 'POST', body: fd });
+            if (d.success) {
+                await fetchList();
+                setSelId(d.analysis_id);
+                setTab('upload');
+            }
+        } catch (e) {
+            alert('Upload failed: ' + e.message);
+        } finally {
+            setUploading(false);
+        }
+    }
+
+    async function handleDelete(id, e) {
+        e.stopPropagation();
+        if (!confirm('Delete this analysis?')) return;
+        try {
+            await apiFetch(`/api/analysis/${id}`, { method: 'DELETE' });
+            await fetchList();
+            if (selId === id) setSelId(null);
+        } catch {}
+    }
+
+    return (
+        <div className="app">
+            <Sidebar tab={tab} setTab={setTab} />
+            <div className="main-content">
+                <Topbar tab={tab} />
+                <div className="content-area">
+                    <div className={`content-main ${tab === 'chat' ? 'chat-view' : ''}`}>
+                        {tab === 'upload'  && <UploadTab  selId={selId} onUpload={handleUpload} uploading={uploading} />}
+                        {tab === 'chat'    && <ChatTab    selId={selId} />}
+                        {tab === 'report'  && <ReportTab  selId={selId} />}
+                        {tab === 'cells'   && <CellsTab   selId={selId} />}
+                    </div>
+                    <div className="content-sidebar">
+                        <History analyses={analyses} selId={selId} onSelect={setSelId} onDelete={handleDelete} />
                     </div>
                 </div>
-            );
-        }
-        
-        function Sidebar({ activeTab, setActiveTab, collapsed, onToggle }) {
-            const tabs = [
-                { id: 'detection', icon: 'fa-microscope', label: 'Detection View' },
-                { id: 'questions', icon: 'fa-comments', label: 'Ask Questions' },
-                { id: 'details', icon: 'fa-chart-bar', label: 'Analysis Details' },
-                { id: 'explorer', icon: 'fa-th', label: 'Cell Explorer' }
-            ];
-            
-            return (
-                <div className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
-                    <div className="sidebar-header">
-                        <h1>Bone Marrow Analysis</h1>
-                        <p>Cytomorphology Assistant</p>
-                        <button 
-                            className={`sidebar-toggle ${collapsed ? 'collapsed' : ''}`}
-                            onClick={onToggle}
-                        >
-                            <i className={`fas fa-chevron-${collapsed ? 'right' : 'left'}`}></i>
-                        </button>
+            </div>
+        </div>
+    );
+}
+
+/* ── Sidebar ── */
+function Sidebar({ tab, setTab }) {
+    const items = [
+        { id: 'upload', icon: 'fa-upload',      label: 'Upload & Analyze' },
+        { id: 'chat',   icon: 'fa-comments',     label: 'Ask Questions'   },
+        { id: 'report', icon: 'fa-file-medical', label: 'RAG Report'      },
+        { id: 'cells',  icon: 'fa-microscope',   label: 'Cell Explorer'   },
+    ];
+    return (
+        <div className="sidebar">
+            <div className="sidebar-header">
+                <h1>🔬 Bone Marrow Analysis</h1>
+                <p>Cytomorphology Assistant</p>
+            </div>
+            <div className="sidebar-nav">
+                {items.map(it => (
+                    <div key={it.id} className={`nav-item ${tab === it.id ? 'active' : ''}`} onClick={() => setTab(it.id)}>
+                        <i className={`fas ${it.icon}`}></i> {it.label}
                     </div>
-                    <div className="sidebar-nav">
-                        {tabs.map(tab => (
-                            <div
-                                key={tab.id}
-                                className={`nav-item ${activeTab === tab.id ? 'active' : ''}`}
-                                onClick={() => setActiveTab(tab.id)}
-                            >
-                                <i className={`fas ${tab.icon}`}></i>
-                                <span>{tab.label}</span>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+/* ── Topbar ── */
+function Topbar({ tab }) {
+    const titles = { upload: 'Upload & Analyze Images', chat: 'Ask Questions', report: 'Comprehensive RAG Report', cells: 'Cell Explorer' };
+    return <div className="topbar"><h2>{titles[tab]}</h2></div>;
+}
+
+/* ── UploadTab ── */
+function UploadTab({ selId, onUpload, uploading }) {
+    const [analysis, setAnalysis] = useState(null);
+    const [imgView,  setImgView]  = useState('filtered');
+    const fileRef = useRef();
+
+    useEffect(() => {
+        if (!selId) { setAnalysis(null); return; }
+        apiFetch(`/api/analysis/${selId}`).then(setAnalysis).catch(() => setAnalysis(null));
+    }, [selId]);
+
+    function pick(e) {
+        const files = e.target.files;
+        if (files.length) onUpload(files);
+        e.target.value = '';
+    }
+
+    const imgKey = imgView === 'raw' ? 'raw' : imgView === 'contact' ? 'contact' : 'filtered';
+    const imgPath = analysis?.detection_images?.[imgKey];
+
+    return (
+        <div>
+            <div className="card">
+                <h3 className="card-title">Upload Bone Marrow Images</h3>
+                <label>
+                    <div className="upload-zone" onClick={() => fileRef.current.click()}>
+                        <i className="fas fa-cloud-upload-alt"></i>
+                        <h3>{uploading ? 'Analyzing…' : 'Click to upload images'}</h3>
+                        <p style={{color:'#718096',fontSize:'.875rem'}}>PNG, JPG, JPEG, TIFF · Multiple files allowed</p>
+                    </div>
+                </label>
+                <input ref={fileRef} type="file" multiple accept=".png,.jpg,.jpeg,.tiff,.tif" onChange={pick} disabled={uploading} />
+            </div>
+
+            {uploading && (
+                <div className="loading"><i className="fas fa-spinner"></i><p>Analysing images…</p></div>
+            )}
+
+            {analysis && !uploading && (
+                <>
+                    <div className="metrics-grid">
+                        {[
+                            ['Images Processed',  analysis.metrics?.images_processed  ?? 0],
+                            ['Cells Detected',    analysis.metrics?.cells_detected    ?? 0],
+                            ['Cells Classified',  analysis.metrics?.cells_classified  ?? 0],
+                            ['Blast %',           ((analysis.metrics?.blast_fraction ?? 0)*100).toFixed(1)+'%'],
+                        ].map(([lbl, val]) => (
+                            <div key={lbl} className="metric-card">
+                                <div className="metric-label">{lbl}</div>
+                                <div className="metric-value">{val}</div>
                             </div>
                         ))}
                     </div>
-                </div>
-            );
-        }
-        
-        function Topbar({ activeTab }) {
-            const titles = {
-                detection: 'Detection View',
-                questions: 'Ask Questions',
-                details: 'Analysis Details',
-                explorer: 'Cell Explorer'
-            };
-            
-            return (
-                <div className="topbar">
-                    <h2>{titles[activeTab] || 'Bone Marrow Analysis'}</h2>
-                </div>
-            );
-        }
-        
-        function DetectionView({ analysis, onUpload, loading }) {
-            const [activeImageTab, setActiveImageTab] = useState('filtered');
-            const fileInputRef = useRef(null);
-            
-            const handleFileSelect = (e) => {
-                const files = e.target.files;
-                if (files.length > 0) {
-                    onUpload(files);
-                }
-            };
-            
-            return (
-                <div>
-                    <div style={{marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem'}}>
-                        <label htmlFor="file-upload">
-                            <div style={{
-                                display: 'inline-block',
-                                padding: '0.75rem 1.5rem',
-                                background: '#3b82f6',
-                                color: 'white',
-                                borderRadius: '6px',
-                                cursor: loading ? 'not-allowed' : 'pointer',
-                                fontWeight: 600,
-                                opacity: loading ? 0.6 : 1
-                            }}>
-                                <i className="fas fa-upload"></i> {loading ? 'Analyzing...' : 'Upload Images'}
-                            </div>
-                        </label>
-                        <input
-                            ref={fileInputRef}
-                            id="file-upload"
-                            type="file"
-                            multiple
-                            accept=".png,.jpg,.jpeg,.tiff"
-                            onChange={handleFileSelect}
-                            disabled={loading}
-                        />
-                        <span style={{fontSize: '0.875rem', color: '#718096'}}>PNG, JPG, JPEG, TIFF supported</span>
-                    </div>
-                    
-                    {loading && (
-                        <div className="loading">
-                            <i className="fas fa-spinner"></i>
-                            <p>Analyzing images...</p>
-                        </div>
-                    )}
-                    
-                    {!loading && analysis && (
-                        <>
-                            <div className="metrics-grid">
-                                <div className="metric-card">
-                                    <div className="metric-label">Images Analyzed</div>
-                                    <div className="metric-value">{analysis.metrics?.images_processed || 0}</div>
-                                </div>
-                                <div className="metric-card">
-                                    <div className="metric-label">Cells Detected</div>
-                                    <div className="metric-value">{analysis.metrics?.cells_detected || 0}</div>
-                                </div>
-                                <div className="metric-card">
-                                    <div className="metric-label">Cells Classified</div>
-                                    <div className="metric-value">{analysis.metrics?.cells_classified || 0}</div>
-                                </div>
-                                <div className="metric-card">
-                                    <div className="metric-label">Blast Percentage</div>
-                                    <div className="metric-value">{((analysis.metrics?.blast_fraction || 0) * 100).toFixed(1)}%</div>
-                                </div>
-                            </div>
-                            
-                            {analysis.images && analysis.images[0] && (
-                                <div className="card">
-                                    <div style={{display: 'flex', gap: '0.5rem', marginBottom: '1rem', borderBottom: '1px solid #e2e8f0'}}>
-                                        <button
-                                            onClick={() => setActiveImageTab('raw')}
-                                            style={{
-                                                padding: '0.75rem 1rem',
-                                                background: activeImageTab === 'raw' ? '#eff6ff' : 'transparent',
-                                                border: 'none',
-                                                borderBottom: activeImageTab === 'raw' ? '2px solid #3b82f6' : '2px solid transparent',
-                                                color: activeImageTab === 'raw' ? '#3b82f6' : '#718096',
-                                                fontWeight: activeImageTab === 'raw' ? 600 : 400,
-                                                cursor: 'pointer'
-                                            }}
-                                        >
-                                            Raw Candidates
-                                        </button>
-                                        <button
-                                            onClick={() => setActiveImageTab('filtered')}
-                                            style={{
-                                                padding: '0.75rem 1rem',
-                                                background: activeImageTab === 'filtered' ? '#eff6ff' : 'transparent',
-                                                border: 'none',
-                                                borderBottom: activeImageTab === 'filtered' ? '2px solid #3b82f6' : '2px solid transparent',
-                                                color: activeImageTab === 'filtered' ? '#3b82f6' : '#718096',
-                                                fontWeight: activeImageTab === 'filtered' ? 600 : 400,
-                                                cursor: 'pointer'
-                                            }}
-                                        >
-                                            Filtered Detection
-                                        </button>
-                                        <button
-                                            onClick={() => setActiveImageTab('contact')}
-                                            style={{
-                                                padding: '0.75rem 1rem',
-                                                background: activeImageTab === 'contact' ? '#eff6ff' : 'transparent',
-                                                border: 'none',
-                                                borderBottom: activeImageTab === 'contact' ? '2px solid #3b82f6' : '2px solid transparent',
-                                                color: activeImageTab === 'contact' ? '#3b82f6' : '#718096',
-                                                fontWeight: activeImageTab === 'contact' ? 600 : 400,
-                                                cursor: 'pointer'
-                                            }}
-                                        >
-                                            Contact Sheet
-                                        </button>
-                                    </div>
-                                    
-                                    {activeImageTab === 'raw' && analysis.images[0].debug_raw_path && (
-                                        <img 
-                                            src={`/api/image/${encodeURIComponent(analysis.images[0].debug_raw_path)}`}
-                                            alt="Raw Candidates with Detection Boxes"
-                                            style={{width: '100%', borderRadius: '8px', border: '1px solid #e2e8f0'}}
-                                            onError={(e) => {
-                                                console.error('Failed to load raw detection image');
-                                                e.target.style.display = 'none';
-                                            }}
-                                        />
-                                    )}
-                                    
-                                    {activeImageTab === 'filtered' && analysis.images[0].filtered_path && (
-                                        <img 
-                                            src={`/api/image/${encodeURIComponent(analysis.images[0].filtered_path)}`}
-                                            alt="Filtered Detection"
-                                            style={{width: '100%', borderRadius: '8px', border: '1px solid #e2e8f0'}}
-                                            onError={(e) => {
-                                                console.error('Failed to load filtered image');
-                                                e.target.style.display = 'none';
-                                            }}
-                                        />
-                                    )}
-                                    
-                                    {activeImageTab === 'contact' && analysis.images[0].contact_sheet && (
-                                        <img 
-                                            src={`/api/image/${encodeURIComponent(analysis.images[0].contact_sheet)}`}
-                                            alt="Contact Sheet"
-                                            style={{width: '100%', borderRadius: '8px', border: '1px solid #e2e8f0'}}
-                                            onError={(e) => {
-                                                console.error('Failed to load contact sheet');
-                                                e.target.style.display = 'none';
-                                            }}
-                                        />
-                                    )}
-                                </div>
-                            )}
-                            
-                            {analysis.morphology && analysis.morphology.length > 0 && (
-                                <div className="card">
-                                    <h3 className="card-title">Cell Distribution</h3>
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th>Cell Type</th>
-                                                <th style={{textAlign: 'center'}}>Count</th>
-                                                <th style={{textAlign: 'center'}}>Percentage</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {analysis.morphology.map(m => (
-                                                <tr key={m.type}>
-                                                    <td style={{fontWeight: 500}}>{m.type}</td>
-                                                    <td style={{textAlign: 'center', fontWeight: 600, color: '#3b82f6'}}>{m.count}</td>
-                                                    <td style={{textAlign: 'center'}}>{(m.percentage * 100).toFixed(1)}%</td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            )}
-                        </>
-                    )}
-                </div>
-            );
-        }
-        
-        function QuestionsView({ analysisId }) {
-            const [messages, setMessages] = useState([]);
-            const [question, setQuestion] = useState('');
-            const [loading, setLoading] = useState(false);
-            
-            useEffect(() => {
-                if (analysisId) {
-                    fetch(`/api/chat/${analysisId}`)
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.history) {
-                                setMessages(data.history.map(h => ({
-                                    question: h.q,
-                                    answer: h.a
-                                })));
-                            }
-                        })
-                        .catch(err => console.error('Failed to load chat:', err));
-                }
-            }, [analysisId]);
-            
-            const sendMessage = async () => {
-                if (!question.trim() || !analysisId || loading) return;
-                
-                setLoading(true);
-                const userMsg = { question, answer: '' };
-                setMessages([...messages, userMsg]);
-                
-                try {
-                    const res = await fetch('/api/chat', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ id: analysisId, q: question })
-                    });
-                    const data = await res.json();
-                    
-                    setMessages(prev => [
-                        ...prev.slice(0, -1),
-                        { question, answer: data.a || data.answer || 'No response' }
-                    ]);
-                    setQuestion('');
-                } catch (err) {
-                    console.error('Chat failed:', err);
-                } finally {
-                    setLoading(false);
-                }
-            };
-            
-            if (!analysisId) {
-                return (
-                    <div className="empty-state">
-                        <i className="fas fa-comments"></i>
-                        <h3>No Analysis Selected</h3>
-                        <p>Please upload and analyze images first</p>
-                    </div>
-                );
-            }
-            
-            return (
-                <div>
-                    <div className="card" style={{minHeight: '500px', display: 'flex', flexDirection: 'column'}}>
-                        <div style={{flex: 1, overflowY: 'auto', marginBottom: '1rem'}}>
-                            {messages.length === 0 ? (
-                                <div className="empty-state">
-                                    <i className="fas fa-comments"></i>
-                                    <h3>Ask Questions</h3>
-                                    <p>Ask about cell types, blast count, clinical interpretation, etc.</p>
-                                </div>
-                            ) : (
-                                messages.map((msg, i) => (
-                                    <div key={i} style={{marginBottom: '1.5rem'}}>
-                                        <div style={{
-                                            background: '#eff6ff',
-                                            padding: '1rem',
-                                            borderRadius: '8px',
-                                            marginBottom: '0.5rem'
-                                        }}>
-                                            <strong style={{color: '#3b82f6'}}>You:</strong>
-                                            <p style={{marginTop: '0.5rem'}}>{msg.question}</p>
-                                        </div>
-                                        {msg.answer && (
-                                            <div style={{
-                                                background: '#f7fafc',
-                                                padding: '1rem',
-                                                borderRadius: '8px',
-                                                borderLeft: '3px solid #3b82f6'
-                                            }}>
-                                                <strong style={{color: '#1a202c'}}>Assistant:</strong>
-                                                <p style={{marginTop: '0.5rem', lineHeight: 1.6}}>{msg.answer}</p>
-                                            </div>
-                                        )}
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                        <div style={{borderTop: '1px solid #e2e8f0', paddingTop: '1rem'}}>
-                            <div style={{display: 'flex', gap: '0.5rem'}}>
-                                <input
-                                    type="text"
-                                    value={question}
-                                    onChange={(e) => setQuestion(e.target.value)}
-                                    onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-                                    placeholder="Ask a question..."
-                                    disabled={loading}
-                                    style={{
-                                        flex: 1,
-                                        padding: '0.75rem',
-                                        border: '1px solid #e2e8f0',
-                                        borderRadius: '6px',
-                                        fontSize: '1rem'
-                                    }}
-                                />
-                                <button
-                                    onClick={sendMessage}
-                                    disabled={loading || !question.trim()}
-                                    style={{
-                                        padding: '0.75rem 1.5rem',
-                                        background: loading || !question.trim() ? '#d1d5db' : '#3b82f6',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '6px',
-                                        cursor: loading || !question.trim() ? 'not-allowed' : 'pointer',
-                                        fontWeight: 600
-                                    }}
-                                >
-                                    {loading ? 'Sending...' : 'Send'}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-        
-        function DetailsView({ analysis }) {
-            const [reportSections, setReportSections] = useState([]);
-            const [loadingReport, setLoadingReport] = useState(false);
-            
-            useEffect(() => {
-                if (analysis && analysis.id) {
-                    // Check if report sections are already in analysis data
-                    if (analysis.report_sections && analysis.report_sections.length > 0) {
-                        setReportSections(analysis.report_sections);
-                    } else {
-                        // Fetch comprehensive report from backend
-                        setLoadingReport(true);
-                        fetch(`/api/report/${analysis.id}`)
-                            .then(res => res.json())
-                            .then(data => {
-                                if (data.sections) {
-                                    setReportSections(data.sections);
-                                }
-                            })
-                            .catch(err => console.error('Failed to load report:', err))
-                            .finally(() => setLoadingReport(false));
-                    }
-                }
-            }, [analysis]);
-            
-            if (!analysis) {
-                return (
-                    <div className="empty-state">
-                        <i className="fas fa-chart-bar"></i>
-                        <h3>No Analysis Selected</h3>
-                        <p>Please upload and analyze images first</p>
-                    </div>
-                );
-            }
-            
-            return (
-                <div>
-                    {loadingReport && (
-                        <div className="loading">
-                            <i className="fas fa-spinner"></i>
-                            <p>Generating comprehensive clinical report...</p>
-                        </div>
-                    )}
-                    
-                    {reportSections && reportSections.length > 0 && (
-                        <div className="card">
-                            <h3 className="card-title" style={{fontSize: '1.5rem', marginBottom: '0.5rem'}}>
-                                Clinical Analysis: {analysis.case_id}
-                            </h3>
-                            <p style={{fontSize: '0.875rem', color: '#718096', marginBottom: '2rem'}}>
-                                Generated: {new Date().toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'})}
-                            </p>
-                            
-                            {reportSections.map((section, idx) => (
-                                <div key={idx} style={{marginBottom: '2.5rem'}}>
-                                    <h4 style={{
-                                        fontSize: '1.125rem',
-                                        fontWeight: 600,
-                                        color: '#1a202c',
-                                        marginBottom: '1rem',
-                                        paddingBottom: '0.5rem',
-                                        borderBottom: '2px solid #e2e8f0'
-                                    }}>
-                                        {section.title}
-                                    </h4>
-                                    <div style={{
-                                        lineHeight: 1.8,
-                                        fontSize: '1rem',
-                                        color: '#374151'
-                                    }} dangerouslySetInnerHTML={{
-                                        __html: section.text
-                                            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                                            .replace(/\n\n/g, '</p><p style="margin-top: 1rem;">')
-                                            .replace(/\n/g, '<br/>')
-                                    }}></div>
-                                    
-                                    {section.images && section.images.length > 0 && (
-                                        <div className="cell-images-grid" style={{marginTop: '1rem'}}>
-                                            {section.images.map((imgPath, imgIdx) => (
-                                                <div key={imgIdx} className="cell-image-item">
-                                                    <img 
-                                                        src={`/api/image/${encodeURIComponent(imgPath)}`}
-                                                        alt={section.title}
-                                                        onError={(e) => {
-                                                            console.error('Failed to load section image');
-                                                            e.target.style.display = 'none';
-                                                        }}
-                                                    />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                    
-                    {analysis.morphology && analysis.morphology.map(cellType => (
-                        <div key={cellType.type} className="cell-type-section">
-                            <div className="cell-type-header">
-                                <h3>{cellType.type}</h3>
-                                <span className="cell-type-badge">{cellType.count} cells ({(cellType.percentage * 100).toFixed(1)}%)</span>
-                            </div>
-                            <div className="cell-type-description">
-                                <p><strong>Description:</strong> {cellType.description || 'Cell type found in bone marrow aspirate smear.'}</p>
-                                <p style={{marginTop: '0.5rem'}}><strong>Clinical Significance:</strong> {cellType.clinical_significance || 'Normal component of hematopoiesis.'}</p>
-                            </div>
-                            {cellType.cells && cellType.cells.length > 0 && (
-                                <div className="cell-images-grid">
-                                    {cellType.cells.slice(0, 8).map((cell, idx) => (
-                                        <div key={idx} className="cell-image-item">
-                                            <img 
-                                                src={`/api/image/${encodeURIComponent(cell.crop_path)}`}
-                                                alt={cellType.type}
-                                                onError={(e) => {
-                                                    console.error('Failed to load cell image:', cell.crop_path);
-                                                    e.target.style.display = 'none';
-                                                }}
-                                            />
-                                            <div className="cell-image-label">
-                                                {(cell.confidence * 100).toFixed(0)}% confidence
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    ))}
-                </div>
-            );
-        }
-        
-        function ExplorerView({ analysis }) {
-            if (!analysis || !analysis.morphology) {
-                return (
-                    <div className="empty-state">
-                        <i className="fas fa-th"></i>
-                        <h3>No Analysis Selected</h3>
-                        <p>Please upload and analyze images first</p>
-                    </div>
-                );
-            }
-            
-            const allCells = analysis.morphology.flatMap(m => 
-                (m.cells || []).map(c => ({...c, type: m.type}))
-            );
-            
-            return (
-                <div>
+
                     <div className="card">
-                        <h3 className="card-title">All Detected Cells ({allCells.length})</h3>
-                        <div className="cell-grid">
-                            {allCells.map((cell, idx) => (
-                                <div key={idx} className="cell-card">
-                                    <img 
-                                        src={`/api/image/${encodeURIComponent(cell.crop_path)}`}
-                                        alt={cell.type}
-                                        onError={(e) => {
-                                            console.error('Failed to load cell image:', cell.crop_path);
-                                            e.target.style.display = 'none';
-                                        }}
-                                    />
-                                    <div className="cell-name">{cell.type}</div>
-                                    <div className="cell-confidence">{(cell.confidence * 100).toFixed(0)}%</div>
-                                </div>
+                        <div className="img-tabs">
+                            {[['raw','Raw Candidates'],['filtered','Filtered Detection'],['contact','Contact Sheet']].map(([k,lbl]) => (
+                                <button key={k} className={`img-tab ${imgView===k?'active':''}`} onClick={() => setImgView(k)}>
+                                    {lbl}
+                                </button>
                             ))}
                         </div>
+                        {imgPath
+                            ? <img src={`/api/image/${encodeURIComponent(imgPath)}`} alt={imgView} style={{width:'100%',borderRadius:'6px'}} onError={e=>e.target.style.display='none'} />
+                            : <div className="empty-state" style={{padding:'2rem'}}><p style={{color:'#9ca3af'}}>Image not available for this view</p></div>
+                        }
                     </div>
+
+                    <div className="card">
+                        <h3 className="card-title">Cell Distribution</h3>
+                        <table>
+                            <thead><tr><th>Cell Type</th><th style={{textAlign:'center'}}>Count</th><th style={{textAlign:'center'}}>%</th></tr></thead>
+                            <tbody>
+                                {(analysis.morphology || []).map(m => (
+                                    <tr key={m.type}>
+                                        <td><strong>{m.type}</strong></td>
+                                        <td style={{textAlign:'center',fontWeight:600}}>{m.count}</td>
+                                        <td style={{textAlign:'center'}}>{(m.percentage*100).toFixed(1)}%</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </>
+            )}
+        </div>
+    );
+}
+
+/* ── ChatTab ── */
+function ChatTab({ selId }) {
+    const [msgs,     setMsgs]    = useState([]);
+    const [input,    setInput]   = useState('');
+    const [loading,  setLoading] = useState(false);
+    const [err,      setErr]     = useState('');
+    const endRef = useRef();
+
+    useEffect(() => { endRef.current?.scrollIntoView({ behavior:'smooth' }); }, [msgs]);
+
+    useEffect(() => {
+        if (!selId) { setMsgs([]); return; }
+        apiFetch(`/api/chat/${selId}`)
+            .then(d => setMsgs((d.history || []).map(h => ({ q: h.question, a: h.answer }))))
+            .catch(() => {});
+    }, [selId]);
+
+    async function send() {
+        if (!input.trim() || !selId || loading) return;
+        const q = input.trim();
+        setMsgs(prev => [...prev, { q, a: null }]);
+        setInput(''); setErr(''); setLoading(true);
+        try {
+            const d = await apiFetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ analysis_id: selId, question: q }),
+            });
+            setMsgs(prev => [...prev.slice(0, -1), { q, a: d.answer }]);
+        } catch (e) {
+            setErr(e.message);
+            setMsgs(prev => prev.slice(0, -1));
+        } finally { setLoading(false); }
+    }
+
+    if (!selId) return (
+        <div className="chat-container" style={{height:'calc(100vh - 120px)'}}>
+            <div className="chat-empty"><i className="fas fa-comments" style={{fontSize:'3rem',marginBottom:'1rem'}}></i><h3>No Analysis Selected</h3><p>Upload a bone marrow image first.</p></div>
+        </div>
+    );
+
+    return (
+        <div className="chat-container" style={{height:'calc(100vh - 120px)'}}>
+            <div className="chat-messages">
+                {msgs.length === 0 && !loading && (
+                    <div className="chat-empty"><i className="fas fa-microscope" style={{fontSize:'3rem',marginBottom:'1rem'}}></i><h3>Ask About This Analysis</h3><p>Type a question about the bone marrow findings.</p></div>
+                )}
+                {msgs.map((m, i) => (
+                    <React.Fragment key={i}>
+                        <div className="msg-wrap user"><div className="msg-inner"><div className="avatar user">You</div><div className="msg-text">{m.q}</div></div></div>
+                        {m.a != null && (
+                            <div className="msg-wrap assistant"><div className="msg-inner"><div className="avatar assistant">🔬</div><div className="msg-text">{m.a}</div></div></div>
+                        )}
+                    </React.Fragment>
+                ))}
+                {loading && (
+                    <div className="msg-wrap assistant"><div className="msg-inner"><div className="avatar assistant">🔬</div><div className="msg-text" style={{color:'#9ca3af'}}>Thinking…</div></div></div>
+                )}
+                {err && <div style={{padding:'0 1rem'}}><div className="error-box">Error: {err}</div></div>}
+                <div ref={endRef} />
+            </div>
+            <div className="chat-input-area">
+                <div className="chat-input-row">
+                    <textarea className="chat-input" rows="1" placeholder="Ask a question about this analysis…"
+                        value={input} onChange={e => setInput(e.target.value)} disabled={loading}
+                        style={{minHeight:'46px',maxHeight:'180px'}}
+                        onKeyDown={e => { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
+                        onInput={e => { e.target.style.height='auto'; e.target.style.height=Math.min(e.target.scrollHeight,180)+'px'; }}
+                    />
+                    <button className="send-btn" onClick={send} disabled={!input.trim() || loading}><i className="fas fa-paper-plane"></i></button>
                 </div>
-            );
-        }
-        
-        function History({ analyses, selected, onSelect, onDelete }) {
-            return (
-                <div className="history-section">
-                    <h3>History</h3>
-                    {analyses.length === 0 ? (
-                        <p style={{fontSize: '0.875rem', color: '#9ca3af', textAlign: 'center', padding: '2rem 0'}}>
-                            No analyses yet
-                        </p>
-                    ) : (
-                        analyses.map(a => (
-                            <div
-                                key={a.id}
-                                className={`history-item ${selected === a.id ? 'active' : ''}`}
-                                onClick={() => onSelect(a.id)}
-                            >
-                                {a.thumbnail && (
-                                    <img 
-                                        src={`/api/image/${encodeURIComponent(a.thumbnail)}`}
-                                        alt="Thumbnail"
-                                        onError={(e) => {
-                                            console.error('Failed to load thumbnail:', a.thumbnail);
-                                            e.target.style.display = 'none';
-                                        }}
-                                    />
-                                )}
-                                <button 
-                                    className="history-delete" 
-                                    onClick={(e) => onDelete(a.id, e)}
-                                    title="Delete"
-                                >
-                                    <i className="fas fa-trash"></i>
-                                </button>
-                                <div className="history-item-title">{a.id}</div>
-                                <div className="history-item-info">
-                                    {a.cells_detected || 0} cells detected
-                                </div>
-                                <div className="history-item-info">
-                                    {new Date(a.timestamp).toLocaleString()}
-                                </div>
-                            </div>
-                        ))
+            </div>
+        </div>
+    );
+}
+
+/* ── ReportTab ── */
+function ReportTab({ selId }) {
+    const [report,  setReport]  = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [err,     setErr]     = useState('');
+
+    useEffect(() => {
+        if (!selId) { setReport(null); setErr(''); return; }
+        setLoading(true); setErr(''); setReport(null);
+        apiFetch(`/api/analysis-report/${selId}`)
+            .then(d => { setReport(d); setLoading(false); })
+            .catch(e => { setErr(e.message); setLoading(false); });
+    }, [selId]);
+
+    if (!selId) return (
+        <div className="card">
+            <div className="empty-state"><i className="fas fa-file-medical"></i><h3>No Analysis Selected</h3><p>Upload an image first.</p></div>
+        </div>
+    );
+    if (loading) return <div className="loading"><i className="fas fa-spinner"></i><p>Generating comprehensive RAG report…</p></div>;
+    if (err)     return <div className="card"><div className="error-box"><strong>Report generation failed:</strong> {err}<br/><small>Check the server console for details.</small></div></div>;
+    if (!report?.sections) return <div className="card"><div className="empty-state"><i className="fas fa-exclamation-circle"></i><h3>No Report Data</h3></div></div>;
+
+    return (
+        <div>
+            <div className="report-header">
+                <h1>Bone Marrow Cytomorphology Report</h1>
+                <p style={{color:'#718096',marginTop:'.25rem'}}>
+                    Clinical Analysis: <strong>{report.case_id}</strong> &nbsp;·&nbsp; Generated: {new Date(report.generated_at).toLocaleString()}
+                </p>
+            </div>
+            {report.warning && <div className="report-warning" role="alert">{report.warning}</div>}
+            {report.sections.map((sec, i) => (
+                <div key={i} className="report-section">
+                    <h3>{sec.title}</h3>
+                    <div className="report-text">{sec.content}</div>
+                    {sec.cell_images && sec.cell_images.length > 0 && (
+                        <div className="report-imgs">
+                            {sec.cell_images.map((p, j) => (
+                                <img key={j} src={`/api/image/${encodeURIComponent(p)}`} alt={`cell-${j}`}
+                                     onError={e => { e.target.style.display='none'; }} />
+                            ))}
+                        </div>
                     )}
                 </div>
-            );
-        }
-        
-        ReactDOM.render(<App />, document.getElementById('root'));
-    </script>
+            ))}
+        </div>
+    );
+}
+
+/* ── CellsTab ── */
+function CellsTab({ selId }) {
+    const [cells,   setCells]   = useState([]);
+    const [filter,  setFilter]  = useState('All');
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (!selId) { setCells([]); return; }
+        setLoading(true);
+        apiFetch(`/api/cells/${selId}`)
+            .then(d => { setCells(d.cells || []); setLoading(false); })
+            .catch(() => setLoading(false));
+    }, [selId]);
+
+    if (!selId) return (
+        <div className="card">
+            <div className="empty-state"><i className="fas fa-microscope"></i><h3>No Analysis Selected</h3></div>
+        </div>
+    );
+    if (loading) return <div className="loading"><i className="fas fa-spinner"></i><p>Loading cells…</p></div>;
+
+    const types   = ['All', ...Array.from(new Set(cells.map(c => c.class)))];
+    const visible = filter === 'All' ? cells : cells.filter(c => c.class === filter);
+
+    return (
+        <div className="card">
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'1.25rem'}}>
+                <h3 className="card-title" style={{margin:0}}>{visible.length} Cells Detected</h3>
+                <select value={filter} onChange={e => setFilter(e.target.value)}
+                    style={{padding:'.4rem .75rem',borderRadius:'6px',border:'1px solid #e2e8f0',fontSize:'.85rem'}}>
+                    {types.map(t => <option key={t} value={t}>{t}</option>)}
+                </select>
+            </div>
+            {visible.length === 0
+                ? <div className="empty-state" style={{padding:'2rem'}}><p>No cells{filter!=='All'?` for "${filter}"`:''}</p></div>
+                : <div className="cell-grid">
+                    {visible.map((cell, i) => {
+                        const conf = safeConf(cell.confidence);
+                        return (
+                            <div key={cell.id || i} className="cell-card">
+                                {cell.image_path
+                                    ? <img src={`/api/image/${encodeURIComponent(cell.image_path)}`} alt={cell.class}
+                                           onError={e => { e.target.style.display='none'; e.target.nextSibling.style.display='flex'; }} />
+                                    : null}
+                                <div className="cell-img-placeholder" style={{display: cell.image_path ? 'none' : 'flex'}}>No Image</div>
+                                <div className="cell-name">{cell.class}</div>
+                                <div className="cell-desc">{CELL_DESC[cell.class] || 'Bone marrow cell'}</div>
+                                <div className="cell-conf">Confidence: {(conf*100).toFixed(0)}%</div>
+                            </div>
+                        );
+                    })}
+                  </div>
+            }
+        </div>
+    );
+}
+
+/* ── History ── */
+function History({ analyses, selId, onSelect, onDelete }) {
+    // newest first
+    const sorted = [...analyses].reverse();
+    return (
+        <div>
+            <div style={{padding:'.85rem 1rem',fontWeight:600,fontSize:'.9rem',borderBottom:'1px solid #e2e8f0'}}>Analysis History</div>
+            {sorted.length === 0
+                ? <div style={{padding:'2rem',textAlign:'center',color:'#9ca3af',fontSize:'.85rem'}}>No analyses yet</div>
+                : sorted.map(a => (
+                    <div key={a.id} className={`hist-item ${selId===a.id?'active':''}`} onClick={() => onSelect(a.id)}>
+                        <button className="del-btn" onClick={e => onDelete(a.id, e)} title="Delete"><i className="fas fa-times"></i></button>
+                        {a.thumbnail && (
+                            <img src={`/api/image/${encodeURIComponent(a.thumbnail)}`} alt="thumb"
+                                 onError={e => e.target.style.display='none'} />
+                        )}
+                        <div className="hist-title">{a.case_id}</div>
+                        <div className="hist-meta">{a.cells} cells · {(safeConf(a.blasts)*100).toFixed(1)}% blasts</div>
+                        <div className="hist-time">{new Date(a.timestamp).toLocaleString()}</div>
+                    </div>
+                ))
+            }
+        </div>
+    );
+}
+
+ReactDOM.render(<App />, document.getElementById('root'));
+</script>
 </body>
 </html>
