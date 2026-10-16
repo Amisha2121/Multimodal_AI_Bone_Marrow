@@ -317,6 +317,18 @@ def get_analysis(analysis_id):
     d      = analyses[analysis_id]
     result = d['analysis']
 
+    xai_list = []
+    for x in getattr(result, 'xai_examples', []):
+        overlay = getattr(x, 'overlay_path', '')
+        if overlay and (Path(overlay).exists() or (REPO_ROOT / overlay).exists()):
+            xai_list.append({
+                'cell_id':             getattr(x, 'cell_id', ''),
+                'predicted_class':     getattr(x, 'predicted_class', ''),
+                'confidence':          _safe_float(getattr(x, 'confidence', 0)),
+                'overlay_path':        str(overlay),
+                'original_image_path': str(getattr(x, 'original_image_path', '')),
+            })
+
     return jsonify({
         'id':        analysis_id,
         'case_id':   d['case_id'],
@@ -335,9 +347,12 @@ def get_analysis(analysis_id):
             }
             for ct, cnt in result.morphology_counts.items()
         ],
-        'detection_images': d.get('detection_images', {}),
-        'images':           d['images'],
-        'cell_images':      d.get('cell_images', []),
+        'is_low_evidence':        getattr(result, 'is_low_evidence', False),
+        'predominant_categories': getattr(result, 'predominant_categories', []),
+        'xai_examples':           xai_list,
+        'detection_images':       d.get('detection_images', {}),
+        'images':                 d['images'],
+        'cell_images':            d.get('cell_images', []),
     })
 
 

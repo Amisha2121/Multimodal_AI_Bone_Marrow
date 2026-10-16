@@ -122,16 +122,17 @@
         .empty-state i{font-size:3rem;margin-bottom:1rem;opacity:.4;}
         .error-box{background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:1rem;color:#dc2626;font-size:.875rem;}
 
-        /* ── Heatmap ── */
-        .heatmap-bar{transition:width 0.8s cubic-bezier(.4,0,.2,1);}
-        .treemap-wrap{display:flex;flex-wrap:nowrap;border-radius:8px;overflow:hidden;height:56px;margin-top:1rem;border:1px solid #e2e8f0;}
-        .treemap-cell{display:flex;align-items:center;justify-content:center;transition:all .15s;cursor:default;overflow:hidden;}
-        .treemap-cell:hover{filter:brightness(1.15);transform:scaleY(1.06);}
-        .heatmap-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:.6rem;}
-        .heatmap-legend-item{display:flex;align-items:center;gap:5px;font-size:.72rem;color:#64748b;}
-        .heatmap-swatch{width:10px;height:10px;border-radius:2px;display:inline-block;}
+        /* ── Heatmap & XAI ── */
         .regen-btn{background:#3b82f6;color:#fff;border:none;padding:.45rem 1rem;border-radius:6px;font-size:.8rem;cursor:pointer;font-weight:500;transition:all .15s;}
         .regen-btn:hover{background:#2563eb;box-shadow:0 2px 8px rgba(59,130,246,.3);}
+        .xai-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.25rem;margin-top:.75rem;}
+        .xai-card{background:#0a0e17;border:1px solid #1e293b;border-radius:8px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.25);transition:transform .15s,box-shadow .15s;}
+        .xai-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.35);}
+        .xai-card img{width:100%;display:block;background:#000;}
+        .xai-card-caption{padding:.75rem .9rem;font-size:.78rem;color:#cbd5e1;background:#050811;border-top:1px solid #1e293b;text-align:center;}
+        .xai-card-caption strong{color:#38bdf8;}
+        .callout-box{margin-top:1rem;padding:.85rem 1rem;border-radius:6px;background:#2d2808;border:1px solid #574c10;color:#fef08a;font-size:.82rem;line-height:1.55;}
+        .chart-box{background:#0b1120;border-radius:8px;padding:1.25rem 1rem .75rem 1rem;border:1px solid #1e293b;}
     </style>
 </head>
 <body>
@@ -266,49 +267,162 @@ function Topbar({ tab }) {
     return <div className="topbar"><h2>{titles[tab]}</h2></div>;
 }
 
-/* ── CellHeatmap ── */
-function CellHeatmap({ morphology }) {
-    if (!morphology || morphology.length === 0) return null;
-    const COLORS = ['#ef4444','#f97316','#eab308','#22c55e','#06b6d4','#3b82f6','#8b5cf6','#ec4899','#14b8a6','#6366f1','#84cc16','#a855f7'];
-    const sorted = [...morphology].sort((a, b) => b.count - a.count);
-    const total  = sorted.reduce((s, m) => s + m.count, 0) || 1;
-    const maxCnt = sorted[0]?.count || 1;
+/* ── CellMorphologySection ── */
+function CellMorphologySection({ analysis }) {
+    if (!analysis || !analysis.morphology || analysis.morphology.length === 0) return null;
+
+    const filtered = analysis.morphology.filter(m => m.count > 0);
+    const dominant = (analysis.predominant_categories && analysis.predominant_categories[0]) || filtered[0]?.type || '—';
+    const dominantItem = filtered.find(m => m.type === dominant) || filtered[0];
+    const dominantCount = dominantItem ? dominantItem.count : 0;
+    const maxCount = Math.max(...filtered.map(m => m.count), 4);
+    const blastPct = ((analysis.metrics?.blast_fraction ?? 0) * 100).toFixed(1);
+
+    const yTicks = [];
+    for (let i = maxCount; i >= 0; i--) {
+        yTicks.push(i);
+    }
+
     return (
-        <div className="card">
-            <h3 className="card-title"><span style={{marginRight:'6px'}}>🔥</span>Cell Distribution Heatmap</h3>
-            <div style={{display:'flex',flexDirection:'column',gap:'5px'}}>
-                {sorted.map((m, i) => {
-                    const pct = ((m.percentage ?? m.count/total) * 100);
-                    const barW = Math.max(6, (m.count / maxCnt) * 100);
-                    const c = COLORS[i % COLORS.length];
-                    return (
-                        <div key={m.type} style={{display:'flex',alignItems:'center',gap:'10px'}}>
-                            <div style={{width:'150px',fontSize:'.78rem',fontWeight:600,textAlign:'right',color:'#4a5568',flexShrink:0,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}} title={m.type}>{m.type}</div>
-                            <div style={{flex:1,background:'#f1f5f9',borderRadius:'4px',height:'26px',overflow:'hidden'}}>
-                                <div className="heatmap-bar" style={{width:barW+'%',height:'100%',background:'linear-gradient(90deg,'+c+'88,'+c+')',borderRadius:'4px',display:'flex',alignItems:'center',paddingLeft:'8px',minWidth:'50px'}}>
-                                    <span style={{fontSize:'.7rem',fontWeight:700,color:'#fff',textShadow:'0 1px 2px rgba(0,0,0,.35)',whiteSpace:'nowrap'}}>{m.count} ({pct.toFixed(1)}%)</span>
+        <div className="card" style={{marginTop:'1.5rem'}}>
+            <h3 style={{fontSize:'1.15rem',fontWeight:700,color:'#1e293b',marginBottom:'.25rem'}}>Cell Morphology</h3>
+            <p style={{fontSize:'.8rem',color:'#64748b',marginBottom:'1.25rem'}}>
+                Based on {analysis.metrics?.cells_classified ?? analysis.metrics?.cells_detected ?? 0} individually detected and classified cells across {analysis.metrics?.images_processed ?? 1} image(s). Detected-cell proportion — does not replace a clinical 500-cell aspirate differential.
+            </p>
+
+            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(320px, 1fr))',gap:'1.5rem',alignItems:'start'}}>
+                {/* Left: Table + Callout */}
+                <div>
+                    <table style={{width:'100%',borderCollapse:'collapse'}}>
+                        <thead>
+                            <tr style={{borderBottom:'1px solid #e2e8f0',fontSize:'.78rem',color:'#64748b',textTransform:'uppercase',letterSpacing:'.05em'}}>
+                                <th style={{textAlign:'left',padding:'.5rem .75rem'}}>Morphology</th>
+                                <th style={{textAlign:'right',padding:'.5rem .75rem'}}>Cells</th>
+                                <th style={{textAlign:'right',padding:'.5rem .75rem'}}>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filtered.map(m => (
+                                <tr key={m.type} style={{borderBottom:'1px solid #f1f5f9',fontSize:'.82rem'}}>
+                                    <td style={{padding:'.55rem .75rem',fontWeight:600,color:'#334155'}}>{m.type}</td>
+                                    <td style={{padding:'.55rem .75rem',textAlign:'right',fontWeight:700,color:'#0f172a'}}>{m.count}</td>
+                                    <td style={{padding:'.55rem .75rem',textAlign:'right',color:'#475569'}}>{(m.percentage * 100).toFixed(1)}%</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+
+                    <div className="callout-box">
+                        {analysis.is_low_evidence ? (
+                            <>
+                                <div><strong>Observed distribution:</strong> {dominant} ({dominantCount} cells).</div>
+                                <div style={{color:'#fef9c3',opacity:.9,marginTop:'2px'}}>Insufficient visual evidence for population-level conclusions.</div>
+                            </>
+                        ) : (
+                            <>
+                                <div><strong>Predominant observed morphology:</strong> {dominant}</div>
+                                <div><strong>Detected-cell blast proportion:</strong> {blastPct}%</div>
+                                <div style={{fontSize:'.74rem',color:'#fef9c3',opacity:.8,fontStyle:'italic',marginTop:'2px'}}>
+                                    (Calculated exclusively from detected cells in this image — not a clinical blast %)
                                 </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+
+                {/* Right: Bar Chart */}
+                <div className="chart-box">
+                    <div style={{display:'flex',height:'190px'}}>
+                        {/* Y-axis */}
+                        <div style={{display:'flex',flexDirection:'column',justifyContent:'space-between',paddingRight:'10px',fontSize:'.72rem',color:'#94a3b8',fontWeight:600,textAlign:'right',width:'22px'}}>
+                            {yTicks.map(t => <span key={t}>{t}</span>)}
+                        </div>
+                        {/* Bars container */}
+                        <div style={{flex:1,display:'flex',alignItems:'flex-end',justifyContent:'space-around',borderLeft:'1px solid #334155',borderBottom:'1px solid #334155',position:'relative',padding:'0 6px'}}>
+                            {/* Gridlines */}
+                            {yTicks.slice(1, -1).map(t => (
+                                <div key={t} style={{
+                                    position:'absolute',
+                                    left:0,
+                                    right:0,
+                                    bottom:`${(t/maxCount)*100}%`,
+                                    borderTop:'1px dashed #1e293b',
+                                    pointerEvents:'none'
+                                }} />
+                            ))}
+                            {filtered.map(m => {
+                                const h = (m.count / maxCount) * 100;
+                                return (
+                                    <div key={m.type} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',height:'100%',justifyContent:'flex-end',padding:'0 4px',zIndex:1}}>
+                                        <div
+                                            title={`${m.type}: ${m.count} cells`}
+                                            style={{
+                                                width:'80%',
+                                                maxWidth:'36px',
+                                                height:`${Math.max(4, h)}%`,
+                                                background:'#7dd3fc',
+                                                borderTopLeftRadius:'3px',
+                                                borderTopRightRadius:'3px',
+                                                transition:'height .5s ease'
+                                            }}
+                                        />
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                    {/* X-axis labels */}
+                    <div style={{display:'flex',marginLeft:'32px',marginTop:'8px',justifyContent:'space-around'}}>
+                        {filtered.map(m => (
+                            <div key={m.type} style={{flex:1,textAlign:'center',padding:'0 2px'}}>
+                                <span style={{
+                                    display:'inline-block',
+                                    fontSize:'.65rem',
+                                    color:'#94a3b8',
+                                    whiteSpace:'nowrap',
+                                    overflow:'hidden',
+                                    textOverflow:'ellipsis',
+                                    maxWidth:'55px',
+                                    transform:'rotate(-45deg)',
+                                    transformOrigin:'top left',
+                                    marginTop:'8px',
+                                    height:'52px'
+                                }} title={m.type}>
+                                    {m.type}
+                                </span>
                             </div>
-                        </div>
-                    );
-                })}
+                        ))}
+                    </div>
+                </div>
             </div>
-            <div className="treemap-wrap">
-                {sorted.map((m, i) => {
-                    const pct = (m.percentage ?? m.count/total) * 100;
-                    if (pct < 0.5) return null;
-                    return (
-                        <div key={m.type} className="treemap-cell" title={m.type+': '+m.count+' cells ('+pct.toFixed(1)+'%)'}
-                            style={{width:pct+'%',height:'100%',background:COLORS[i%COLORS.length]}}>
-                            {pct > 8 && <span style={{fontSize:'.6rem',fontWeight:700,color:'#fff',textShadow:'0 1px 3px rgba(0,0,0,.45)',textAlign:'center',lineHeight:1.2,padding:'0 2px'}}>{m.type.length>14?m.type.split(/[\s(/]/)[0]:m.type}<br/>{pct.toFixed(0)}%</span>}
+        </div>
+    );
+}
+
+/* ── ExplainabilitySection (XAI Attention Rollout) ── */
+function ExplainabilitySection({ xaiExamples }) {
+    if (!xaiExamples || xaiExamples.length === 0) return null;
+
+    return (
+        <div className="card" style={{marginTop:'1.5rem'}}>
+            <h3 style={{fontSize:'1.15rem',fontWeight:700,color:'#1e293b',marginBottom:'.25rem'}}>
+                Representative Cell Crops &amp; Explainability (XAI)
+            </h3>
+            <p style={{fontSize:'.8rem',color:'#64748b',marginBottom:'1.25rem'}}>
+                Attention rollout shows where the model's visual representation attended within each individual detected cell crop. It is an explainability visualization, not proof of a biological or clinical diagnosis.
+            </p>
+
+            <div className="xai-grid">
+                {xaiExamples.map((x, i) => (
+                    <div key={x.cell_id || i} className="xai-card">
+                        <img
+                            src={`/api/image/${encodeURIComponent(x.overlay_path)}`}
+                            alt={x.cell_id}
+                            onError={e => { e.target.style.display = 'none'; }}
+                        />
+                        <div className="xai-card-caption">
+                            <strong>{x.cell_id}</strong> Prediction: {x.predicted_class} · Cell Confidence: {(x.confidence * 100).toFixed(1)}%
                         </div>
-                    );
-                })}
-            </div>
-            <div className="heatmap-legend">
-                {sorted.map((m, i) => (
-                    <div key={m.type} className="heatmap-legend-item">
-                        <span className="heatmap-swatch" style={{background:COLORS[i%COLORS.length]}}></span>{m.type}
                     </div>
                 ))}
             </div>
@@ -370,8 +484,6 @@ function UploadTab({ selId, onUpload, uploading }) {
                         ))}
                     </div>
 
-                    <CellHeatmap morphology={analysis.morphology} />
-
                     <div className="card">
                         <div className="img-tabs">
                             {[['raw','Raw Candidates'],['filtered','Filtered Detection'],['contact','Contact Sheet']].map(([k,lbl]) => (
@@ -386,21 +498,9 @@ function UploadTab({ selId, onUpload, uploading }) {
                         }
                     </div>
 
-                    <div className="card">
-                        <h3 className="card-title">Cell Distribution</h3>
-                        <table>
-                            <thead><tr><th>Cell Type</th><th style={{textAlign:'center'}}>Count</th><th style={{textAlign:'center'}}>%</th></tr></thead>
-                            <tbody>
-                                {(analysis.morphology || []).map(m => (
-                                    <tr key={m.type}>
-                                        <td><strong>{m.type}</strong></td>
-                                        <td style={{textAlign:'center',fontWeight:600}}>{m.count}</td>
-                                        <td style={{textAlign:'center'}}>{(m.percentage*100).toFixed(1)}%</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                    <CellMorphologySection analysis={analysis} />
+
+                    <ExplainabilitySection xaiExamples={analysis.xai_examples} />
                 </>
             )}
         </div>
