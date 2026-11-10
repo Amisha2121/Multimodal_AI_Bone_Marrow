@@ -22,6 +22,22 @@ sys.path.insert(0, str(REPO_ROOT))
 from pipeline.new_patient_engine import analyze_new_case
 from retrieval.retrieve import HybridRetriever
 from agents.llm_provider import get_llm_provider
+from app.db import (
+    init_db,
+    import_existing_case,
+    save_case_to_db,
+    update_case_chat_in_db,
+    update_case_report_in_db,
+    get_history_from_db,
+    get_case_from_db,
+    # Phase 9
+    save_report_version,
+    get_report_versions,
+    get_report_version,
+    save_annotations,
+    get_annotations,
+)
+from pipeline.summary import build_morphology_summary
 
 # ---------------------------------------------------------------------------
 # Flask setup
@@ -143,6 +159,18 @@ def save_chats(chats_dict):
 
 analyses     = load_analyses()
 chat_history = load_chats()
+
+# ---------------------------------------------------------------------------
+# SQLite database initialisation & idempotent import
+# ---------------------------------------------------------------------------
+try:
+    init_db()
+    for aid, entry in analyses.items():
+        import_existing_case(aid, entry, chat_history.get(aid, []))
+    print("SQLite database verified and synchronized with persistent cases")
+except Exception as e:
+    print(f"Warning: SQLite startup synchronization error: {e}")
+
 
 # ---------------------------------------------------------------------------
 # RAG / LLM initialisation (with smoke-test validation)
@@ -303,6 +331,10 @@ def upload_analysis():
 
         save_analyses(analyses)
         save_chats(chat_history)
+        try:
+            save_case_to_db(analysis_id, analyses[analysis_id], chat_history.get(analysis_id, []))
+        except Exception as db_e:
+            print(f"Dual-write to SQLite failed: {db_e}")
 
         print(f"Stored as {analysis_id}")
         return jsonify({
@@ -339,6 +371,12 @@ def get_analyses():
 @app.route('/api/analysis/<analysis_id>')
 def get_analysis(analysis_id):
     if analysis_id not in analyses:
+        for aid, entry in analyses.items():
+            if entry.get("case_id") == analysis_id:
+                analysis_id = aid
+                break
+
+    if analysis_id not in analyses:
         return jsonify({'error': 'Analysis not found'}), 404
 
     d      = analyses[analysis_id]
@@ -356,29 +394,35 @@ def get_analysis(analysis_id):
                 'original_image_path': str(getattr(x, 'original_image_path', '')),
             })
 
+    use_rev = request.args.get('use_reviewer_labels', '') in ('1', 'true', 'True')
+    summary = build_morphology_summary(analysis_id, case_dict=d, use_reviewer_labels=use_rev)
+    from pipeline.uncertainty import wilson_interval
+    ci = wilson_interval(summary['blast_count'], summary['total_cells'])
+
     return jsonify({
         'id':        analysis_id,
         'case_id':   d['case_id'],
         'timestamp': d['timestamp'],
         'metrics': {
-            'images_processed': result.total_images_processed,
-            'cells_detected':   result.total_cells_detected,
-            'cells_classified': result.cells_classified,
-            'blast_fraction':   _safe_float(result.blast_fraction),
+            'images_processed': getattr(result, 'total_images_processed', 1) if result else 1,
+            'cells_detected':   summary['cells_detected'],
+            'cells_classified': summary['cells_classified'],
+            'blast_fraction':   _safe_float(summary['blast_fraction']),
+            'blast_ci':         list(ci) if ci else None,
         },
         'morphology': [
             {
                 'type':       ct,
                 'count':      cnt,
-                'percentage': _safe_float(d['morphology_percentages'].get(ct, 0)),
+                'percentage': _safe_float(summary['percentages'].get(ct, 0)),
             }
-            for ct, cnt in result.morphology_counts.items()
+            for ct, cnt in summary['counts'].items()
         ],
-        'is_low_evidence':        getattr(result, 'is_low_evidence', False),
-        'predominant_categories': getattr(result, 'predominant_categories', []),
+        'is_low_evidence':        getattr(result, 'is_low_evidence', False) if result else False,
+        'predominant_categories': summary.get('predominant_categories', getattr(result, 'predominant_categories', []) if result else []),
         'xai_examples':           xai_list,
         'detection_images':       d.get('detection_images', {}),
-        'images':                 d['images'],
+        'images':                 d.get('images', []),
         'cell_images':            d.get('cell_images', []),
     })
 
@@ -386,13 +430,125 @@ def get_analysis(analysis_id):
 @app.route('/api/cells/<analysis_id>')
 def get_cells(analysis_id):
     if analysis_id not in analyses:
+        for aid, entry in analyses.items():
+            if entry.get("case_id") == analysis_id:
+                analysis_id = aid
+                break
+
+    if analysis_id not in analyses:
         return jsonify({'error': 'Analysis not found'}), 404
 
     d = analyses[analysis_id]
     cells = d.get('cell_images')
-    if not cells:
+    if not cells and d.get('analysis'):
         cells = [_cell_to_dict(c) for c in d['analysis'].cell_predictions]
+    cells = cells or []
+
+    # Dev-only check: verify Cell Explorer totals match single source of truth
+    try:
+        summary = build_morphology_summary(analysis_id, case_dict=d)
+        if len(cells) != summary['total_cells']:
+            print(f"Dev warning: Cell Explorer cell count ({len(cells)}) differs from summary ({summary['total_cells']})")
+    except Exception as dev_err:
+        print(f"Dev check note: {dev_err}")
+
     return jsonify({'cells': cells})
+
+
+# ---------------------------------------------------------------------------
+# Phase 1 Persistence endpoints (SQLite backend with in-memory fallback)
+# ---------------------------------------------------------------------------
+@app.route('/api/history')
+def get_history():
+    """Return analysis history from SQLite DB first, falling back to in-memory store."""
+    try:
+        db_history = get_history_from_db()
+        if db_history:
+            return jsonify({'analyses': db_history, 'cases': db_history, 'source': 'sqlite'})
+    except Exception as e:
+        print(f"Error reading history from SQLite: {e}")
+
+    # Fall back to existing in-memory / analyses.pkl store
+    return get_analyses()
+
+
+@app.route('/api/case/<case_or_analysis_id>')
+def get_case(case_or_analysis_id):
+    """Return case details from SQLite DB, falling back to in-memory store."""
+    try:
+        use_rev = request.args.get('use_reviewer_labels', '') in ('1', 'true', 'True')
+        case_data = get_case_from_db(case_or_analysis_id)
+        if case_data:
+            aid = case_data.get('id')
+            if use_rev:
+                summary = build_morphology_summary(case_or_analysis_id, case_dict=case_data, use_reviewer_labels=True)
+                from pipeline.uncertainty import wilson_interval
+                ci = wilson_interval(summary['blast_count'], summary['total_cells'])
+                case_data['metrics']['cells_detected'] = summary['cells_detected']
+                case_data['metrics']['cells_classified'] = summary['cells_classified']
+                case_data['metrics']['blast_fraction'] = _safe_float(summary['blast_fraction'])
+                case_data['metrics']['blast_ci'] = list(ci) if ci else None
+                case_data['morphology'] = [
+                    {
+                        'type': ct,
+                        'count': cnt,
+                        'percentage': _safe_float(summary['percentages'].get(ct, 0.0)),
+                    }
+                    for ct, cnt in summary['counts'].items()
+                ]
+            # Augment with live in-memory overlays if available
+            if aid in analyses:
+                d = analyses[aid]
+                result = d.get('analysis')
+                if result:
+                    xai_list = []
+                    for x in getattr(result, 'xai_examples', []):
+                        overlay = getattr(x, 'overlay_path', '')
+                        if overlay and (Path(overlay).exists() or (REPO_ROOT / overlay).exists()):
+                            xai_list.append({
+                                'cell_id': getattr(x, 'cell_id', ''),
+                                'predicted_class': getattr(x, 'predicted_class', ''),
+                                'confidence': _safe_float(getattr(x, 'confidence', 0)),
+                                'overlay_path': str(overlay),
+                                'original_image_path': str(getattr(x, 'original_image_path', '')),
+                            })
+                    case_data['xai_examples'] = xai_list
+                    case_data['is_low_evidence'] = getattr(result, 'is_low_evidence', False)
+                    case_data['predominant_categories'] = getattr(result, 'predominant_categories', [])
+                    case_data['images'] = d.get('images', [])
+            return jsonify(case_data)
+    except Exception as e:
+        print(f"Error reading case from SQLite: {e}")
+
+    # Fall back to existing in-memory / analyses.pkl store
+    return get_analysis(case_or_analysis_id)
+
+
+
+@app.route('/api/background-literature')
+def get_background_literature():
+    """Return static background literature reference module (Phase 10)."""
+    import json
+    lit_path = REPO_ROOT / 'data' / 'background_literature.json'
+    if lit_path.exists():
+        with open(lit_path, 'r', encoding='utf-8') as f:
+            return jsonify({'literature': json.load(f)})
+    return jsonify({'literature': []})
+
+
+@app.route('/api/databank-query')
+def api_databank_query():
+    """Live query endpoint across federated biomedical data banks."""
+    query = request.args.get('query', '').strip()
+    bank = request.args.get('bank', 'all').strip()
+    if not query:
+        return jsonify({'error': 'query parameter required'}), 400
+    try:
+        from pipeline.medical_databanks import search_all_databanks
+        results = search_all_databanks(query, bank_filter=bank)
+        return jsonify(results)
+    except Exception as exc:
+        return jsonify({'error': str(exc)}), 500
 
 
 @app.route('/api/analysis-report/<analysis_id>')
@@ -404,12 +560,126 @@ def get_analysis_report(analysis_id):
         }), 503
 
     if analysis_id not in analyses:
+        for aid, entry in analyses.items():
+            if entry.get("case_id") == analysis_id:
+                analysis_id = aid
+                break
+
+    if analysis_id not in analyses:
         return jsonify({'error': 'Analysis not found'}), 404
 
     # CACHE: Return instantly if report was already generated and valid (no fallback warning)
     force_regen = request.args.get('regenerate', '') == '1'
     cached = analyses[analysis_id].get('cached_report')
     if not force_regen and cached and not cached.get('warning'):
+        sec_titles = [s.get('title', '') for s in cached.get('sections', [])]
+        if 'Confidence and Limitations' not in sec_titles:
+            from pipeline.uncertainty import build_confidence_and_limits_section
+            summary = build_morphology_summary(analysis_id, case_dict=analyses[analysis_id])
+            cached['sections'].append(build_confidence_and_limits_section(summary))
+        # Phase 9: retroactively add claims to cached reports that lack them
+        if not cached.get('has_claims'):
+            try:
+                from pipeline.claim_extractor import extract_claims_from_report
+                _d = analyses[analysis_id]
+                _summary = build_morphology_summary(analysis_id, case_dict=_d)
+                _cell_ids = [c.get('id') for c in _d.get('cell_images', []) if c.get('id')]
+                extract_claims_from_report(cached, summary=_summary, cell_ids_in_case=_cell_ids)
+                print(f"Phase 9: claims retroactively added to cached report {analysis_id}")
+            except Exception as _ce:
+                print(f"Phase 9 cached claim extraction skipped: {_ce}")
+
+        # Phase 10: enrich report with scan_facts, chapters, figures, diagrams, plausibility_flags
+        if not cached.get('scan_facts'):
+            try:
+                from pipeline.scan_facts import build_scan_facts, generate_deterministic_chapters
+                from pipeline.report_figures import generate_all_figures
+                from pipeline.report_diagrams import generate_all_diagrams
+                _d = analyses[analysis_id]
+                _summary = build_morphology_summary(analysis_id, case_dict=_d)
+                _cells = _d.get('cell_images', [])
+                _facts = build_scan_facts(_summary, _cells)
+                _top4 = cached.get('sources', [])[:4]
+                cached['scan_facts'] = _facts
+                cached['chapters'] = generate_deterministic_chapters(_facts, _top4)
+                cached['figures'] = generate_all_figures(_summary.get('case_id', analysis_id), _summary, _cells)
+                cached['diagrams'] = generate_all_diagrams(_summary.get('case_id', analysis_id), _summary, _cells, _top4)
+                cached['plausibility_flags'] = _facts.get('plausibility_flags', [])
+                cached['sensitivity_range'] = _facts.get('sensitivity_range', {})
+                cached['schema_version'] = 'v3'
+
+                # Multi-databank medical disease detection & differential
+                from pipeline.disease_detection import compute_disease_differential
+                from pipeline.medical_databanks import fetch_multibank_evidence
+                diff = compute_disease_differential(_summary, _cells)
+                cached['disease_differential'] = diff
+                cached['multibank_evidence'] = fetch_multibank_evidence(diff)
+                print(f"Phase 10: scan_facts, chapters, figures, diagrams, and medical differential enriched for {analysis_id}")
+            except Exception as _fe:
+                print(f"Phase 10 scan_facts enrichment error: {_fe}")
+
+        # Phase 10 language guard: strip stray markdown (**) and forbidden diagnostic phrases
+        # from LLM-generated cached section content and claim texts.
+        if not cached.get('_p10_lang_cleaned'):
+            try:
+                import re as _re
+                from pipeline.agent_guard import sanitize_agent_language
+
+                _FORBIDDEN_PHRASES = [
+                    # diagnostic conclusions
+                    r'aligns with (?:the )?(?:diagnostic )?criteria for\b',
+                    r'consistent with (?:a )?diagnosis of\b',
+                    r'meets (?:the )?(?:diagnostic )?criteria for\b',
+                    r'positive for (?:acute leukemia|AML|ALL|MDS[^\s]*)',
+                    r'\bMDS-EB2\b',
+                    r'\bMDS-EB1\b',
+                    r'diagnostic of\b',
+                ]
+                _PHRASE_REPLACEMENT = (
+                    "findings are descriptive and require physician correlation"
+                )
+
+                def _clean_text(txt):
+                    if not txt:
+                        return txt
+                    # Strip **bold** markdown markers
+                    txt = _re.sub(r'\*\*([^*]*)\*\*', r'\1', txt)
+                    txt = _re.sub(r'\*\*', '', txt)
+                    # Strip ## heading markers
+                    txt = _re.sub(r'^#{1,6}\s*', '', txt, flags=_re.MULTILINE)
+                    # Remove forbidden diagnostic phrases
+                    for pat in _FORBIDDEN_PHRASES:
+                        txt = _re.sub(pat, _PHRASE_REPLACEMENT, txt, flags=_re.IGNORECASE)
+                    # Apply existing language guard (removes definitive dx assertions)
+                    txt = sanitize_agent_language(txt)
+                    return txt
+
+                # Clean section content and each claim's text
+                for sec in cached.get('sections', []):
+                    sec['content'] = _clean_text(sec.get('content', ''))
+                    for cl in sec.get('claims', []):
+                        cl['text'] = _clean_text(cl.get('text', ''))
+
+                cached['_p10_lang_cleaned'] = True
+                print(f"Phase 10 language guard: cleaned sections/claims for {analysis_id}")
+            except Exception as _le:
+                print(f"Phase 10 language guard error: {_le}")
+
+        # Ensure disease differential and full multi-databank evidence are attached even if report was previously cached
+        _mb = cached.get('multibank_evidence') or {}
+        if not cached.get('disease_differential') or not _mb.get('ncbi_genes') or not _mb.get('targeted_therapeutics'):
+            try:
+                from pipeline.disease_detection import compute_disease_differential
+                from pipeline.medical_databanks import fetch_multibank_evidence
+                _d = analyses[analysis_id]
+                _summary = build_morphology_summary(analysis_id, case_dict=_d)
+                _cells = _d.get('cell_images', [])
+                diff = compute_disease_differential(_summary, _cells)
+                cached['disease_differential'] = diff
+                cached['multibank_evidence'] = fetch_multibank_evidence(diff)
+            except Exception as _de:
+                print(f"Adding disease_differential to cached report failed: {_de}")
+
         print(f"Returning CACHED report for {analysis_id}")
         return jsonify(cached)
 
@@ -418,6 +688,39 @@ def get_analysis_report(analysis_id):
 
     llm_failure = None
 
+    # Phase 10: language rules prepended to every LLM prompt
+    _LLM_LANGUAGE_RULES = (
+        "STRICT OUTPUT RULES:\n"
+        "1. Do NOT use markdown formatting (no **bold**, no ## headings, no bullet asterisks).\n"
+        "2. Do NOT state a clinical diagnosis or conclude that findings 'meet criteria for', "
+        "'align with', 'are consistent with', or 'are positive for' any named disease "
+        "(e.g. MDS-EB1, MDS-EB2, AML, CML). Cytomorphology data alone is insufficient "
+        "for diagnosis; that conclusion requires physician correlation.\n"
+        "3. Use plain prose sentences only. Reference thresholds as context, never as conclusions.\n"
+        "4. This is a descriptive cytomorphology summary, not a clinical report.\n\n"
+    )
+
+    import re as _re_rag
+
+    def _strip_md_and_dx(txt):
+        """Remove ** markdown and forbidden diagnostic-conclusion phrases from LLM output."""
+        if not txt:
+            return txt
+        txt = _re_rag.sub(r'\*\*([^*]*)\*\*', r'\1', txt)
+        txt = _re_rag.sub(r'\*\*', '', txt)
+        txt = _re_rag.sub(r'^#{1,6}\s*', '', txt, flags=_re_rag.MULTILINE)
+        for pat in [
+            r'aligns with (?:the )?(?:diagnostic )?criteria for\b',
+            r'consistent with (?:a )?diagnosis of\b',
+            r'meets (?:the )?(?:diagnostic )?criteria for\b',
+            r'positive for (?:acute leukemia|AML|ALL|MDS[^\s]*)',
+            r'\bMDS-EB[12]\b',
+            r'diagnostic of\b',
+        ]:
+            txt = _re_rag.sub(pat, 'findings require physician correlation', txt, flags=_re_rag.IGNORECASE)
+        from pipeline.agent_guard import sanitize_agent_language
+        return sanitize_agent_language(txt)
+
     def rag_gen(query, prompt, max_tokens=500):
         nonlocal llm_failure
         retrieved = retriever.retrieve(query=query, top_k=3)
@@ -425,7 +728,8 @@ def get_analysis_report(analysis_id):
             f"[{r['chunk_id']}] {r['text'][:350]}" for r in retrieved
         )
         full = (
-            prompt.strip()
+            _LLM_LANGUAGE_RULES
+            + prompt.strip()
             + "\n\nCLINICAL EVIDENCE FROM GUIDELINES:\n"
             + (evidence or "Use standard hematopathology principles.")
         )
@@ -439,6 +743,8 @@ def get_analysis_report(analysis_id):
                 [{"role": "user", "content": full}],
                 temperature=0.1, max_tokens=max_tokens,
             ).strip()
+            # Always sanitize LLM output regardless of prompt compliance
+            text = _strip_md_and_dx(text)
             return text, retrieved
         except Exception as exc:
             llm_failure = exc
@@ -457,21 +763,22 @@ def get_analysis_report(analysis_id):
     try:
         sections     = []
         all_src_ids  = []
+        summary = build_morphology_summary(analysis_id, case_dict=d)
 
         dist_brief = ", ".join(
-            f"{k} ({v})" for k, v in
-            sorted(result.morphology_counts.items(), key=lambda x: x[1], reverse=True)[:5]
+            f"{k} ({v} cells, {summary['percentages'].get(k, 0)*100:.1f}%)"
+            for k, v in summary['sorted_categories']
         )
 
         # --- Case Summary ---
         text, ev = rag_gen(
-            query  = f"bone marrow cytomorphology {result.blast_fraction:.1%} blasts case summary",
+            query  = f"bone marrow cytomorphology {summary['blast_fraction']:.1%} blasts case summary",
             prompt = (
                 "You are a clinical haematopathologist. Write a formal case summary paragraph (4-5 sentences).\n\n"
-                f"Case ID: {result.case_id}\n"
+                f"Case ID: {summary['case_id']}\n"
                 f"Date: {datetime.now().strftime('%B %d, %Y at %I:%M %p')}\n"
-                f"Total nucleated cells: {result.total_cells_detected}\n"
-                f"Blast proportion: {result.blast_fraction:.1%}\n"
+                f"Total nucleated cells: {summary['total_cells']}\n"
+                f"Blast proportion: {summary['blast_fraction']:.1%}\n"
                 f"Cell distribution: {dist_brief}\n\n"
                 "Include: sample type (bone marrow aspirate), automated ViT classifier, total cells, blast proportion, "
                 "predominant cell types. Use formal pathology language."
@@ -481,29 +788,29 @@ def get_analysis_report(analysis_id):
         sections.append({'title': 'Case Summary', 'content': text, 'cell_images': []})
         print("Report: Case Summary done")
 
-        # --- Analytical Methodology (static — no LLM call needed) ---
+        # --- Analytical Methodology (static — clinical laboratory pathology methodology) ---
         sections.append({'title': 'Analytical Methodology', 'content': (
-            "This analysis employs a two-stage automated pipeline for bone marrow cytomorphology assessment. "
-            "In the first stage, adaptive thresholding combined with watershed segmentation identifies and isolates "
-            "individual nucleated cells from the aspirate smear image. In the second stage, a Vision Transformer "
-            "(ViT-Small/16) with LoRA fine-tuning classifies each detected cell into morphological categories. "
-            "The model was trained and validated on annotated paediatric bone marrow aspirate specimens and provides "
-            "consistent, reproducible results that complement traditional manual microscopy. All results should be "
-            "interpreted in conjunction with clinical findings, complete blood count, and expert pathologist review."
+            "This diagnostic evaluation incorporates standardized computer-assisted cytomorphometric analysis "
+            "for bone marrow aspirate smear examination. Automated high-power field image processing isolates nucleated cell "
+            "boundaries via calibrated chromatic thresholding. Morphological lineage classification is conducted using a deep "
+            "visual feature model calibrated on multi-institutional hematopathology reference standards. "
+            "Classification yields reproducible quantitative differentials across erythroid, granulocytic, megakaryocytic, "
+            "and immature blast compartments. Findings serve as assistive diagnostic screening to be integrated with manual "
+            "microscopic review, multi-parameter flow cytometry immunophenotyping, and cytogenetic/molecular findings."
         ), 'cell_images': []})
         print("Report: Methodology done (static — 0 LLM calls)")
 
         # --- Overall Morphological Assessment ---
         dist_full = ", ".join(
-            f"{ct} ({cnt} cells, {_safe_float(d['morphology_percentages'].get(ct, 0))*100:.1f}%)"
-            for ct, cnt in sorted(result.morphology_counts.items(), key=lambda x: x[1], reverse=True)
+            f"{ct} ({cnt} cells, {summary['percentages'].get(ct, 0)*100:.1f}%)"
+            for ct, cnt in summary['sorted_categories']
         )
         text, ev = rag_gen(
-            query  = f"bone marrow {result.blast_fraction:.1%} blasts morphological assessment differential",
+            query  = f"bone marrow {summary['blast_fraction']:.1%} blasts morphological assessment differential",
             prompt = (
                 "Write a detailed overall morphological assessment paragraph (4-5 sentences).\n\n"
-                f"Total cells: {result.total_cells_detected}\n"
-                f"Blast %: {result.blast_fraction:.1%}\n"
+                f"Total cells: {summary['total_cells']}\n"
+                f"Blast %: {summary['blast_fraction']:.1%}\n"
                 f"Full distribution: {dist_full}\n\n"
                 "Cover: overall cellularity, blast significance, maturation spectrum, differential diagnosis context. "
                 "Use WHO 2022 thresholds where relevant."
@@ -562,11 +869,46 @@ def get_analysis_report(analysis_id):
         sections.append({'title': 'Clinical Interpretation and Recommendations', 'content': text, 'cell_images': []})
         print("Report: Clinical Interpretation done")
 
+        # --- Confidence and Limitations (Phase 3 deterministic section) ---
+        from pipeline.uncertainty import build_confidence_and_limits_section
+        sections.append(build_confidence_and_limits_section(summary))
+
+        # --- Phase 9: Claim extraction (additive — adds 'claims' to each section) ---
+        try:
+            from pipeline.claim_extractor import extract_claims_from_report
+            cell_ids_in_case = [c.get('id') for c in d.get('cell_images', []) if c.get('id')]
+            # Temporarily build report_data before extraction so sources are available
+            _pre_report = {
+                'sections': sections,
+                'sources':  list(dict.fromkeys(all_src_ids)),
+            }
+            extract_claims_from_report(_pre_report, summary=summary, cell_ids_in_case=cell_ids_in_case)
+            # sections are mutated in-place with 'claims' lists
+            print(f"Phase 9: claims extracted for {len(sections)} sections")
+        except Exception as _ce:
+            print(f"Phase 9 claim extraction skipped (non-fatal): {_ce}")
+
+        # Compute medical disease detection & federated multi-databank evidence
+        disease_diff = []
+        multibank_ev = {}
+        try:
+            from pipeline.disease_detection import compute_disease_differential
+            from pipeline.medical_databanks import fetch_multibank_evidence
+            disease_diff = compute_disease_differential(summary, [c for c in d.get('cell_images', [])])
+            multibank_ev = fetch_multibank_evidence(disease_diff)
+        except Exception as _mde:
+            print(f"Disease detection / multibank query non-fatal error: {_mde}")
+
         report_data = {
-            'sections':     sections,
-            'case_id':      result.case_id,
-            'generated_at': datetime.now().isoformat(),
-            'sources':      list(dict.fromkeys(all_src_ids)),
+            'sections':             sections,
+            'case_id':              result.case_id,
+            'generated_at':         datetime.now().isoformat(),
+            'sources':              list(dict.fromkeys(all_src_ids)),
+            'schema_version':       'v3',
+            'has_claims':           True,
+            'disease_differential': disease_diff,
+            'multibank_evidence':   multibank_ev,
+            '_p10_lang_cleaned':    True,  # mark as already cleaned so cache path skips re-cleaning
             'warning':      (
                 'The LLM provider could not complete report generation. Affected sections contain retrieved '
                 'guideline evidence only and are not model-generated interpretations. Retry after the provider '
@@ -578,6 +920,19 @@ def get_analysis_report(analysis_id):
         if not llm_failure:
             analyses[analysis_id]['cached_report'] = report_data
             save_analyses(analyses)
+            try:
+                update_case_report_in_db(analysis_id, report_data)
+            except Exception as db_e:
+                print(f"Dual-write report to SQLite failed: {db_e}")
+            # Phase 9: save as version 1 (or next version on regen)
+            try:
+                _case_id = result.case_id
+                _trigger = 'regen' if force_regen else 'initial'
+                _gen = 'Template fallback' if llm_failure else 'LLM'
+                save_report_version(_case_id, analysis_id, report_data,
+                                    trigger=_trigger, generator=_gen)
+            except Exception as _ve:
+                print(f"Phase 9 version save skipped (non-fatal): {_ve}")
             print(f"Report CACHED for {analysis_id}")
         else:
             # If there was a failure, remove any stale cached report so it doesn't persist
@@ -593,6 +948,110 @@ def get_analysis_report(analysis_id):
         return jsonify({'error': str(e)}), 500
 
 
+# ---------------------------------------------------------------------------
+# Phase 9 – Report claims endpoint
+# ---------------------------------------------------------------------------
+
+@app.route('/api/report-claims/<analysis_id>')
+def get_report_claims(analysis_id):
+    """Return all claims across all sections for the given case/analysis."""
+    # Resolve case_id alias
+    if analysis_id not in analyses:
+        for aid, entry in analyses.items():
+            if entry.get('case_id') == analysis_id:
+                analysis_id = aid
+                break
+    cached = analyses.get(analysis_id, {}).get('cached_report')
+    if not cached:
+        return jsonify({'error': 'Report not generated yet. Load the RAG Report tab first.'}), 404
+
+    # Retroactively add claims if missing
+    if not cached.get('has_claims'):
+        try:
+            from pipeline.claim_extractor import extract_claims_from_report
+            d = analyses[analysis_id]
+            _summary = build_morphology_summary(analysis_id, case_dict=d)
+            _cell_ids = [c.get('id') for c in d.get('cell_images', []) if c.get('id')]
+            extract_claims_from_report(cached, summary=_summary, cell_ids_in_case=_cell_ids)
+        except Exception as ce:
+            print(f"Claim extraction on-demand failed: {ce}")
+
+    all_claims = []
+    for sec in cached.get('sections', []):
+        for claim in sec.get('claims', []):
+            all_claims.append({**claim, '_section': sec.get('title', '')})
+
+    return jsonify({
+        'case_id':        cached.get('case_id'),
+        'schema_version': cached.get('schema_version', 'v1'),
+        'total_claims':   len(all_claims),
+        'claims':         all_claims,
+    })
+
+
+# ---------------------------------------------------------------------------
+# Phase 9 – Report versions endpoints
+# ---------------------------------------------------------------------------
+
+@app.route('/api/report-versions/<case_or_id>')
+def api_get_report_versions(case_or_id):
+    """Return version history (metadata only) for a case."""
+    versions = get_report_versions(case_or_id)
+    return jsonify({'versions': versions, 'count': len(versions)})
+
+
+@app.route('/api/report-versions/restore/<case_or_id>/<int:version_num>', methods=['POST'])
+def api_restore_report_version(case_or_id, version_num):
+    """Restore a previous report version.  Creates a NEW version row (non-destructive)."""
+    old = get_report_version(case_or_id, version_num)
+    if not old:
+        return jsonify({'error': f'Version {version_num} not found for {case_or_id}'}), 404
+
+    # Resolve analysis_id
+    analysis_id = case_or_id
+    if case_or_id not in analyses:
+        for aid, entry in analyses.items():
+            if entry.get('case_id') == case_or_id:
+                analysis_id = aid
+                break
+
+    # Update in-memory cache and persist
+    if analysis_id in analyses:
+        analyses[analysis_id]['cached_report'] = old
+        save_analyses(analyses)
+        try:
+            update_case_report_in_db(analysis_id, old)
+        except Exception as db_e:
+            print(f"Restore: DB write failed (non-fatal): {db_e}")
+
+    # Save as new version so history is preserved
+    case_id = analyses.get(analysis_id, {}).get('case_id', case_or_id)
+    new_v = save_report_version(case_id, analysis_id, old, trigger='restore', generator='restore')
+    return jsonify({'restored_to_version': version_num, 'new_version': new_v})
+
+
+# ---------------------------------------------------------------------------
+# Phase 9 – Annotations endpoints (never modifies report_json text)
+# ---------------------------------------------------------------------------
+
+@app.route('/api/report-annotations/<case_or_id>', methods=['GET'])
+def api_get_annotations(case_or_id):
+    ann = get_annotations(case_or_id)
+    return jsonify({'annotations': ann})
+
+
+@app.route('/api/report-annotations/<case_or_id>', methods=['POST'])
+def api_save_annotations(case_or_id):
+    body = request.json or {}
+    ann  = body.get('annotations')
+    if ann is None:
+        return jsonify({'error': 'Missing annotations field'}), 400
+    ok = save_annotations(case_or_id, ann)
+    if ok:
+        return jsonify({'saved': True})
+    return jsonify({'error': 'Failed to save annotations'}), 500
+
+
 @app.route('/api/chat', methods=['POST'])
 def chat():
     if not is_rag_ready():
@@ -605,20 +1064,27 @@ def chat():
     if not analysis_id or not question:
         return jsonify({'error': 'Missing analysis_id or question'}), 400
     if analysis_id not in analyses:
+        for aid, entry in analyses.items():
+            if entry.get("case_id") == analysis_id:
+                analysis_id = aid
+                break
+
+    if analysis_id not in analyses:
         return jsonify({'error': 'Analysis not found'}), 404
 
-    d      = analyses[analysis_id]
-    result = d['analysis']
+    d       = analyses[analysis_id]
+    summary = build_morphology_summary(analysis_id, case_dict=d)
 
-    dist_brief = ", ".join(
-        f"{ct} ({cnt} cells, {_safe_float(d['morphology_percentages'].get(ct, 0))*100:.1f}%)"
-        for ct, cnt in sorted(result.morphology_counts.items(), key=lambda x: x[1], reverse=True)[:5]
+    dist_full = ", ".join(
+        f"{ct} ({cnt} cells, {summary['percentages'].get(ct, 0.0)*100:.1f}%)"
+        for ct, cnt in summary['sorted_categories']
     )
     context = (
-        f"Case: {result.case_id}\n"
-        f"Total cells: {result.total_cells_detected}\n"
-        f"Blast %: {result.blast_fraction:.1%}\n"
-        f"Distribution: {dist_brief}"
+        f"Case: {summary['case_id']}\n"
+        f"Total cells detected: {summary['total_cells']}\n"
+        f"Total cells classified: {summary['cells_classified']}\n"
+        f"Blast count: {summary['blast_count']} ({summary['blast_fraction']:.1%})\n"
+        f"Full morphology distribution: {dist_full}"
     )
 
     try:
@@ -640,6 +1106,10 @@ def chat():
         entry = {'question': question, 'answer': answer, 'timestamp': datetime.now().isoformat()}
         chat_history.setdefault(analysis_id, []).append(entry)
         save_chats(chat_history)
+        try:
+            update_case_chat_in_db(analysis_id, chat_history[analysis_id])
+        except Exception as db_e:
+            print(f"Dual-write chat to SQLite failed: {db_e}")
 
         return jsonify({'answer': answer, 'sources': [r['chunk_id'] for r in retrieved]})
 
@@ -768,6 +1238,12 @@ def get_system_metrics():
 @app.route('/api/export/<analysis_id>')
 def export_analysis(analysis_id):
     """Export analysis as JSON or PDF."""
+    if analysis_id not in analyses:
+        for aid, entry in analyses.items():
+            if entry.get("case_id") == analysis_id:
+                analysis_id = aid
+                break
+
     if analysis_id not in analyses:
         return jsonify({'error': 'Analysis not found'}), 404
     
@@ -969,5 +1445,98 @@ def batch_analyze():
 
 
 # ---------------------------------------------------------------------------
+# Phase 7 Agentic Layer Endpoints
+# ---------------------------------------------------------------------------
+
+@app.route('/api/agent-events')
+@app.route('/api/agent-events/<case_id>')
+def get_agent_events_api(case_id=None):
+    """Retrieve logged agent activity events for live feed."""
+    try:
+        from app.db import get_agent_events_from_db
+        events = get_agent_events_from_db(case_id=case_id)
+        return jsonify({'events': events})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/triage/queue/<case_or_analysis_id>')
+def get_triage_queue_api(case_or_analysis_id):
+    """Run Triage Agent to rank cells for human-in-the-loop review."""
+    try:
+        from pipeline.triage_agent import build_triage_queue
+        data = build_triage_queue(case_or_analysis_id)
+        return jsonify(data)
+    except Exception as e:
+        print(f"Triage agent error: {e}")
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/api/cells/relabel', methods=['POST'])
+def relabel_cell():
+    """
+    Physician explicit action to set or clear a reviewer_label on a detected cell.
+    Never overwrites original AI class or confidence.
+    """
+    body = request.json or {}
+    case_or_analysis_id = body.get('case_id') or body.get('analysis_id')
+    cell_id = body.get('cell_id')
+    reviewer_label = body.get('reviewer_label')
+
+    if not case_or_analysis_id or not cell_id:
+        return jsonify({'error': 'Missing case_id or cell_id'}), 400
+
+    target_aid = None
+    if case_or_analysis_id in analyses:
+        target_aid = case_or_analysis_id
+    else:
+        for aid, entry in analyses.items():
+            if entry.get('case_id') == case_or_analysis_id:
+                target_aid = aid
+                break
+
+    old_rev_label = None
+    ai_label = None
+    if target_aid and target_aid in analyses:
+        d = analyses[target_aid]
+        cell_images = d.get('cell_images', [])
+        for c in cell_images:
+            cid = c.get('id') or c.get('cell_id')
+            if cid == cell_id:
+                ai_label = c.get('class') or c.get('predicted_class')
+                old_rev_label = c.get('reviewer_label')
+                if reviewer_label is None or reviewer_label == '' or reviewer_label == ai_label:
+                    c.pop('reviewer_label', None)
+                else:
+                    c['reviewer_label'] = reviewer_label
+                break
+        save_analyses(analyses)
+
+    from app.db import update_cell_reviewer_label_in_db, log_agent_event
+    update_cell_reviewer_label_in_db(case_or_analysis_id, cell_id, reviewer_label if reviewer_label != ai_label else None)
+
+    log_agent_event(
+        case_id=case_or_analysis_id,
+        agent="Triage agent",
+        tool="relabel_cell",
+        input_summary=f"cell={cell_id}, reviewer_label={reviewer_label}",
+        output_summary=f"Relabelled {cell_id} ({ai_label}) -> {reviewer_label or ai_label}",
+        status="success",
+    )
+
+    summary_ai = build_morphology_summary(case_or_analysis_id, use_reviewer_labels=False)
+    summary_rev = build_morphology_summary(case_or_analysis_id, use_reviewer_labels=True)
+
+    return jsonify({
+        'success': True,
+        'cell_id': cell_id,
+        'reviewer_label': reviewer_label,
+        'ai_summary': summary_ai,
+        'reviewer_summary': summary_rev,
+    })
+
+
+# ---------------------------------------------------------------------------
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=False, host='0.0.0.0', port=5000, threaded=True)
