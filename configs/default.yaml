@@ -79,12 +79,12 @@ retrieval:
 
 # ── LLM ──────────────────────────────────────────────────────────────────────
 llm:
-  provider: groq                      # "groq" | "gemini" | "openai" | "local"
-  model: qwen/qwen3.8-27b             # Available model on this Groq account
+  provider: gemini                    # "groq" | "gemini" | "openai" | "local"
+  model: gemini-3.1-flash-lite        # High quota, fast, reliable on Google AI Studio
   max_tokens: 8192                    
   temperature: 0.1
-  # Gemini settings (for when provider=gemini with valid AIza key)
-  gemini_model: gemini-1.5-flash
+  # Gemini settings
+  gemini_model: gemini-3.1-flash-lite
   gemini_max_tokens: 8192
   # Legacy local model settings
   local_model: mistralai/Mistral-7B-Instruct-v0.3

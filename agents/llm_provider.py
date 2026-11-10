@@ -43,8 +43,12 @@ class LLMProvider:
         self.config = config
         self.llm_config = config.get("llm", {})
         self.provider = self.llm_config.get("provider", "groq")
-        self.model_name = self.llm_config.get("model", "llama-3.3-70b-versatile")
-        self.max_tokens = self.llm_config.get("max_tokens", 2048)
+        if self.provider == "gemini":
+            self.model_name = self.llm_config.get("gemini_model") or self.llm_config.get("model", "gemini-1.5-flash")
+            self.max_tokens = self.llm_config.get("gemini_max_tokens", self.llm_config.get("max_tokens", 8192))
+        else:
+            self.model_name = self.llm_config.get("model", "llama-3.3-70b-versatile")
+            self.max_tokens = self.llm_config.get("max_tokens", 2048)
         self.temperature = self.llm_config.get("temperature", 0.1)
         self._use_new_genai = False  # Flag for Gemini API version
 
@@ -84,7 +88,12 @@ class LLMProvider:
         logger.info(f"Groq LLM initialized with model: {self.model_name}")
 
     def _initialize_gemini(self):
-        """Initialize Google Gemini client."""
+        """Initialize Google Gemini client.
+
+        Supports two credential formats:
+          - Standard API key (starts with 'AIzaSy'): passed as api_key param
+          - OAuth2 access token (starts with 'AQ.'): passed as Bearer credentials
+        """
         try:
             # Try new package first
             try:
@@ -99,22 +108,46 @@ class LLMProvider:
                 "Google Generative AI library not installed. Install with: pip install google-generativeai"
             )
 
-        api_key = os.getenv("GOOGLE_API_KEY")
+        api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
         if not api_key:
             raise ValueError(
-                "GOOGLE_API_KEY not found in environment. "
-                "Get your API key at https://makersuite.google.com/app/apikey and add it to .env"
+                "GEMINI_API_KEY or GOOGLE_API_KEY not found in environment. "
+                "Get your API key at https://aistudio.google.com/app/apikey and add it to .env"
             )
 
+        # Detect if this is an OAuth2 access token (AQ. prefix) vs a standard API key
+        is_oauth_token = not api_key.startswith("AIzaSy")
+
         if self._use_new_genai:
-            # New API
-            self.client = genai.Client(api_key=api_key)
-            logger.info(f"Google Gemini LLM initialized (new API) with model: {self.model_name}")
+            if is_oauth_token:
+                # OAuth2 access token — wrap in google.oauth2.credentials.Credentials
+                try:
+                    from google.oauth2.credentials import Credentials as OAuthCredentials
+                    creds = OAuthCredentials(token=api_key)
+                    self.client = genai.Client(credentials=creds)
+                    logger.info(f"Google Gemini LLM initialized (new API, OAuth2 token) with model: {self.model_name}")
+                except ImportError:
+                    raise ImportError(
+                        "google-auth not installed. Install with: pip install google-auth"
+                    )
+            else:
+                self.client = genai.Client(api_key=api_key)
+                logger.info(f"Google Gemini LLM initialized (new API) with model: {self.model_name}")
         else:
-            # Old API
-            genai.configure(api_key=api_key)
+            if is_oauth_token:
+                try:
+                    from google.oauth2.credentials import Credentials as OAuthCredentials
+                    import google.auth.transport.requests
+                    creds = OAuthCredentials(token=api_key)
+                    genai.configure(credentials=creds)
+                except ImportError:
+                    raise ImportError(
+                        "google-auth not installed. Install with: pip install google-auth"
+                    )
+            else:
+                genai.configure(api_key=api_key)
             self.client = genai.GenerativeModel(self.model_name)
-            logger.info(f"Google Gemini LLM initialized (legacy API) with model: {self.model_name}")
+            logger.info(f"Google Gemini LLM initialized (legacy API, {'OAuth2' if is_oauth_token else 'API key'}) with model: {self.model_name}")
 
     def _initialize_openai(self):
         """Initialize OpenAI client."""
@@ -204,58 +237,106 @@ class LLMProvider:
                     raise
 
     def _generate_gemini(self, messages: list[dict[str, str]], **kwargs) -> str:
-        """Generate using Google Gemini API."""
-        max_tokens = kwargs.get("max_tokens", self.max_tokens)
+        """Generate using Google Gemini API with retry + model fallback on 503."""
+        max_tokens  = kwargs.get("max_tokens",  self.max_tokens)
         temperature = kwargs.get("temperature", self.temperature)
 
-        try:
-            # Convert messages to Gemini format
-            prompt_parts = []
-            system_instruction = None
-            
-            for msg in messages:
-                if msg["role"] == "system":
-                    system_instruction = msg["content"]
-                elif msg["role"] == "user":
-                    prompt_parts.append(msg["content"])
-                elif msg["role"] == "assistant":
-                    prompt_parts.append(f"Previous response: {msg['content']}")
-            
-            # Combine system instruction with user prompt if present
-            full_prompt = "\n\n".join(prompt_parts)
-            if system_instruction:
-                full_prompt = f"{system_instruction}\n\n{full_prompt}"
-            
-            # Generate with Gemini
-            if self._use_new_genai:
-                # New API (google-genai) - don't prepend "models/"
-                response = self.client.models.generate_content(
-                    model=self.model_name,
-                    contents=full_prompt,
-                    config={
-                        "temperature": temperature,
-                        "max_output_tokens": max_tokens,
-                    }
-                )
-                return response.text
-            else:
-                # Legacy API (google-generativeai)
-                generation_config = {
-                    "temperature": temperature,
-                    "max_output_tokens": max_tokens,
-                }
-                
-                response = self.client.generate_content(
-                    full_prompt,
-                    generation_config=generation_config
-                )
-                
-                return response.text
-        except Exception as e:
-            logger.error(f"Gemini generation failed: {e}")
-            import traceback
-            traceback.print_exc()
-            raise
+        # Convert messages to a single prompt string
+        prompt_parts       = []
+        system_instruction = None
+        for msg in messages:
+            if msg["role"] == "system":
+                system_instruction = msg["content"]
+            elif msg["role"] == "user":
+                prompt_parts.append(msg["content"])
+            elif msg["role"] == "assistant":
+                prompt_parts.append(f"Previous response: {msg['content']}")
+        full_prompt = "\n\n".join(prompt_parts)
+        if system_instruction:
+            full_prompt = f"{system_instruction}\n\n{full_prompt}"
+
+        # Ordered fallback model list — tried in sequence on 503 or 429
+        model_candidates = [
+            self.model_name,
+            "gemini-flash-lite-latest",
+            "gemini-3.1-flash-lite",
+            "gemini-2.5-flash-lite",
+            "gemini-3.5-flash",
+            "gemini-3.8-flash",
+        ]
+        # Preserve order while deduplicating
+        FALLBACK_MODELS = list(dict.fromkeys(m for m in model_candidates if m))
+
+        last_exc = None
+        for model_attempt, model in enumerate(FALLBACK_MODELS):
+            max_retries = 2
+            for attempt in range(max_retries):
+                try:
+                    if self._use_new_genai:
+                        response = self.client.models.generate_content(
+                            model=model,
+                            contents=full_prompt,
+                            config={
+                                "temperature": temperature,
+                                "max_output_tokens": max_tokens,
+                            }
+                        )
+                    else:
+                        generation_config = {
+                            "temperature": temperature,
+                            "max_output_tokens": max_tokens,
+                        }
+                        response = self.client.generate_content(
+                            full_prompt,
+                            generation_config=generation_config,
+                        )
+
+                    # Extract text safely
+                    text = getattr(response, "text", None)
+                    if not text and hasattr(response, "candidates") and response.candidates:
+                        c = response.candidates[0]
+                        if hasattr(c, "content") and hasattr(c.content, "parts"):
+                            text = "".join(getattr(p, "text", "") or "" for p in c.content.parts)
+                    final_text = (text or "").strip()
+
+                    # Success — persist the working model so future calls use it directly
+                    if model != self.model_name:
+                        logger.warning(f"Switched to working Gemini model: {model}")
+                        self.model_name = model
+                    return final_text
+
+                except Exception as e:
+                    last_exc = e
+                    err_str = str(e)
+                    is_transient = (
+                        "503" in err_str or "UNAVAILABLE" in err_str
+                        or "429" in err_str or "RESOURCE_EXHAUSTED" in err_str
+                        or "quota" in err_str.lower()
+                        or "high demand" in err_str.lower()
+                        or "overload" in err_str.lower()
+                    )
+                    if is_transient:
+                        if attempt < max_retries - 1:
+                            wait_sec = 1.5 ** attempt   # 1s, 1.5s
+                            logger.warning(
+                                f"Gemini {err_str[:60]}... on {model!r} (attempt {attempt+1}/{max_retries}). "
+                                f"Retrying in {wait_sec:.1f}s..."
+                            )
+                            time.sleep(wait_sec)
+                        else:
+                            logger.warning(
+                                f"Gemini exhausted retries on {model!r}. Trying next fallback model..."
+                            )
+                        continue  # next retry or next model
+                    else:
+                        # Non-transient error — try next model if available, else raise
+                        logger.warning(f"Gemini error on {model!r}: {e}. Trying fallback model...")
+                        break
+
+        # All models exhausted
+        logger.error(f"All Gemini models exhausted. Last error: {last_exc}")
+        raise last_exc
+
 
     def _generate_openai(self, messages: list[dict[str, str]], **kwargs) -> str:
         """Generate using OpenAI API."""

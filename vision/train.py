@@ -382,6 +382,39 @@ def run_training(config_override_path: Optional[str] = None) -> None:
 
     logger.info(f"\nTraining complete. Best val macro F1 = {best_macro_f1:.4f}")
     logger.info(f"Best checkpoint → {best_ckpt_path}")
+    
+    # ── Post-training calibration ─────────────────────────────────────────────
+    if cfg.training.get("run_calibration", True):
+        logger.info("\n" + "=" * 70)
+        logger.info("POST-TRAINING CALIBRATION")
+        logger.info("=" * 70)
+        
+        try:
+            from vision.calibration import calibrate_model
+            
+            # Load best model for calibration
+            best_model = BoneMarrowViT.load_checkpoint(best_ckpt_path, device=str(device))
+            best_model.eval()
+            
+            # Run calibration on validation set
+            calibration_dir = save_dir / "calibration"
+            temp_layer = calibrate_model(
+                model=best_model,
+                val_loader=val_loader,
+                device=device,
+                save_dir=calibration_dir,
+                n_bins=15,
+            )
+            
+            logger.info(f"\n✓ Calibration complete → {calibration_dir}")
+            logger.info(f"  Temperature: {temp_layer.get_temperature():.4f}")
+            logger.info("  Use CalibratedBoneMarrowViT for inference with calibrated probabilities")
+            
+        except ImportError as e:
+            logger.warning(f"Calibration skipped: {e}")
+        except Exception as e:
+            logger.error(f"Calibration failed: {e}")
+            logger.warning("Training completed successfully, but calibration failed. You can run calibration separately.")
 
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
@@ -392,5 +425,15 @@ if __name__ == "__main__":
         "--config", type=str, default=None,
         help="Path to YAML config override (e.g., configs/colab.yaml)."
     )
+    parser.add_argument(
+        "--skip-calibration", action="store_true",
+        help="Skip post-training calibration step"
+    )
     args = parser.parse_args()
+    
+    # Temporarily override config if skip_calibration flag is set
+    cfg = load_config(args.config)
+    if args.skip_calibration:
+        cfg.training["run_calibration"] = False
+    
     run_training(config_override_path=args.config)

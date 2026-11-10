@@ -1,0 +1,1751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔬 Bone Marrow AI — Clinical Cytomorphology Assistant</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --bg-hover: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        
+        .app { display: flex; height: 100vh; }
+        
+        /* ═══ Sidebar ═══ */
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .sidebar-header h1 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .sidebar-header p {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        .sidebar-nav {
+            flex: 1;
+            padding: 1rem 0;
+            overflow-y: auto;
+        }
+        
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .nav-section-title {
+            padding: 0.5rem 1rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .nav-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+        }
+        
+        .nav-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        
+        .nav-item.active {
+            background: rgba(59, 130, 246, 0.15);
+            border-left-color: var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .nav-item i {
+            width: 18px;
+            text-align: center;
+        }
+        
+        .badge {
+            margin-left: auto;
+            background: var(--primary);
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+        }
+        
+        /* ═══ Main Content ═══ */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .topbar {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .topbar h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .topbar-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        
+        .btn-secondary:hover {
+            background: #475569;
+        }
+        
+        .content-area {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+        
+        .content-main {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+        
+        .content-main::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .content-main::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+        
+        /* ═══ Cards ═══ */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s;
+        }
+        
+        .card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .card-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.25rem;
+            line-height: 1.6;
+        }
+        
+        /* ═══ Metrics Grid ═══ */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, var(--bg-card) 0%, #1e293b 100%);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.25rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+        
+        .metric-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .metric-change {
+            font-size: 0.75rem;
+            color: var(--secondary);
+            margin-top: 0.25rem;
+        }
+        
+        /* ═══ Upload Zone ═══ */
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(59, 130, 246, 0.05);
+        }
+        
+        .upload-zone:hover {
+            border-color: var(--primary);
+            background: rgba(59, 130, 246, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .upload-zone i {
+            font-size: 3.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            display: block;
+        }
+        
+        .upload-zone h3 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .upload-zone p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        /* ═══ Image Tabs ═══ */
+        .img-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .img-tab {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            margin-bottom: -2px;
+        }
+        
+        .img-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        
+        .img-tab:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        /* ═══ Loading ═══ */
+        .loading {
+            text-align: center;
+            padding: 4rem;
+        }
+        
+        .loading i {
+            font-size: 3rem;
+            color: var(--primary);
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ═══ Chat ═══ */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: var(--bg-main);
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+        
+        .msg-wrap {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        
+        .avatar.user {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+        }
+        
+        .avatar.assistant {
+            background: linear-gradient(135deg, #10b981, #14b8a6);
+            color: white;
+        }
+        
+        .msg-text {
+            flex: 1;
+            background: var(--bg-card);
+            padding: 1rem;
+            border-radius: 12px;
+            line-height: 1.7;
+            border: 1px solid var(--border);
+        }
+        
+        .chat-input-area {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+            background: var(--bg-card);
+        }
+        
+        .chat-input-row {
+            position: relative;
+        }
+        
+        .chat-input {
+            width: 100%;
+            padding: 1rem 3.5rem 1rem 1rem;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            resize: none;
+            font-family: inherit;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+        
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .send-btn {
+            position: absolute;
+            right: 0.75rem;
+            bottom: 0.75rem;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .send-btn:hover:not(:disabled) {
+            background: var(--primary-dark);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .send-btn:disabled {
+            background: var(--border);
+            cursor: not-allowed;
+        }
+        
+        /* ═══ Empty State ═══ */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+        
+        /* ═══ Status Badge ═══ */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-badge.success {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--secondary);
+        }
+        
+        .status-badge.warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+        
+        /* ═══ Improvement Badges ═══ */
+        .improvement-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        .improvement-badge {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
+            border: 1px solid var(--primary);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--primary);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        
+        .improvement-badge i {
+            font-size: 0.7rem;
+        }
+        
+        /* ═══ New Components Styles ═══ */
+        .metric-box {
+            padding: 1rem;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1.2;
+        }
+        
+        .metric-sublabel {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+        }
+        
+        .input {
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        .input:focus {
+            border-color: var(--primary) !important;
+        }
+        
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            background: var(--bg-main);
+            border-radius: 3px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+<div id="root">
+    <div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0f172a;color:#f1f5f9;font-family:sans-serif;flex-direction:column;gap:1rem;">
+        <i class="fas fa-spinner fa-spin" style="font-size:3rem;color:#3b82f6;"></i>
+        <div style="font-size:1.2rem;">Loading Bone Marrow AI...</div>
+        <div style="font-size:0.9rem;color:#94a3b8;">Initializing React components</div>
+    </div>
+</div>
+<script type="text/babel">
+// Error boundary to catch React errors
+window.onerror = function(msg, url, line, col, error) {
+    document.getElementById('root').innerHTML = '<div style="padding:2rem;background:#fee;color:#c00;font-family:monospace;"><h2>JavaScript Error</h2><p><strong>Message:</strong> ' + msg + '</p><p><strong>Line:</strong> ' + line + ':' + col + '</p><p><strong>Error:</strong> ' + (error ? error.stack : 'N/A') + '</p></div>';
+    return true;
+};
+
+console.log('Starting to load React components...');
+
+const { useState, useEffect, useRef } = React;
+
+console.log('React hooks loaded:', { useState, useEffect, useRef });
+
+/* ============================================ Helpers ============================================ */
+async function apiFetch(url, opts = {}) {
+    const res = await fetch(url, opts);
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(body.error || `HTTP ${res.status}`);
+    return body;
+}
+
+/* ═══════════════════════════════════════ App ═══════════════════════════════════════ */
+function App() {
+    const [tab, setTab] = useState('home');
+    const [analyses, setAnalyses] = useState([]);
+    const [selId, setSelId] = useState(null);
+    const [uploading, setUploading] = useState(false);
+
+    useEffect(() => { fetchList(); }, []);
+
+    async function fetchList() {
+        try {
+            const d = await apiFetch('/api/analyses');
+            const list = d.analyses || [];
+            setAnalyses(list);
+            if (list.length > 0 && !selId) setSelId(list[list.length - 1].id);
+        } catch {}
+    }
+
+    async function handleUpload(files) {
+        setUploading(true);
+        const fd = new FormData();
+        Array.from(files).forEach(f => fd.append('files', f));
+        try {
+            const d = await apiFetch('/api/upload', { method: 'POST', body: fd });
+            if (d.success) {
+                await fetchList();
+                setSelId(d.analysis_id);
+                setTab('results');
+            }
+        } catch (e) {
+            alert('Upload failed: ' + e.message);
+        } finally {
+            setUploading(false);
+        }
+    }
+
+    return (
+        <div className="app">
+            <Sidebar tab={tab} setTab={setTab} analyses={analyses} selId={selId} setSelId={setSelId} />
+            <div className="main-content">
+                <Topbar tab={tab} />
+                <div className="content-area">
+                    <div className="content-main">
+                        {tab === 'home' && <HomeTab onUpload={handleUpload} uploading={uploading} />}
+                        {tab === 'results' && <ResultsTab selId={selId} />}
+                        {tab === 'chat' && <ChatTab selId={selId} />}
+                        {tab === 'metrics' && <MetricsTab />}
+                        {tab === 'active-learning' && <ActiveLearningTab />}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+/* ============================================ Sidebar ============================================ */
+function Sidebar({ tab, setTab, analyses, selId, setSelId }) {
+    const sections = [
+        {
+            title: 'Main',
+            items: [
+                { id: 'home', icon: 'fa-home', label: 'Upload & Analyze' },
+                { id: 'results', icon: 'fa-chart-line', label: 'Results & XAI' },
+                { id: 'chat', icon: 'fa-comments', label: 'Ask Questions' },
+            ]
+        },
+        {
+            title: 'Advanced',
+            items: [
+                { id: 'metrics', icon: 'fa-tachometer-alt', label: 'System Metrics' },
+                { id: 'active-learning', icon: 'fa-graduation-cap', label: 'Active Learning', badge: 'NEW' },
+            ]
+        }
+    ];
+
+    return (
+        <div className="sidebar">
+            <div className="sidebar-header">
+                <h1><i className="fas fa-microscope"></i> BoneMarrow AI</h1>
+                <p>Clinical Cytomorphology Assistant</p>
+                <div className="improvement-badges" style={{marginTop:'0.75rem'}}>
+                    <div className="improvement-badge" title="Temperature Scaling Calibration">
+                        <i className="fas fa-check-circle"></i> Calibrated
+                    </div>
+                    <div className="improvement-badge" title="63-chunk RAG Knowledge Base">
+                        <i className="fas fa-check-circle"></i> RAG (63)
+                    </div>
+                    <div className="improvement-badge" title="Multi-Image Aggregation">
+                        <i className="fas fa-check-circle"></i> Multi-Image
+                    </div>
+                    <div className="improvement-badge" title="Quantitative XAI Metrics">
+                        <i className="fas fa-check-circle"></i> XAI
+                    </div>
+                </div>
+            </div>
+            <div className="sidebar-nav">
+                {sections.map(sec => (
+                    <div key={sec.title} className="nav-section">
+                        <div className="nav-section-title">{sec.title}</div>
+                        {sec.items.map(it => (
+                            <div
+                                key={it.id}
+                                className={`nav-item ${tab === it.id ? 'active' : ''}`}
+                                onClick={() => setTab(it.id)}
+                            >
+                                <i className={`fas ${it.icon}`}></i>
+                                {it.label}
+                                {it.badge && <span className="badge">{it.badge}</span>}
+                            </div>
+                        ))}
+                    </div>
+                ))}
+                
+                {/* Analysis History Section */}
+                {analyses.length > 0 && (
+                    <div className="nav-section">
+                        <div className="nav-section-title">
+                            Analysis History ({analyses.length})
+                        </div>
+                        <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                            {analyses.slice().reverse().map(a => (
+                                <div
+                                    key={a.id}
+                                    className={`nav-item ${selId === a.id ? 'active' : ''}`}
+                                    onClick={() => {
+                                        setSelId(a.id);
+                                        setTab('results');
+                                    }}
+                                    style={{ 
+                                        flexDirection: 'column', 
+                                        alignItems: 'flex-start',
+                                        padding: '0.75rem',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    <div style={{ 
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        gap: '0.5rem',
+                                        width: '100%',
+                                        marginBottom: '0.25rem'
+                                    }}>
+                                        <i className="fas fa-vial" style={{ fontSize: '0.9rem' }}></i>
+                                        <span style={{ 
+                                            fontWeight: '600', 
+                                            fontSize: '0.85rem',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap',
+                                            flex: '1'
+                                        }}>
+                                            {a.case_id}
+                                        </span>
+                                    </div>
+                                    <div style={{ 
+                                        fontSize: '0.7rem', 
+                                        color: 'var(--text-secondary)',
+                                        paddingLeft: '1.4rem'
+                                    }}>
+                                        {a.cells} cells · {(a.blasts * 100).toFixed(1)}% blasts
+                                    </div>
+                                    <div style={{ 
+                                        fontSize: '0.65rem', 
+                                        color: 'var(--text-secondary)',
+                                        paddingLeft: '1.4rem',
+                                        marginTop: '0.125rem'
+                                    }}>
+                                        {new Date(a.timestamp).toLocaleDateString()} {new Date(a.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+/* ═══════════════════════════════════════ Topbar ═══════════════════════════════════════ */
+function Topbar({ tab }) {
+    const titles = {
+        home: '🔬 Upload & Analyze Bone Marrow Images',
+        results: '📊 Analysis Results & Explainability',
+        chat: '💬 Ask Questions About Your Analysis',
+        metrics: '📈 Real-Time System Metrics',
+        'active-learning': '🎓 Active Learning — Expert Review Queue'
+    };
+    return (
+        <div className="topbar">
+            <h2>{titles[tab] || 'Bone Marrow AI'}</h2>
+            <div className="topbar-actions">
+                <span className="status-badge success">
+                    <i className="fas fa-check-circle"></i>
+                    System Ready
+                </span>
+            </div>
+        </div>
+    );
+}
+
+/* ═══════════════════════════════════════ HomeTab ═══════════════════════════════════════ */
+function HomeTab({ onUpload, uploading }) {
+    const fileRef = useRef();
+
+    function pick(e) {
+        const files = e.target.files;
+        if (files.length) onUpload(files);
+        e.target.value = '';
+    }
+
+    return (
+        <div>
+            <div className="card">
+                <h3 className="card-title">
+                    <i className="fas fa-cloud-upload-alt"></i>
+                    Upload Bone Marrow Images
+                </h3>
+                <p className="card-subtitle">
+                    Upload one or more bone marrow cytology images for AI-powered analysis. Our system will detect individual cells, classify morphology, and generate an evidence-based report using RAG (Retrieval-Augmented Generation) with WHO 2022 guidelines.
+                </p>
+                <label>
+                    <div className="upload-zone" onClick={() => !uploading && fileRef.current.click()}>
+                        <i className={uploading ? 'fas fa-spinner' : 'fas fa-cloud-upload-alt'}></i>
+                        <h3>{uploading ? 'Analyzing Images...' : 'Click to Upload Images'}</h3>
+                        <p>PNG, JPG, JPEG, TIFF · Multiple files supported</p>
+                    </div>
+                </label>
+                <input ref={fileRef} type="file" multiple accept=".png,.jpg,.jpeg,.tiff,.tif" onChange={pick} disabled={uploading} />
+            </div>
+
+            <div className="card">
+                <h3 className="card-title">
+                    <i className="fas fa-star"></i>
+                    Latest Improvements (November 2026)
+                </h3>
+                <p className="card-subtitle">
+                    7 of 8 literature-backed improvements implemented (87.5% complete):
+                </p>
+                <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(300px, 1fr))',gap:'1rem',marginTop:'1rem'}}>
+                    {[
+                        { title: 'Temperature Scaling Calibration', desc: 'Reliable confidence scores via post-hoc calibration', icon: 'fa-thermometer-half' },
+                        { title: 'Expanded RAG KB (63 chunks)', desc: '5x knowledge base coverage of WHO/ICC guidelines', icon: 'fa-book-medical' },
+                        { title: 'Multi-Image Aggregation', desc: 'Statistical uncertainty quantification across images', icon: 'fa-images' },
+                        { title: 'Quantitative XAI Metrics', desc: 'Objective GradCAM quality (Pointing Game, AUC)', icon: 'fa-chart-area' },
+                        { title: 'Self-Consistency Checking', desc: 'LLM hallucination detection via sampling', icon: 'fa-shield-alt' },
+                        { title: 'Retrieval Evaluation', desc: 'P@K, R@K, MRR, MAP, NDCG metrics', icon: 'fa-search' },
+                        { title: 'Active Learning Pipeline', desc: 'Uncertainty-based expert review prioritization', icon: 'fa-graduation-cap' },
+                    ].map(item => (
+                        <div key={item.title} style={{background:'var(--bg-card)',padding:'1rem',borderRadius:'8px',border:'1px solid var(--border)'}}>
+                            <h4 style={{display:'flex',alignItems:'center',gap:'0.5rem',marginBottom:'0.5rem',color:'var(--primary)'}}>
+                                <i className={`fas ${item.icon}`}></i>
+                                {item.title}
+                            </h4>
+                            <p style={{fontSize:'0.85rem',color:'var(--text-secondary)',lineHeight:'1.6'}}>
+                                {item.desc}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+/* ═══════════════════════════════════════ ResultsTab ═══════════════════════════════════════ */
+function ResultsTab({ selId }) {
+    const [analysis, setAnalysis] = useState(null);
+    const [imgView, setImgView] = useState('filtered');
+
+    useEffect(() => {
+        if (!selId) { setAnalysis(null); return; }
+        apiFetch(`/api/analysis/${selId}`).then(setAnalysis).catch(() => setAnalysis(null));
+    }, [selId]);
+
+    if (!analysis) {
+        return (
+            <div className="empty-state">
+                <i className="fas fa-inbox"></i>
+                <h3>No Analysis Selected</h3>
+                <p>Upload images from the Home tab to get started</p>
+            </div>
+        );
+    }
+
+    const imgKey = imgView === 'raw' ? 'raw' : imgView === 'contact' ? 'contact' : 'filtered';
+    const imgPath = analysis?.detection_images?.[imgKey];
+
+    return (
+        <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <div style={{ flex: '1' }}></div>
+                <button 
+                    className="btn btn-primary"
+                    onClick={() => window.open(`/api/export/${selId}?format=json`, '_blank')}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                >
+                    <i className="fas fa-download"></i>
+                    Export Analysis (JSON)
+                </button>
+            </div>
+            
+            <div className="metrics-grid">
+                {[
+                    { label: 'Images Processed', value: analysis.metrics?.images_processed ?? 0, icon: 'fa-images' },
+                    { label: 'Cells Detected', value: analysis.metrics?.cells_detected ?? 0, icon: 'fa-th' },
+                    { label: 'Cells Classified', value: analysis.metrics?.cells_classified ?? 0, icon: 'fa-microscope' },
+                    { label: 'Blast Fraction', value: ((analysis.metrics?.blast_fraction ?? 0) * 100).toFixed(1) + '%', icon: 'fa-percent' },
+                ].map(m => (
+                    <div key={m.label} className="metric-card">
+                        <div className="metric-label"><i className={`fas ${m.icon}`}></i> {m.label}</div>
+                        <div className="metric-value">{m.value}</div>
+                    </div>
+                ))}
+            </div>
+
+            <div className="card">
+                <h3 className="card-title">
+                    <i className="fas fa-eye"></i>
+                    Detection Visualization
+                </h3>
+                <div className="img-tabs">
+                    {[
+                        ['raw', 'Raw Candidates'],
+                        ['filtered', 'Filtered Detection'],
+                        ['contact', 'Contact Sheet']
+                    ].map(([k, lbl]) => (
+                        <button key={k} className={`img-tab ${imgView === k ? 'active' : ''}`} onClick={() => setImgView(k)}>
+                            {lbl}
+                        </button>
+                    ))}
+                </div>
+                {imgPath ? (
+                    <img
+                        src={`/api/image/${encodeURIComponent(imgPath)}`}
+                        alt={imgView}
+                        style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--border)' }}
+                        onError={e => e.target.style.display = 'none'}
+                    />
+                ) : (
+                    <div className="empty-state">
+                        <p>Image not available for this view</p>
+                    </div>
+                )}
+            </div>
+
+            {analysis.xai_examples && analysis.xai_examples.length > 0 && (
+                <div className="card">
+                    <h3 className="card-title">
+                        <i className="fas fa-brain"></i>
+                        Explainability (XAI) - Attention Rollout
+                    </h3>
+                    <p className="card-subtitle">
+                        Attention rollout visualization shows where the Vision Transformer model focused when classifying each cell. Warmer colors indicate higher attention.
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1rem' }}>
+                        {analysis.xai_examples.map((x, i) => (
+                            <div key={x.cell_id || i} style={{ background: 'var(--bg-main)', border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden' }}>
+                                <img
+                                    src={`/api/image/${encodeURIComponent(x.overlay_path)}`}
+                                    alt={x.cell_id}
+                                    style={{ width: '100%', display: 'block' }}
+                                    onError={e => e.target.style.display = 'none'}
+                                />
+                                <div style={{ padding: '0.75rem', fontSize: '0.8rem' }}>
+                                    <div style={{ color: 'var(--primary)', fontWeight: 700, marginBottom: '0.25rem' }}>{x.cell_id}</div>
+                                    <div style={{ color: 'var(--text-secondary)' }}>
+                                        <strong>{x.predicted_class}</strong> ({(x.confidence * 100).toFixed(1)}%)
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            <ReportSection selId={selId} />
+        </div>
+    );
+}
+
+/* ============================================ ReportSection ============================================ */
+function ReportSection({ selId }) {
+    const [report, setReport] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        if (!selId) {
+            setReport(null);
+            return;
+        }
+        loadReport();
+    }, [selId]);
+
+    async function loadReport(regenerate = false) {
+        setLoading(true);
+        setError(null);
+        try {
+            const url = `/api/analysis-report/${selId}${regenerate ? '?regenerate=1' : ''}`;
+            const data = await apiFetch(url);
+            setReport(data);
+        } catch (e) {
+            setError(e.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    if (!selId) return null;
+
+    return (
+        <div className="card">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <h3 className="card-title">
+                    <i className="fas fa-file-medical"></i>
+                    Clinical Report (RAG-Generated)
+                </h3>
+                <button 
+                    className="btn btn-primary"
+                    onClick={() => loadReport(true)}
+                    disabled={loading}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                >
+                    <i className={`fas ${loading ? 'fa-spinner fa-spin' : 'fa-sync'}`}></i>
+                    {loading ? 'Generating...' : 'Regenerate'}
+                </button>
+            </div>
+
+            {loading && !report && (
+                <div className="loading" style={{ padding: '2rem' }}>
+                    <i className="fas fa-spinner fa-spin"></i>
+                    <p>Generating clinical report with RAG system...</p>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
+                        Retrieving guidelines and synthesizing clinical interpretation...
+                    </p>
+                </div>
+            )}
+
+            {error && (
+                <div style={{ padding: '1rem', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid var(--danger)', borderRadius: '8px', color: 'var(--danger)' }}>
+                    <strong>Error generating report:</strong> {error}
+                </div>
+            )}
+
+            {report && (
+                <div>
+                    {report.warning && (
+                        <div style={{ padding: '1rem', background: 'rgba(245, 158, 11, 0.1)', border: '1px solid var(--warning)', borderRadius: '8px', color: 'var(--warning)', marginBottom: '1rem' }}>
+                            <i className="fas fa-exclamation-triangle"></i> <strong>Note:</strong> {report.warning}
+                        </div>
+                    )}
+
+                    <div style={{ marginBottom: '1rem', padding: '0.75rem', background: 'var(--bg-main)', borderRadius: '6px', border: '1px solid var(--border)' }}>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                            <strong>Case ID:</strong> {report.case_id} &nbsp;|&nbsp; 
+                            <strong>Generated:</strong> {new Date(report.generated_at).toLocaleString()} &nbsp;|&nbsp;
+                            <strong>Sources:</strong> {report.sources?.length || 0} guideline chunks
+                        </div>
+                    </div>
+
+                    {report.sections?.map((section, idx) => (
+                        <div key={idx} style={{ marginBottom: '2rem' }}>
+                            <h4 style={{ 
+                                color: 'var(--primary)', 
+                                fontSize: '1.1rem', 
+                                fontWeight: '600', 
+                                marginBottom: '0.75rem',
+                                borderBottom: '2px solid var(--border)',
+                                paddingBottom: '0.5rem'
+                            }}>
+                                {section.title}
+                            </h4>
+                            <div style={{ 
+                                fontSize: '0.95rem', 
+                                lineHeight: '1.7', 
+                                color: 'var(--text-primary)',
+                                whiteSpace: 'pre-wrap',
+                                marginBottom: '1rem'
+                            }}>
+                                {section.content}
+                            </div>
+
+                            {section.cell_images && section.cell_images.length > 0 && (
+                                <div style={{ 
+                                    display: 'grid', 
+                                    gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', 
+                                    gap: '0.75rem',
+                                    marginTop: '1rem'
+                                }}>
+                                    {section.cell_images.slice(0, 8).map((imgPath, i) => (
+                                        <div key={i} style={{ 
+                                            border: '1px solid var(--border)', 
+                                            borderRadius: '6px', 
+                                            overflow: 'hidden',
+                                            background: 'var(--bg-main)'
+                                        }}>
+                                            <img
+                                                src={`/api/image/${encodeURIComponent(imgPath)}`}
+                                                alt={`Cell ${i+1}`}
+                                                style={{ width: '100%', display: 'block' }}
+                                                onError={e => e.target.style.display = 'none'}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+
+                    <div style={{ 
+                        marginTop: '2rem', 
+                        padding: '1rem', 
+                        background: 'var(--bg-main)', 
+                        borderRadius: '8px',
+                        border: '1px solid var(--border)'
+                    }}>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+                            <strong>Evidence Sources ({report.sources?.length || 0}):</strong>
+                        </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                            {report.sources?.map((src, i) => (
+                                <span key={i} className="tag" style={{ fontSize: '0.75rem' }}>
+                                    {src}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+/* ============================================ ChatTab ============================================ */
+function ChatTab({ selId }) {
+    const [msgs, setMsgs] = useState([]);
+    const [input, setInput] = useState('');
+    const [loading, setLoading] = useState(false);
+    const endRef = useRef();
+
+    useEffect(() => {
+        endRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [msgs]);
+
+    useEffect(() => {
+        if (!selId) {
+            setMsgs([]);
+            return;
+        }
+        apiFetch(`/api/chat/${selId}`)
+            .then(d => setMsgs((d.history || []).map(h => ({ q: h.question, a: h.answer }))))
+            .catch(() => {});
+    }, [selId]);
+
+    async function send() {
+        if (!input.trim() || loading || !selId) return;
+        const q = input;
+        setInput('');
+        setMsgs(prev => [...prev, { q, a: null }]);
+        setLoading(true);
+        try {
+            const d = await apiFetch(`/api/chat/${selId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question: q })
+            });
+            setMsgs(prev => prev.map((m, i) => i === prev.length - 1 ? { ...m, a: d.answer } : m));
+        } catch (e) {
+            setMsgs(prev => prev.map((m, i) => i === prev.length - 1 ? { ...m, a: 'Error: ' + e.message } : m));
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    if (!selId) {
+        return (
+            <div className="empty-state">
+                <i className="fas fa-comments"></i>
+                <h3>No Analysis Selected</h3>
+                <p>Upload and analyze images first to start asking questions</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="chat-container">
+            <div className="chat-messages">
+                {msgs.length === 0 && (
+                    <div className="empty-state">
+                        <i className="fas fa-robot"></i>
+                        <h3>AI Assistant Ready</h3>
+                        <p>Ask questions about your bone marrow analysis</p>
+                        <div style={{ marginTop: '1rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                            <strong>Try asking:</strong>
+                            <ul style={{ listStyle: 'none', marginTop: '0.5rem' }}>
+                                <li>• What does this blast percentage suggest?</li>
+                                <li>• Are there any concerning morphological features?</li>
+                                <li>• What additional tests would you recommend?</li>
+                            </ul>
+                        </div>
+                    </div>
+                )}
+                {msgs.map((m, i) => (
+                    <div key={i}>
+                        <div className="msg-wrap">
+                            <div className="avatar user">U</div>
+                            <div className="msg-text">{m.q}</div>
+                        </div>
+                        {m.a && (
+                            <div className="msg-wrap">
+                                <div className="avatar assistant">AI</div>
+                                <div className="msg-text">{m.a}</div>
+                            </div>
+                        )}
+                        {!m.a && <div className="loading"><i className="fas fa-spinner"></i></div>}
+                    </div>
+                ))}
+                <div ref={endRef} />
+            </div>
+            <div className="chat-input-area">
+                <div className="chat-input-row">
+                    <textarea
+                        className="chat-input"
+                        value={input}
+                        onChange={e => setInput(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), send())}
+                        placeholder="Ask a question about the analysis..."
+                        rows={1}
+                        disabled={loading}
+                    />
+                    <button className="send-btn" onClick={send} disabled={loading || !input.trim()}>
+                        <i className="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+
+/* ═══════════════════════════════════════ MetricsTab ═══════════════════════════════════════ */
+function MetricsTab() {
+    const [metrics, setMetrics] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetchMetrics();
+        const interval = setInterval(fetchMetrics, 5000); // Refresh every 5s
+        return () => clearInterval(interval);
+    }, []);
+
+    async function fetchMetrics() {
+        try {
+            const d = await apiFetch('/api/system-metrics');
+            setMetrics(d);
+            setLoading(false);
+        } catch (e) {
+            console.error('Metrics fetch failed:', e);
+            setLoading(false);
+        }
+    }
+
+    if (loading) return <div className="loading"><i className="fas fa-spinner"></i> Loading metrics...</div>;
+    if (!metrics) return <div className="empty-state"><p>Failed to load system metrics</p></div>;
+
+    return (
+        <div style={{ display: 'grid', gap: '1.5rem' }}>
+            <div className="card">
+                <h3 className="card-title">
+                    <i className="fas fa-database"></i>
+                    Knowledge Base — Expanded RAG
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
+                    <div className="metric-box">
+                        <div className="metric-label">Total Chunks</div>
+                        <div className="metric-value">{metrics.knowledge_base.total_chunks}</div>
+                        <div className="metric-sublabel">WHO 2022 + ICC 2022</div>
+                    </div>
+                    <div className="metric-box">
+                        <div className="metric-label">Retrieval MRR</div>
+                        <div className="metric-value">{metrics.knowledge_base.retrieval_mrr.toFixed(3)}</div>
+                        <div className="metric-sublabel">Mean Reciprocal Rank</div>
+                    </div>
+                    <div className="metric-box">
+                        <div className="metric-label">Index Type</div>
+                        <div className="metric-value" style={{ fontSize: '1rem' }}>{metrics.knowledge_base.index_type}</div>
+                        <div className="metric-sublabel">Dense + Sparse</div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="card">
+                <h3 className="card-title">
+                    <i className="fas fa-balance-scale"></i>
+                    Temperature Scaling Calibration
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
+                    <div className="metric-box">
+                        <div className="metric-label">Status</div>
+                        <div className="metric-value" style={{ fontSize: '1.2rem', color: metrics.calibration.enabled ? 'var(--secondary)' : 'var(--warning)' }}>
+                            {metrics.calibration.enabled ? 'Active' : 'Inactive'}
+                        </div>
+                        <div className="metric-sublabel">{metrics.calibration.method}</div>
+                    </div>
+                    <div className="metric-box">
+                        <div className="metric-label">Pre-Cal ECE</div>
+                        <div className="metric-value">{(metrics.calibration.ece_improvement * 100).toFixed(2)}%</div>
+                        <div className="metric-sublabel">Expected Calibration Error</div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="card">
+                <h3 className="card-title">
+                    <i className="fas fa-brain"></i>
+                    Explainable AI (XAI) Metrics
+                </h3>
+                <div style={{ marginTop: '1rem' }}>
+                    <div className="metric-label">Available Quantitative Metrics:</div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginTop: '0.75rem' }}>
+                        {metrics.xai.metrics_available.map(m => (
+                            <span key={m} className="tag">{m}</span>
+                        ))}
+                    </div>
+                    <div style={{ marginTop: '1rem', padding: '1rem', background: 'var(--bg-main)', borderRadius: '8px', border: '1px solid var(--border)' }}>
+                        <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                            <strong>Visualization:</strong> {metrics.xai.visualization}
+                        </div>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
+                            Quantitative XAI metrics evaluate attention map quality using pointing game accuracy, deletion/insertion AUC, and more.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="card">
+                <h3 className="card-title">
+                    <i className="fas fa-check-double"></i>
+                    Self-Consistency Checking
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
+                    <div className="metric-box">
+                        <div className="metric-label">Status</div>
+                        <div className="metric-value" style={{ fontSize: '1.2rem', color: 'var(--secondary)' }}>Active</div>
+                        <div className="metric-sublabel">Enabled for all analyses</div>
+                    </div>
+                    <div className="metric-box">
+                        <div className="metric-label">Samples</div>
+                        <div className="metric-value">{metrics.self_consistency.num_samples}</div>
+                        <div className="metric-sublabel">Generated per query</div>
+                    </div>
+                    <div className="metric-box">
+                        <div className="metric-label">Temperature</div>
+                        <div className="metric-value">{metrics.self_consistency.temperature}</div>
+                        <div className="metric-sublabel">Sampling diversity</div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="card">
+                <h3 className="card-title">
+                    <i className="fas fa-graduation-cap"></i>
+                    Active Learning Pipeline
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
+                    <div className="metric-box">
+                        <div className="metric-label">Review Queue</div>
+                        <div className="metric-value">{metrics.active_learning.queue_size}</div>
+                        <div className="metric-sublabel">Samples awaiting review</div>
+                    </div>
+                    <div className="metric-box">
+                        <div className="metric-label">Uncertainty Threshold</div>
+                        <div className="metric-value">{metrics.active_learning.uncertainty_threshold}</div>
+                        <div className="metric-sublabel">Trigger for expert review</div>
+                    </div>
+                    <div className="metric-box">
+                        <div className="metric-label">Methods</div>
+                        <div className="metric-value" style={{ fontSize: '0.9rem' }}>{metrics.active_learning.methods.length}</div>
+                        <div className="metric-sublabel">Combined uncertainty metrics</div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="card">
+                <h3 className="card-title">
+                    <i className="fas fa-chart-pie"></i>
+                    Analysis Statistics
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
+                    <div className="metric-box">
+                        <div className="metric-label">Total Cases</div>
+                        <div className="metric-value">{metrics.analyses.total_cases}</div>
+                        <div className="metric-sublabel">Analyzed to date</div>
+                    </div>
+                    <div className="metric-box">
+                        <div className="metric-label">Total Cells</div>
+                        <div className="metric-value">{metrics.analyses.total_cells_classified.toLocaleString()}</div>
+                        <div className="metric-sublabel">Classified cells</div>
+                    </div>
+                    <div className="metric-box">
+                        <div className="metric-label">Avg Confidence</div>
+                        <div className="metric-value">{(metrics.analyses.avg_confidence * 100).toFixed(1)}%</div>
+                        <div className="metric-sublabel">Model certainty</div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="card" style={{ background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%)', border: '1px solid var(--primary)' }}>
+                <h3 className="card-title">
+                    <i className="fas fa-robot"></i>
+                    RAG System Status
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
+                    <div className="metric-box" style={{ background: 'var(--bg-card)' }}>
+                        <div className="metric-label">Status</div>
+                        <div className="metric-value" style={{ fontSize: '1.2rem', color: metrics.rag_status.available ? 'var(--secondary)' : 'var(--danger)' }}>
+                            {metrics.rag_status.available ? 'Online' : 'Offline'}
+                        </div>
+                        <div className="metric-sublabel">{metrics.rag_status.available ? 'Ready for queries' : 'Check configuration'}</div>
+                    </div>
+                    <div className="metric-box" style={{ background: 'var(--bg-card)' }}>
+                        <div className="metric-label">LLM Provider</div>
+                        <div className="metric-value" style={{ fontSize: '1rem' }}>{metrics.rag_status.llm_provider || 'N/A'}</div>
+                        <div className="metric-sublabel">{metrics.rag_status.llm_model || 'Not initialized'}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+/* ═══════════════════════════════════════ ActiveLearningTab ═══════════════════════════════════════ */
+function ActiveLearningTab() {
+    const [queue, setQueue] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [selectedSample, setSelectedSample] = useState(null);
+    const [feedback, setFeedback] = useState({ label: '', confidence: 1.0, notes: '' });
+
+    useEffect(() => {
+        fetchQueue();
+    }, []);
+
+    async function fetchQueue() {
+        setLoading(true);
+        try {
+            const d = await apiFetch('/api/active-learning/queue');
+            setQueue(d);
+        } catch (e) {
+            console.error('Queue fetch failed:', e);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    async function submitFeedback() {
+        if (!selectedSample || !feedback.label) {
+            alert('Please select a sample and provide a label');
+            return;
+        }
+
+        try {
+            await apiFetch('/api/active-learning/feedback', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    sample_id: selectedSample.sample_id,
+                    expert_label: feedback.label,
+                    confidence: feedback.confidence,
+                    notes: feedback.notes,
+                })
+            });
+            alert('Feedback submitted successfully!');
+            setSelectedSample(null);
+            setFeedback({ label: '', confidence: 1.0, notes: '' });
+            fetchQueue();
+        } catch (e) {
+            alert('Feedback submission failed: ' + e.message);
+        }
+    }
+
+    if (loading) return <div className="loading"><i className="fas fa-spinner"></i> Loading active learning queue...</div>;
+    if (!queue) return <div className="empty-state"><p>Failed to load active learning queue</p></div>;
+
+    return (
+        <div style={{ display: 'grid', gap: '1.5rem' }}>
+            <div className="card">
+                <h3 className="card-title">
+                    <i className="fas fa-info-circle"></i>
+                    About Active Learning
+                </h3>
+                <p style={{ color: 'var(--text-secondary)', marginTop: '0.5rem', lineHeight: '1.6' }}>
+                    The Active Learning pipeline identifies samples with high uncertainty scores for expert review. 
+                    Samples are prioritized based on combined uncertainty metrics including entropy, confidence, 
+                    grounding, and self-consistency. Expert feedback is used to improve model performance over time.
+                </p>
+                <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                    <div className="metric-box" style={{ flex: '1', minWidth: '200px' }}>
+                        <div className="metric-label">Queue Size</div>
+                        <div className="metric-value">{queue.queue_size}</div>
+                    </div>
+                    <div className="metric-box" style={{ flex: '1', minWidth: '200px' }}>
+                        <div className="metric-label">Uncertainty Threshold</div>
+                        <div className="metric-value">{queue.threshold}</div>
+                    </div>
+                    <div className="metric-box" style={{ flex: '1', minWidth: '200px' }}>
+                        <div className="metric-label">Showing</div>
+                        <div className="metric-value">{queue.items.length}</div>
+                        <div className="metric-sublabel">Top priority samples</div>
+                    </div>
+                </div>
+            </div>
+
+            {queue.items.length === 0 ? (
+                <div className="empty-state">
+                    <i className="fas fa-check-circle" style={{ fontSize: '3rem', color: 'var(--secondary)' }}></i>
+                    <h3>No Samples in Queue</h3>
+                    <p>All current predictions are below the uncertainty threshold. Great job!</p>
+                </div>
+            ) : (
+                <div className="card">
+                    <h3 className="card-title">
+                        <i className="fas fa-list"></i>
+                        Review Queue — Top {queue.items.length} Uncertain Samples
+                    </h3>
+                    <div style={{ marginTop: '1rem', overflowX: 'auto' }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                            <thead>
+                                <tr style={{ borderBottom: '2px solid var(--border)', textAlign: 'left' }}>
+                                    <th style={{ padding: '0.75rem', color: 'var(--text-secondary)', fontWeight: '600' }}>Sample ID</th>
+                                    <th style={{ padding: '0.75rem', color: 'var(--text-secondary)', fontWeight: '600' }}>Predicted Class</th>
+                                    <th style={{ padding: '0.75rem', color: 'var(--text-secondary)', fontWeight: '600' }}>Uncertainty</th>
+                                    <th style={{ padding: '0.75rem', color: 'var(--text-secondary)', fontWeight: '600' }}>Priority</th>
+                                    <th style={{ padding: '0.75rem', color: 'var(--text-secondary)', fontWeight: '600' }}>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {queue.items.map((item, i) => (
+                                    <tr key={item.sample_id} style={{ borderBottom: '1px solid var(--border)' }}>
+                                        <td style={{ padding: '0.75rem', fontFamily: 'monospace', fontSize: '0.85rem' }}>{item.sample_id.substring(0, 12)}...</td>
+                                        <td style={{ padding: '0.75rem' }}>
+                                            <span className="tag">{item.predicted_class}</span>
+                                        </td>
+                                        <td style={{ padding: '0.75rem' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                <div style={{ flex: '1', height: '8px', background: 'var(--bg-main)', borderRadius: '4px', overflow: 'hidden' }}>
+                                                    <div style={{ width: `${item.uncertainty_score * 100}%`, height: '100%', background: 'var(--warning)' }}></div>
+                                                </div>
+                                                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{(item.uncertainty_score * 100).toFixed(1)}%</span>
+                                            </div>
+                                        </td>
+                                        <td style={{ padding: '0.75rem', color: item.priority_score > 0.7 ? 'var(--danger)' : item.priority_score > 0.5 ? 'var(--warning)' : 'var(--text-secondary)' }}>
+                                            {(item.priority_score * 100).toFixed(1)}%
+                                        </td>
+                                        <td style={{ padding: '0.75rem' }}>
+                                            <button 
+                                                className="btn btn-sm btn-primary"
+                                                onClick={() => setSelectedSample(item)}
+                                                style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+                                            >
+                                                Review
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+
+            {selectedSample && (
+                <div className="card" style={{ border: '2px solid var(--primary)' }}>
+                    <h3 className="card-title">
+                        <i className="fas fa-user-md"></i>
+                        Expert Review — {selectedSample.sample_id.substring(0, 16)}...
+                    </h3>
+                    <div style={{ marginTop: '1rem', display: 'grid', gap: '1.5rem' }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                            <div>
+                                <div style={{ fontWeight: '600', marginBottom: '0.5rem' }}>Predicted Class:</div>
+                                <div style={{ padding: '0.75rem', background: 'var(--bg-main)', borderRadius: '6px', border: '1px solid var(--border)' }}>
+                                    {selectedSample.predicted_class}
+                                </div>
+                            </div>
+                            <div>
+                                <div style={{ fontWeight: '600', marginBottom: '0.5rem' }}>Uncertainty Score:</div>
+                                <div style={{ padding: '0.75rem', background: 'var(--bg-main)', borderRadius: '6px', border: '1px solid var(--border)' }}>
+                                    {(selectedSample.uncertainty_score * 100).toFixed(2)}%
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div style={{ fontWeight: '600', marginBottom: '0.5rem' }}>Uncertainty Breakdown:</div>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.75rem' }}>
+                                <div className="metric-box">
+                                    <div className="metric-label">Entropy</div>
+                                    <div className="metric-value" style={{ fontSize: '1.2rem' }}>{selectedSample.metrics.entropy.toFixed(3)}</div>
+                                </div>
+                                <div className="metric-box">
+                                    <div className="metric-label">Confidence</div>
+                                    <div className="metric-value" style={{ fontSize: '1.2rem' }}>{(selectedSample.metrics.confidence * 100).toFixed(1)}%</div>
+                                </div>
+                                <div className="metric-box">
+                                    <div className="metric-label">Grounding</div>
+                                    <div className="metric-value" style={{ fontSize: '1.2rem' }}>{(selectedSample.metrics.grounding * 100).toFixed(1)}%</div>
+                                </div>
+                                <div className="metric-box">
+                                    <div className="metric-label">Consistency</div>
+                                    <div className="metric-value" style={{ fontSize: '1.2rem' }}>{(selectedSample.metrics.consistency * 100).toFixed(1)}%</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label style={{ fontWeight: '600', display: 'block', marginBottom: '0.5rem' }}>Expert Label *</label>
+                            <input
+                                type="text"
+                                className="input"
+                                placeholder="Enter correct cell type classification"
+                                value={feedback.label}
+                                onChange={e => setFeedback({ ...feedback, label: e.target.value })}
+                                style={{ width: '100%', padding: '0.75rem', background: 'var(--bg-main)', border: '1px solid var(--border)', borderRadius: '6px', color: 'var(--text-primary)' }}
+                            />
+                        </div>
+
+                        <div>
+                            <label style={{ fontWeight: '600', display: 'block', marginBottom: '0.5rem' }}>
+                                Expert Confidence: {(feedback.confidence * 100).toFixed(0)}%
+                            </label>
+                            <input
+                                type="range"
+                                min="0"
+                                max="1"
+                                step="0.05"
+                                value={feedback.confidence}
+                                onChange={e => setFeedback({ ...feedback, confidence: parseFloat(e.target.value) })}
+                                style={{ width: '100%' }}
+                            />
+                        </div>
+
+                        <div>
+                            <label style={{ fontWeight: '600', display: 'block', marginBottom: '0.5rem' }}>Notes (optional)</label>
+                            <textarea
+                                className="input"
+                                placeholder="Add any additional notes or observations..."
+                                value={feedback.notes}
+                                onChange={e => setFeedback({ ...feedback, notes: e.target.value })}
+                                rows="3"
+                                style={{ width: '100%', padding: '0.75rem', background: 'var(--bg-main)', border: '1px solid var(--border)', borderRadius: '6px', color: 'var(--text-primary)', resize: 'vertical' }}
+                            />
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '1rem' }}>
+                            <button className="btn btn-primary" onClick={submitFeedback} style={{ flex: '1' }}>
+                                <i className="fas fa-check"></i>
+                                Submit Feedback
+                            </button>
+                            <button 
+                                className="btn"
+                                onClick={() => {
+                                    setSelectedSample(null);
+                                    setFeedback({ label: '', confidence: 1.0, notes: '' });
+                                }}
+                                style={{ flex: '0 0 auto', background: 'var(--bg-hover)', color: 'var(--text-primary)' }}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+/* ═══════════════════════════════════════ Render ═══════════════════════════════════════ */
+console.log('About to render App component...');
+try {
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+    console.log('App rendered successfully!');
+} catch (error) {
+    console.error('Render error:', error);
+    document.getElementById('root').innerHTML = '<div style="padding:2rem;background:#fee;color:#c00;font-family:monospace;"><h2>React Render Error</h2><pre>' + error.stack + '</pre></div>';
+}
+</script>
+</body>
+</html>>

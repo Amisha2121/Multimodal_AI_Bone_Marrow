@@ -57,9 +57,16 @@ def _is_pediatric(age_years: float | None, age_months: float | None) -> bool | N
     return None   # unknown
 
 
-def build_llm_powered_synthesis(state: AgentState) -> Dict[str, Any]:
+def build_llm_powered_synthesis(state: AgentState, temperature: float = 0.1) -> Dict[str, Any]:
     """
     LLM-powered clinical synthesis using Groq Llama with retrieved evidence.
+    
+    Args:
+        state: Agent state with case data
+        temperature: Sampling temperature (default: 0.1 for deterministic, 0.3 for diversity)
+    
+    Returns:
+        Dict with draft_differential, differential_diagnosis_hierarchy, morphological_justification
     """
     from agents.llm_provider import get_llm_provider
 
@@ -159,7 +166,7 @@ Focus on evidence-based interpretation, cite guidelines appropriately, and clear
             {"role": "user", "content": user_prompt},
         ]
 
-        draft_text = llm.generate(messages, temperature=0.1, max_tokens=2048)
+        draft_text = llm.generate(messages, temperature=temperature, max_tokens=2048)
 
         logger.info(f"[{pid}] LLM synthesis completed ({len(draft_text)} chars)")
 

@@ -14,7 +14,33 @@
       "question": "what is Myeloid Maturing",
       "answer": "In the context of this case, \"Myeloid (Maturing)\" refers to the presence of intermediate-stage granulocytic precursors, specifically promyelocytes, myelocytes, metamyelocytes, and bands, which are actively progressing toward mature neutrophils. This category is distinct from blasts and mature granulocytes, representing the active differentiation phase of the myeloid lineage. In this specific specimen, these cells account for 33.3% of the total cell count, indicating a significant population of developing myeloid cells alongside the observed 8.3% blast fraction.",
       "timestamp": "2026-10-16T11:31:34.724550"
+    },
+    {
+      "question": "What are the main morphological findings?",
+      "answer": "The bone marrow aspirate section demonstrates a heterogeneous cellular distribution dominated by myeloid elements in various stages of maturation (33.3%) and mature/band granulocytes (25.0%). Lymphoid series cells are also present at 16.7%. Blasts account for 8.3% of the evaluated cells, alongside identifiable promyelocytes (8.3%).",
+      "timestamp": "2026-10-24T10:04:28.658421"
+    },
+    {
+      "question": "what can you conclude from this scan?",
+      "answer": "Based on the provided digital bone marrow aspirate scan containing 12 annotated cells, the blast count is 1 cell, resulting in an annotated-cell blast fraction of 8.3%. This proportion falls below the standard diagnostic threshold for acute leukemia within these pre-selected high-power monolayer fields. However, clinical correlation and immunophenotypic evaluation are essential to definitively rule out malignancy, particularly in pediatric cases where distinguishing reactive elements such as haematogones from minimal residual disease is critical.",
+      "timestamp": "2026-10-24T11:05:53.825998"
     }
   ],
-  "adb52ad345f1": []
+  "adb52ad345f1": [
+    {
+      "question": "what is a blast",
+      "answer": "A blast is an immature, undifferentiated hematopoietic precursor cell normally confined to the bone marrow that differentiates into mature blood elements (such as myeloid or lymphoid lineages). Morphologically, blasts are characterized by a high nuclear-to-cytoplasmic ratio, fine or open chromatin, and prominent",
+      "timestamp": "2026-10-23T22:55:06.370446"
+    },
+    {
+      "question": "give me a short summary of this scan",
+      "answer": "Bone marrow aspirate analysis of case CASE-F09AFAC4 reveals a total of 49 cells across pre-selected monolayer fields, demonstrating an annotated blast fraction of 10.2% (5 cells). The differential count shows a heterogeneous distribution dominated by the megakaryocyte/platelet lineage (30.6%), alongside granulocytic, lymphoid, and maturing myeloid elements. Further clinical correlation and flow cytometry are recommended to evaluate the significance of the blast population within the context of the patient's full diagnostic workup.",
+      "timestamp": "2026-10-24T10:05:15.103393"
+    },
+    {
+      "question": "What is the Monocyte Series?",
+      "answer": "Based on the provided cell distribution data for Case-F09AFAC4, cells belonging to the Monocyte Series are not represented among the 49 annotated cells. The observed populations consist primarily of megakaryocytes and platelets, mature and band granulocytes, lymphoid cells, blasts, and maturing myeloid elements. Consequently, the quantitative proportion of the monocyte series in this specific sampling is 0%.",
+      "timestamp": "2026-10-24T11:17:22.988240"
+    }
+  ]
 }

@@ -59,6 +59,8 @@ from pipeline.data_model import (
     CellInferenceResult,
     PatientAnalysis,
     XAIExample,
+    ImageLevelStatistics,
+    AggregatedStatistics,
 )
 from pipeline.cell_detector import (
     DetectedCell,
@@ -66,6 +68,10 @@ from pipeline.cell_detector import (
     detect_cells,
     annotate_detections_on_image,
     generate_detection_debug_views,
+)
+from pipeline.multi_image_aggregation import (
+    aggregate_multi_image_predictions,
+    format_aggregation_report,
 )
 from vision.model import BoneMarrowViT
 from vision.taxonomy import MORPH_CLASSES, IDX_TO_MORPH
@@ -560,6 +566,7 @@ def analyze_new_case(
     analysis.cells_classified = len(cell_preds)
 
     # ── 5. Sample-level aggregation ───────────────────────────────────────────
+    # Single-image aggregate (kept for backward compatibility)
     agg = aggregate_cell_predictions(cell_preds)
     analysis.morphology_counts = agg["counts"]
     analysis.morphology_percentages = agg["percentages"]
@@ -567,6 +574,32 @@ def analyze_new_case(
     analysis.predominant_categories = agg["predominant"]
     analysis.confidence_summary = agg["confidence_summary"]
     analysis.status = "ok"
+    
+    # Multi-image aggregate (Improvement #3: Campanella et al. 2019)
+    if len(image_infos) > 1:
+        try:
+            # Group predictions by image_id
+            predictions_by_image: Dict[str, List[CellInferenceResult]] = {}
+            for cp in cell_preds:
+                if cp.image_id not in predictions_by_image:
+                    predictions_by_image[cp.image_id] = []
+                predictions_by_image[cp.image_id].append(cp)
+            
+            # Compute multi-image statistics
+            multi_stats = aggregate_multi_image_predictions(predictions_by_image)
+            analysis.multi_image_stats = multi_stats
+            
+            # Override single-image blast_fraction with multi-image mean
+            analysis.blast_fraction = multi_stats.blast_fraction_mean
+            
+            logger.info(
+                f"Multi-image aggregation: {multi_stats.num_images} images, "
+                f"blast={multi_stats.blast_fraction_mean:.1%} ± {multi_stats.blast_fraction_std:.1%}, "
+                f"consistency={multi_stats.consistency_score:.2f}"
+            )
+        except Exception as e:
+            logger.warning(f"Multi-image aggregation failed: {e}")
+            # Fall back to single-image aggregation (already computed)
 
     # ── 6. XAI ───────────────────────────────────────────────────────────────
     xai_dir = case_dir / "xai"

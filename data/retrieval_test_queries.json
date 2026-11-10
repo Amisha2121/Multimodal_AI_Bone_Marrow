@@ -1,0 +1,190 @@
+[
+  {
+    "query_id": "Q001",
+    "query_text": "What are the diagnostic blast criteria for pediatric B-ALL according to WHO 2022?",
+    "relevant_chunk_ids": ["WHO2022_ALL_001", "WHO2022_PEDIATRIC_ALL_002"],
+    "graded_relevance": {
+      "WHO2022_ALL_001": 3,
+      "WHO2022_PEDIATRIC_ALL_002": 3,
+      "WHO2022_BLAST_THRESHOLDS_006": 2
+    }
+  },
+  {
+    "query_id": "Q002",
+    "query_text": "How to differentiate benign haematogones from leukemic lymphoblasts in children?",
+    "relevant_chunk_ids": ["WHO2022_HAEMATOGONES_009", "WHO2022_PEDIATRIC_ALL_002"],
+    "graded_relevance": {
+      "WHO2022_HAEMATOGONES_009": 3,
+      "WHO2022_PEDIATRIC_ALL_002": 2
+    }
+  },
+  {
+    "query_id": "Q003",
+    "query_text": "What is the blast percentage threshold for AML diagnosis in adults?",
+    "relevant_chunk_ids": ["WHO2022_AML_003", "WHO2022_BLAST_THRESHOLDS_006"],
+    "graded_relevance": {
+      "WHO2022_AML_003": 3,
+      "WHO2022_BLAST_THRESHOLDS_006": 3,
+      "WHO2022_AML_APL_004": 1
+    }
+  },
+  {
+    "query_id": "Q004",
+    "query_text": "Auer rods and faggot cells in APL cytomorphology",
+    "relevant_chunk_ids": ["WHO2022_AML_APL_004"],
+    "graded_relevance": {
+      "WHO2022_AML_APL_004": 3,
+      "WHO2022_AML_003": 1
+    }
+  },
+  {
+    "query_id": "Q005",
+    "query_text": "CML chronic phase blast percentage cutoff and myelocyte bulge",
+    "relevant_chunk_ids": ["WHO2022_MPN_CML_017", "WHO2022_MPN_010"],
+    "graded_relevance": {
+      "WHO2022_MPN_CML_017": 3,
+      "WHO2022_MPN_010": 2,
+      "WHO2022_BLAST_THRESHOLDS_006": 1
+    }
+  },
+  {
+    "query_id": "Q006",
+    "query_text": "MDS diagnosis with blast fraction 10% and dysplastic features",
+    "relevant_chunk_ids": ["WHO2022_MDS_012", "WHO2022_MDS_013", "WHO2022_MDS_BLAST_EXCESS_014"],
+    "graded_relevance": {
+      "WHO2022_MDS_012": 3,
+      "WHO2022_MDS_013": 2,
+      "WHO2022_MDS_BLAST_EXCESS_014": 3
+    }
+  },
+  {
+    "query_id": "Q007",
+    "query_text": "Therapy-related AML after chemotherapy blast count criteria",
+    "relevant_chunk_ids": ["WHO2022_THERAPY_RELATED_027", "WHO2022_AML_003"],
+    "graded_relevance": {
+      "WHO2022_THERAPY_RELATED_027": 3,
+      "WHO2022_AML_003": 2
+    }
+  },
+  {
+    "query_id": "Q008",
+    "query_text": "Down syndrome associated ALL blast morphology in children",
+    "relevant_chunk_ids": ["WHO2022_DOWN_SYNDROME_029", "WHO2022_PEDIATRIC_ALL_002"],
+    "graded_relevance": {
+      "WHO2022_DOWN_SYNDROME_029": 3,
+      "WHO2022_PEDIATRIC_ALL_002": 2,
+      "WHO2022_ALL_001": 1
+    }
+  },
+  {
+    "query_id": "Q009",
+    "query_text": "Flow cytometry markers for B-cell ALL immunophenotyping",
+    "relevant_chunk_ids": ["WHO2022_IMMUNOPHENOTYPING_020", "WHO2022_ALL_001"],
+    "graded_relevance": {
+      "WHO2022_IMMUNOPHENOTYPING_020": 3,
+      "WHO2022_ALL_001": 2
+    }
+  },
+  {
+    "query_id": "Q010",
+    "query_text": "Cytogenetic abnormalities Philadelphia chromosome BCR-ABL in ALL",
+    "relevant_chunk_ids": ["WHO2022_CYTOGENETICS_023", "WHO2022_ALL_001"],
+    "graded_relevance": {
+      "WHO2022_CYTOGENETICS_023": 3,
+      "WHO2022_ALL_001": 2,
+      "WHO2022_MPN_CML_017": 1
+    }
+  },
+  {
+    "query_id": "Q011",
+    "query_text": "What blast percentage distinguishes MDS from AML?",
+    "relevant_chunk_ids": ["WHO2022_BLAST_THRESHOLDS_006", "WHO2022_MDS_012", "WHO2022_AML_003"],
+    "graded_relevance": {
+      "WHO2022_BLAST_THRESHOLDS_006": 3,
+      "WHO2022_MDS_012": 2,
+      "WHO2022_AML_003": 2
+    }
+  },
+  {
+    "query_id": "Q012",
+    "query_text": "Polycythemia vera diagnostic criteria erythroid morphology",
+    "relevant_chunk_ids": ["WHO2022_MPN_PV_018", "WHO2022_MPN_010"],
+    "graded_relevance": {
+      "WHO2022_MPN_PV_018": 3,
+      "WHO2022_MPN_010": 2
+    }
+  },
+  {
+    "query_id": "Q013",
+    "query_text": "Essential thrombocythemia blast count and megakaryocyte morphology",
+    "relevant_chunk_ids": ["WHO2022_MPN_ET_019", "WHO2022_MPN_010"],
+    "graded_relevance": {
+      "WHO2022_MPN_ET_019": 3,
+      "WHO2022_MPN_010": 2
+    }
+  },
+  {
+    "query_id": "Q014",
+    "query_text": "Histiocytic neoplasms bone marrow involvement morphology",
+    "relevant_chunk_ids": ["WHO2022_HISTIOCYTIC_031", "WHO2022_OTHER_037"],
+    "graded_relevance": {
+      "WHO2022_HISTIOCYTIC_031": 3,
+      "WHO2022_OTHER_037": 1
+    }
+  },
+  {
+    "query_id": "Q015",
+    "query_text": "Germline predisposition to myeloid neoplasms diagnostic criteria",
+    "relevant_chunk_ids": ["WHO2022_GERMLINE_034", "WHO2022_GERMLINE_035"],
+    "graded_relevance": {
+      "WHO2022_GERMLINE_034": 3,
+      "WHO2022_GERMLINE_035": 3
+    }
+  },
+  {
+    "query_id": "Q016",
+    "query_text": "Minimal residual disease detection bone marrow morphology",
+    "relevant_chunk_ids": ["WHO2022_RESPONSE_036"],
+    "graded_relevance": {
+      "WHO2022_RESPONSE_036": 3
+    }
+  },
+  {
+    "query_id": "Q017",
+    "query_text": "AML with maturation blast count and granulocyte differentiation",
+    "relevant_chunk_ids": ["WHO2022_AML_003", "WHO2022_AML_MATURATION_005"],
+    "graded_relevance": {
+      "WHO2022_AML_003": 2,
+      "WHO2022_AML_MATURATION_005": 3
+    }
+  },
+  {
+    "query_id": "Q018",
+    "query_text": "MDS with ring sideroblasts diagnostic morphology criteria",
+    "relevant_chunk_ids": ["WHO2022_MDS_RING_SIDEROBLAST_015", "WHO2022_MDS_012"],
+    "graded_relevance": {
+      "WHO2022_MDS_RING_SIDEROBLAST_015": 3,
+      "WHO2022_MDS_012": 2
+    }
+  },
+  {
+    "query_id": "Q019",
+    "query_text": "MPN unclassifiable diagnostic criteria blast percentage",
+    "relevant_chunk_ids": ["WHO2022_MPN_UNCLASSIFIABLE_016", "WHO2022_MPN_010"],
+    "graded_relevance": {
+      "WHO2022_MPN_UNCLASSIFIABLE_016": 3,
+      "WHO2022_MPN_010": 2
+    }
+  },
+  {
+    "query_id": "Q020",
+    "query_text": "Pediatric patient age 3 years with 30% blasts differential diagnosis",
+    "relevant_chunk_ids": ["WHO2022_PEDIATRIC_ALL_002", "WHO2022_ALL_001", "WHO2022_BLAST_THRESHOLDS_006"],
+    "graded_relevance": {
+      "WHO2022_PEDIATRIC_ALL_002": 3,
+      "WHO2022_ALL_001": 2,
+      "WHO2022_BLAST_THRESHOLDS_006": 2,
+      "WHO2022_HAEMATOGONES_009": 1
+    }
+  }
+]

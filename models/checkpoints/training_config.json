@@ -30,5 +30,5 @@
   "train_cells": 14563,
   "val_cells": 2951,
   "test_cells": 3338,
-  "device": "cuda"
+  "device": "cpu"
 }

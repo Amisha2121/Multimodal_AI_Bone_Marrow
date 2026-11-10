@@ -8,6 +8,7 @@ Hierarchy:
     └── image_infos         : List[CaseImageInfo]   (one per uploaded image)
     └── cell_predictions    : List[CellInferenceResult]  (one per detected cell)
     └── xai_examples        : List[XAIExample]       (3 representative cells)
+    └── multi_image_stats   : Optional[AggregatedStatistics] (multi-image aggregation)
 
 All outputs are keyed to the current case_id.
 No hardcoded patient IDs. No cross-case data.
@@ -15,6 +16,52 @@ No hardcoded patient IDs. No cross-case data.
 
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Any, Tuple
+
+
+# ── Multi-image aggregation ───────────────────────────────────────────────────
+
+@dataclass
+class ImageLevelStatistics:
+    """Per-image summary statistics for multi-image aggregation."""
+    image_id: str
+    blast_fraction: float
+    total_cells: int
+    mean_confidence: float
+    predominant_class: str
+    top3_classes: List[str] = field(default_factory=list)
+
+
+@dataclass
+class AggregatedStatistics:
+    """
+    Cross-image statistical aggregation with uncertainty quantification.
+    
+    Literature: Campanella et al. (2019) - "Clinical-grade computational pathology 
+    using weakly supervised deep learning on whole slide images"
+    Nature Medicine 25:1301-1309. doi:10.1038/s41591-019-0508-1
+    
+    Multiple images per case enable:
+    - Confidence intervals for blast fraction (α=0.05, t-distribution)
+    - Outlier detection (MAD-based, threshold=2.5σ)
+    - Consistency scoring across images (1.0 - coefficient of variation)
+    """
+    # Required fields (no defaults)
+    num_images: int
+    blast_fraction_mean: float
+    blast_fraction_std: float
+    blast_fraction_ci_lower: float
+    blast_fraction_ci_upper: float
+    confidence_mean: float
+    confidence_std: float
+    confidence_ci_lower: float
+    confidence_ci_upper: float
+    consistency_score: float  # 0-1, higher = more consistent across images
+    
+    # Optional fields (with defaults)
+    blast_fraction_per_image: Dict[str, float] = field(default_factory=dict)
+    outlier_images: List[str] = field(default_factory=list)
+    total_cells_all_images: int = 0
+    recommendation: str = ""  # RELIABLE | MODERATE | INCONSISTENT | SINGLE_IMAGE
 
 
 # ── Image-level info ──────────────────────────────────────────────────────────
@@ -134,6 +181,9 @@ class PatientAnalysis:
     blast_fraction: float = 0.0
     predominant_categories: List[str] = field(default_factory=list)
     confidence_summary: Dict[str, float] = field(default_factory=dict)
+    
+    # Multi-image aggregation (Improvement #3)
+    multi_image_stats: Optional[AggregatedStatistics] = None
 
     # Evidence quality
     is_zero_cells: bool = False

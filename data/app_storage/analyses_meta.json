@@ -1,0 +1,18 @@
+[
+  {
+    "id": "9a0ca82e9003",
+    "case_id": "CASE-CECDBCC7",
+    "timestamp": "2026-10-15T22:59:41.588990",
+    "cells": 12,
+    "blasts": 0.0833,
+    "thumbnail": "C:\\Users\\AMISHA\\Desktop\\Codes\\Multimodal_AI_Bone_Marrow\\data\\new_patient_cache\\CASE-CECDBCC7\\originals\\IMAGE-01_debug_filtered.png"
+  },
+  {
+    "id": "adb52ad345f1",
+    "case_id": "CASE-F09AFAC4",
+    "timestamp": "2026-10-16T11:43:41.931229",
+    "cells": 49,
+    "blasts": 0.102,
+    "thumbnail": "C:\\Users\\AMISHA\\Desktop\\Codes\\Multimodal_AI_Bone_Marrow\\data\\new_patient_cache\\CASE-F09AFAC4\\originals\\IMAGE-01_debug_filtered.png"
+  }
+]
