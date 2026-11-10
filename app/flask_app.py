@@ -1096,14 +1096,32 @@ def chat():
             f"{context}\n\n"
             f"CLINICAL GUIDELINES:\n{evidence or 'Use standard hematopathology principles.'}\n\n"
             f"QUESTION: {question}\n\n"
-            "Answer in 2-4 clear sentences using professional clinical language."
+            "Answer in 2-4 clear sentences using professional clinical language. Do not make definitive diagnostic conclusions without physician review."
         )
-        answer = llm_provider.generate(
-            [{"role": "user", "content": prompt}],
-            temperature=0.1, max_tokens=500,
-        ).strip()
+        try:
+            answer = llm_provider.generate(
+                [{"role": "user", "content": prompt}],
+                temperature=0.1, max_tokens=500,
+            ).strip()
+        except Exception as llm_err:
+            print(f"Chat LLM generation failed: {llm_err}; utilizing clinical guideline fallback")
+            first_guide = retrieved[0]['text'][:260] if retrieved else "Clinical morphology criteria per WHO 5th Edition."
+            answer = (
+                f"For {summary['case_id']}, the observed blast proportion is {summary['blast_fraction']:.1%} "
+                f"({summary['blast_count']} of {summary['total_cells']} nucleated cells). "
+                f"Guideline context: {first_guide}... "
+                f"Definitive assessment requires multi-modal integration with flow cytometry, cytogenetics, and molecular testing."
+            )
 
-        entry = {'question': question, 'answer': answer, 'timestamp': datetime.now().isoformat()}
+        from pipeline.agent_guard import sanitize_agent_language
+        answer = sanitize_agent_language(answer)
+
+        sources_meta = [
+            {'id': r['chunk_id'], 'title': r.get('title', r['chunk_id']), 'snippet': r.get('text', '')[:150] + '...'}
+            for r in retrieved
+        ]
+
+        entry = {'question': question, 'answer': answer, 'sources': sources_meta, 'timestamp': datetime.now().isoformat()}
         chat_history.setdefault(analysis_id, []).append(entry)
         save_chats(chat_history)
         try:
@@ -1111,7 +1129,7 @@ def chat():
         except Exception as db_e:
             print(f"Dual-write chat to SQLite failed: {db_e}")
 
-        return jsonify({'answer': answer, 'sources': [r['chunk_id'] for r in retrieved]})
+        return jsonify({'answer': answer, 'sources': sources_meta})
 
     except Exception as e:
         print(f"Chat FAILED: {e}")

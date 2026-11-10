@@ -93,6 +93,19 @@
         .send-btn:hover:not(:disabled){background:#2563eb;}
         .send-btn:disabled{background:#d1d5db;cursor:not-allowed;}
 
+        /* ── Enhanced Chat UI ── */
+        .chat-header-bar{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.25rem;border-bottom:1px solid #e2e8f0;background:#ffffff;box-shadow:0 1px 2px rgba(0,0,0,.03);flex-wrap:wrap;gap:.5rem;}
+        .chat-pill{font-size:.74rem;font-weight:600;padding:2px 8px;border-radius:12px;display:inline-flex;align-items:center;gap:4px;}
+        .chat-suggestions{display:flex;flex-wrap:wrap;gap:6px;padding:.5rem 1.25rem;background:#f8fafc;border-top:1px solid #e2e8f0;}
+        .chat-chip{font-size:.76rem;color:#2563eb;background:#eff6ff;border:1px solid #bfdbfe;padding:4px 10px;border-radius:16px;cursor:pointer;transition:all .15s;font-weight:500;}
+        .chat-chip:hover{background:#dbeafe;border-color:#93c5fd;}
+        .chat-source-tag{display:inline-flex;align-items:center;gap:3px;font-size:.68rem;font-family:monospace;background:#f1f5f9;color:#0284c7;border:1px solid #cbd5e1;padding:2px 6px;border-radius:4px;margin-right:4px;margin-top:4px;}
+        .typing-indicator{display:inline-flex;align-items:center;gap:4px;padding:6px 12px;background:#f1f5f9;border-radius:16px;color:#64748b;font-size:.78rem;}
+        .typing-dot{width:5px;height:5px;background:#94a3b8;border-radius:50%;animation:pulseDot 1.4s infinite ease-in-out both;}
+        .typing-dot:nth-child(1){animation-delay:-0.32s;}
+        .typing-dot:nth-child(2){animation-delay:-0.16s;}
+        @keyframes pulseDot{0%,80%,100%{transform:scale(0);}40%{transform:scale(1);}}
+
         /* ── Report ── */
         .report-header{background:#fff;border-radius:8px;padding:1.5rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,.08);}
         .report-header h1{font-size:1.5rem;font-weight:700;}
@@ -1024,27 +1037,51 @@ function UploadTab({ selId, onUpload, uploading }) {
     );
 }
 
-/* ── ChatTab ── */
+/* ── ChatTab (Enhanced Clinical Assistant with Guideline Evidence & Suggestions) ── */
 function ChatTab({ selId }) {
     const [msgs,     setMsgs]    = useState([]);
     const [input,    setInput]   = useState('');
     const [loading,  setLoading] = useState(false);
     const [err,      setErr]     = useState('');
+    const [caseMeta, setCaseMeta] = useState(null);
     const endRef = useRef();
 
-    useEffect(() => { endRef.current?.scrollIntoView({ behavior:'smooth' }); }, [msgs]);
+    const SUGGESTIONS = [
+        "What is the blast count and clinical significance?",
+        "Does this meet acute leukemia criteria (≥20%)?",
+        "What are the predominant cell lineages in this sample?",
+        "What confirmatory diagnostic workup is indicated?",
+        "Explain the key genetic drivers (e.g. TP53, ABL1, RUNX1)."
+    ];
+
+    useEffect(() => {
+        endRef.current?.scrollIntoView({ behavior:'smooth' });
+    }, [msgs, loading]);
+
+    useEffect(() => {
+        if (!selId) { setCaseMeta(null); return; }
+        apiFetch(`/api/analysis/${selId}`)
+            .then(setCaseMeta)
+            .catch(() => {});
+    }, [selId]);
 
     useEffect(() => {
         if (!selId) { setMsgs([]); return; }
         apiFetch(`/api/chat/${selId}`)
-            .then(d => setMsgs((d.history || []).map(h => ({ q: h.question, a: h.answer }))))
+            .then(d => setMsgs((d.history || []).map(h => ({
+                q: h.question,
+                a: h.answer,
+                sources: h.sources || [],
+                timestamp: h.timestamp ? new Date(h.timestamp).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }) : ''
+            }))))
             .catch(() => {});
     }, [selId]);
 
-    async function send() {
-        if (!input.trim() || !selId || loading) return;
-        const q = input.trim();
-        setMsgs(prev => [...prev, { q, a: null }]);
+    async function send(overrideQ) {
+        const q = (overrideQ || input).trim();
+        if (!q || !selId || loading) return;
+        const nowStr = new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+        setMsgs(prev => [...prev, { q, a: null, sources: [], timestamp: nowStr }]);
         setInput(''); setErr(''); setLoading(true);
         try {
             const d = await apiFetch('/api/chat', {
@@ -1052,48 +1089,252 @@ function ChatTab({ selId }) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ analysis_id: selId, question: q }),
             });
-            setMsgs(prev => [...prev.slice(0, -1), { q, a: d.answer }]);
+            setMsgs(prev => [
+                ...prev.slice(0, -1),
+                { q, a: d.answer, sources: d.sources || [], timestamp: nowStr }
+            ]);
         } catch (e) {
             setErr(e.message);
-            setMsgs(prev => prev.slice(0, -1));
-        } finally { setLoading(false); }
+            setMsgs(prev => [
+                ...prev.slice(0, -1),
+                {
+                    q,
+                    a: "Clinical Assistant Notice: An error occurred retrieving guideline synthesis (" + e.message + "). The server has logged this query. Please retry or rephrase your question.",
+                    sources: [],
+                    timestamp: nowStr,
+                    isError: true
+                }
+            ]);
+        } finally {
+            setLoading(false);
+        }
     }
 
     if (!selId) return (
         <div className="chat-container" style={{height:'calc(100vh - 120px)'}}>
-            <div className="chat-empty"><i className="fas fa-comments" style={{fontSize:'3rem',marginBottom:'1rem'}}></i><h3>No Analysis Selected</h3><p>Upload a bone marrow image first.</p></div>
+            <div className="chat-empty">
+                <i className="fas fa-comments" style={{fontSize:'3rem',marginBottom:'1rem',color:'#cbd5e1'}}></i>
+                <h3>No Analysis Selected</h3>
+                <p>Select a case from the Analysis History sidebar or upload an aspirate image to start chatting.</p>
+            </div>
         </div>
     );
 
+    const blastPctStr = caseMeta?.blast_pct != null ? ((caseMeta.blast_pct)*100).toFixed(1) + '%' : '–';
+    const cellsTotal = caseMeta?.cells_count ?? '–';
+
     return (
         <div className="chat-container" style={{height:'calc(100vh - 120px)'}}>
+            {/* Top Case Context Header */}
+            <div className="chat-header-bar">
+                <div style={{display:'flex',alignItems:'center',gap:'.6rem',flexWrap:'wrap'}}>
+                    <div style={{width:'32px',height:'32px',borderRadius:'8px',background:'#eff6ff',display:'flex',alignItems:'center',justifyContent:'center',color:'#2563eb'}}>
+                        <i className="fas fa-robot"></i>
+                    </div>
+                    <div>
+                        <div style={{fontWeight:700,fontSize:'.92rem',color:'#1e293b'}}>
+                            Clinical Pathology Assistant
+                        </div>
+                        <div style={{fontSize:'.72rem',color:'#64748b'}}>
+                            Grounded in WHO 5th Ed. &amp; ICC 2022 Criteria
+                        </div>
+                    </div>
+                </div>
+                <div style={{display:'flex',alignItems:'center',gap:'.5rem',flexWrap:'wrap'}}>
+                    <span className="chat-pill" style={{background:'#f1f5f9',color:'#334155'}}>
+                        <i className="fas fa-folder-open" style={{color:'#64748b'}}></i> {caseMeta?.case_id || selId}
+                    </span>
+                    <span className="chat-pill" style={{background:'#e0f2fe',color:'#0369a1'}}>
+                        <i className="fas fa-dna"></i> Blasts: {blastPctStr}
+                    </span>
+                    <span className="chat-pill" style={{background:'#f1f5f9',color:'#475569'}}>
+                        <i className="fas fa-microscope"></i> N={cellsTotal}
+                    </span>
+                    <button
+                        type="button"
+                        onClick={() => setMsgs([])}
+                        title="Clear conversation view"
+                        style={{background:'transparent',border:'1px solid #e2e8f0',borderRadius:'6px',padding:'3px 8px',fontSize:'.72rem',color:'#64748b',cursor:'pointer'}}
+                    >
+                        <i className="fas fa-trash-alt"></i> Clear
+                    </button>
+                </div>
+            </div>
+
+            {/* Chat Messages */}
             <div className="chat-messages">
                 {msgs.length === 0 && !loading && (
-                    <div className="chat-empty"><i className="fas fa-microscope" style={{fontSize:'3rem',marginBottom:'1rem'}}></i><h3>Ask About This Analysis</h3><p>Type a question about the bone marrow findings.</p></div>
+                    <div className="chat-empty" style={{padding:'2.5rem 1.5rem'}}>
+                        <div style={{width:'64px',height:'64px',borderRadius:'50%',background:'#eff6ff',display:'flex',alignItems:'center',justifyContent:'center',marginBottom:'1rem'}}>
+                            <i className="fas fa-stethoscope" style={{fontSize:'1.8rem',color:'#2563eb'}}></i>
+                        </div>
+                        <h3 style={{color:'#1e293b',marginBottom:'.4rem',fontWeight:700}}>Consult the Clinical Assistant</h3>
+                        <p style={{maxWidth:'460px',lineHeight:1.55,color:'#64748b',fontSize:'.88rem',marginBottom:'1.5rem'}}>
+                            Inquire about diagnostic criteria, lineage distributions, maturation characteristics, blast significance, or guideline-recommended confirmatory workup for <strong>{caseMeta?.case_id || selId}</strong>.
+                        </p>
+
+                        <div style={{maxWidth:'580px',width:'100%',textAlign:'left'}}>
+                            <div style={{fontSize:'.75rem',fontWeight:700,color:'#475569',textTransform:'uppercase',letterSpacing:'.5px',marginBottom:'.6rem'}}>
+                                Suggested Inquiries:
+                            </div>
+                            <div style={{display:'flex',flexDirection:'column',gap:'.45rem'}}>
+                                {SUGGESTIONS.map((s, idx) => (
+                                    <div
+                                        key={idx}
+                                        onClick={() => send(s)}
+                                        style={{
+                                            padding:'.6rem .9rem',
+                                            borderRadius:'8px',
+                                            background:'#ffffff',
+                                            border:'1px solid #e2e8f0',
+                                            cursor:'pointer',
+                                            fontSize:'.84rem',
+                                            color:'#1e293b',
+                                            display:'flex',
+                                            alignItems:'center',
+                                            justifyContent:'space-between',
+                                            transition:'all .15s',
+                                            boxShadow:'0 1px 2px rgba(0,0,0,.03)'
+                                        }}
+                                        onMouseEnter={e => { e.currentTarget.style.borderColor = '#93c5fd'; e.currentTarget.style.background = '#f8fafc'; }}
+                                        onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.background = '#ffffff'; }}
+                                    >
+                                        <span>{s}</span>
+                                        <i className="fas fa-arrow-right" style={{color:'#94a3b8',fontSize:'.75rem'}}></i>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
                 )}
+
                 {msgs.map((m, i) => (
                     <React.Fragment key={i}>
-                        <div className="msg-wrap user"><div className="msg-inner"><div className="avatar user">You</div><div className="msg-text">{m.q}</div></div></div>
+                        {/* User Message */}
+                        <div className="msg-wrap user">
+                            <div className="msg-inner">
+                                <div className="avatar user">
+                                    <i className="fas fa-user-md" style={{fontSize:'.85rem'}}></i>
+                                </div>
+                                <div className="msg-text">
+                                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'2px'}}>
+                                        <strong style={{fontSize:'.78rem',color:'#1e40af'}}>Physician / Clinician</strong>
+                                        <span style={{fontSize:'.68rem',color:'#94a3b8'}}>{m.timestamp}</span>
+                                    </div>
+                                    <div style={{color:'#1e293b',fontSize:'.9rem',lineHeight:1.6}}>{m.q}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Assistant Response */}
                         {m.a != null && (
-                            <div className="msg-wrap assistant"><div className="msg-inner"><div className="avatar assistant">🔬</div><div className="msg-text">{m.a}</div></div></div>
+                            <div className="msg-wrap assistant" style={{background: m.isError ? '#fffaf0' : '#ffffff'}}>
+                                <div className="msg-inner">
+                                    <div className="avatar assistant" style={{background: m.isError ? '#f59e0b' : '#2563eb'}}>
+                                        <i className="fas fa-robot" style={{fontSize:'.85rem'}}></i>
+                                    </div>
+                                    <div className="msg-text">
+                                        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'2px'}}>
+                                            <strong style={{fontSize:'.78rem',color:'#1e293b'}}>Pathology AI Assistant</strong>
+                                            <span style={{fontSize:'.68rem',color:'#94a3b8'}}>{m.timestamp}</span>
+                                        </div>
+                                        <div style={{color:'#334155',fontSize:'.89rem',lineHeight:1.65,whiteSpace:'pre-wrap'}}>
+                                            {m.a}
+                                        </div>
+
+                                        {/* Cited Guideline Sources */}
+                                        {m.sources && m.sources.length > 0 && (
+                                            <div style={{marginTop:'.65rem',paddingTop:'.5rem',borderTop:'1px dashed #e2e8f0'}}>
+                                                <div style={{fontSize:'.7rem',fontWeight:700,color:'#64748b',marginBottom:'3px'}}>
+                                                    <i className="fas fa-book-medical" style={{marginRight:'4px',color:'#2563eb'}}></i>Retrieved Guideline Evidence:
+                                                </div>
+                                                <div style={{display:'flex',flexWrap:'wrap',gap:'4px'}}>
+                                                    {m.sources.map((src, si) => {
+                                                        const srcId = typeof src === 'string' ? src : (src.id || src.title);
+                                                        const srcTitle = typeof src === 'object' ? src.title : srcId;
+                                                        return (
+                                                            <span key={si} className="chat-source-tag" title={srcTitle}>
+                                                                <i className="fas fa-bookmark" style={{fontSize:'.6rem'}}></i> {srcId}
+                                                            </span>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
                         )}
                     </React.Fragment>
                 ))}
+
+                {/* Loading State */}
                 {loading && (
-                    <div className="msg-wrap assistant"><div className="msg-inner"><div className="avatar assistant">🔬</div><div className="msg-text" style={{color:'#9ca3af'}}>Thinking…</div></div></div>
+                    <div className="msg-wrap assistant">
+                        <div className="msg-inner">
+                            <div className="avatar assistant" style={{background:'#2563eb'}}>
+                                <i className="fas fa-robot" style={{fontSize:'.85rem'}}></i>
+                            </div>
+                            <div className="msg-text">
+                                <div className="typing-indicator">
+                                    <span>Retrieving clinical guidelines and formulating analysis</span>
+                                    <div className="typing-dot"></div>
+                                    <div className="typing-dot"></div>
+                                    <div className="typing-dot"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 )}
-                {err && <div style={{padding:'0 1rem'}}><div className="error-box">Error: {err}</div></div>}
+
+                {err && (
+                    <div style={{padding:'0 1.5rem',marginBottom:'.5rem'}}>
+                        <div className="error-box" style={{fontSize:'.82rem',padding:'.6rem .9rem'}}>
+                            <i className="fas fa-exclamation-triangle" style={{marginRight:'6px'}}></i>
+                            Notice: {err}
+                        </div>
+                    </div>
+                )}
                 <div ref={endRef} />
             </div>
+
+            {/* Quick Suggestion Chips (above input bar when chat has started) */}
+            {msgs.length > 0 && (
+                <div className="chat-suggestions">
+                    <span style={{fontSize:'.7rem',fontWeight:600,color:'#64748b',display:'flex',alignItems:'center'}}>
+                        Follow-up:
+                    </span>
+                    {SUGGESTIONS.slice(0, 3).map((s, idx) => (
+                        <span key={idx} className="chat-chip" onClick={() => send(s)}>
+                            {s}
+                        </span>
+                    ))}
+                </div>
+            )}
+
+            {/* Input Area */}
             <div className="chat-input-area">
                 <div className="chat-input-row">
-                    <textarea className="chat-input" rows="1" placeholder="Ask a question about this analysis…"
-                        value={input} onChange={e => setInput(e.target.value)} disabled={loading}
+                    <textarea
+                        className="chat-input"
+                        rows="1"
+                        placeholder="Inquire about morphology, blast criteria, or diagnostic guidelines (Enter to send, Shift+Enter for newline)…"
+                        value={input}
+                        onChange={e => setInput(e.target.value)}
+                        disabled={loading}
                         style={{minHeight:'46px',maxHeight:'180px'}}
-                        onKeyDown={e => { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
-                        onInput={e => { e.target.style.height='auto'; e.target.style.height=Math.min(e.target.scrollHeight,180)+'px'; }}
+                        onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
+                        onInput={e => { e.target.style.height = 'auto'; e.target.style.height = Math.min(e.target.scrollHeight, 180) + 'px'; }}
                     />
-                    <button className="send-btn" onClick={send} disabled={!input.trim() || loading}><i className="fas fa-paper-plane"></i></button>
+                    <button
+                        type="button"
+                        className="send-btn"
+                        onClick={() => send()}
+                        disabled={!input.trim() || loading}
+                        title="Send question"
+                    >
+                        {loading ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-paper-plane"></i>}
+                    </button>
                 </div>
             </div>
         </div>
