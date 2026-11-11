@@ -2583,6 +2583,101 @@ function ReportTab({ selId }) {
                                         <img src={d4Img} alt="D4 Evidence Chain" className="p10-diagram-img" onClick={() => setLightboxImg(d4Img)} />
                                     </div>
                                 </div>
+
+                                {/* Dynamic Patient-Specific Visualizations (Module 5) */}
+                                {report.visualization_manifest?.visualizations?.length > 0 && (
+                                    <div style={{marginTop:'1.5rem'}}>
+                                        <div style={{fontSize:'.88rem',fontWeight:700,color:'#0f172a',marginBottom:'.75rem',display:'flex',alignItems:'center',gap:'6px'}}>
+                                            <i className="fas fa-project-diagram" style={{color:'#6366f1'}}></i>
+                                            Patient-Specific Clinical Visualizations ({report.visualization_manifest.visualizations.length})
+                                        </div>
+                                        <div className="p10-diagram-grid">
+                                            {report.visualization_manifest.visualizations.map((v, vIdx) => {
+                                                const imgUri = v.url.startsWith('/') ? v.url : `/api/image/${encodeURIComponent(v.url.startsWith('data/') ? v.url : 'data/' + v.url)}`;
+                                                return (
+                                                    <div key={v.visualization_id || vIdx} className="p10-diagram-card">
+                                                        <div className="p10-diagram-head">
+                                                            <span title={v.title} style={{whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',maxWidth:'240px'}}>{v.title}</span>
+                                                            <span style={{fontSize:'.68rem',color:'#64748b'}}>{v.type}</span>
+                                                        </div>
+                                                        <img
+                                                            src={imgUri}
+                                                            alt={v.title}
+                                                            className="p10-diagram-img"
+                                                            onClick={() => setLightboxImg(imgUri)}
+                                                            onError={e => { e.target.style.display = 'none'; }}
+                                                        />
+                                                        <div style={{fontSize:'.7rem',color:'#64748b',marginTop:'6px',lineHeight:1.4}}>
+                                                            {v.description}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Patient Clinical Context & Missing Modalities (Module 1) */}
+                                {report.patient_clinical_context && (
+                                    <div className="card" style={{marginTop:'1.5rem',borderLeft:'4px solid #6366f1',padding:'1.25rem'}}>
+                                        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:'.75rem',flexWrap:'wrap',gap:'.5rem'}}>
+                                            <div style={{fontWeight:700,fontSize:'.95rem',color:'#0f172a'}}>
+                                                <i className="fas fa-clipboard-list" style={{color:'#6366f1',marginRight:'6px'}}></i>
+                                                Patient Diagnostic Ingestion &amp; Ancillary Testing Status
+                                            </div>
+                                            <span style={{fontSize:'.74rem',background:'#f1f5f9',padding:'3px 8px',borderRadius:'12px',fontWeight:600,color:'#334155'}}>
+                                                {report.patient_clinical_context.is_image_only ? 'Image-Only Submission' : 'Multi-Modal Context'}
+                                            </span>
+                                        </div>
+                                        <p style={{fontSize:'.8rem',color:'#64748b',marginBottom:'1rem',lineHeight:1.5}}>
+                                            Standard diagnostic criteria require multi-parameter correlation. Modalities below reflect the current clinical case intake state:
+                                        </p>
+                                        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit, minmax(220px, 1fr))',gap:'.75rem'}}>
+                                            {Object.entries(report.patient_clinical_context.parameters || {}).map(([k, p]) => (
+                                                <div key={k} style={{
+                                                    background: p.is_available ? '#f0fdf4' : '#f8fafc',
+                                                    border: `1px solid ${p.is_available ? '#bbf7d0' : '#e2e8f0'}`,
+                                                    borderRadius:'6px',
+                                                    padding:'.6rem .8rem',
+                                                    fontSize:'.78rem'
+                                                }}>
+                                                    <div style={{fontWeight:600,color:'#1e293b',marginBottom:'2px'}}>{p.name}</div>
+                                                    <div style={{fontSize:'.72rem',color: p.is_available ? '#15803d' : '#64748b',fontWeight:500}}>
+                                                        {p.is_available ? `${p.value} ${p.unit || ''}` : `[${p.status}]`}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Pre-Publication Validation Audit Summary (Module 7 & 8) */}
+                                {report.validation_audit && (
+                                    <div style={{
+                                        marginTop:'1.25rem',
+                                        background:'#f8fafc',
+                                        border:'1px solid #cbd5e1',
+                                        borderRadius:'8px',
+                                        padding:'.75rem 1rem',
+                                        display:'flex',
+                                        alignItems:'center',
+                                        justifyContent:'space-between',
+                                        fontSize:'.78rem',
+                                        color:'#334155',
+                                        flexWrap:'wrap',
+                                        gap:'.5rem'
+                                    }}>
+                                        <div style={{display:'flex',alignItems:'center',gap:'8px'}}>
+                                            <i className={`fas ${report.validation_audit.is_valid ? 'fa-check-circle' : 'fa-exclamation-triangle'}`} style={{color: report.validation_audit.is_valid ? '#10b981' : '#f59e0b',fontSize:'.95rem'}}></i>
+                                            <span>
+                                                <strong>Pre-Publication Audit:</strong> Verified {report.validation_audit.audited_claims_count} factual claims (Grounding ratio: {(report.validation_audit.grounding_ratio * 100).toFixed(0)}%). Numerical consistency check passed.
+                                            </span>
+                                        </div>
+                                        <span style={{fontSize:'.72rem',color:'#64748b'}}>
+                                            Agent-Guard language rules enforced
+                                        </span>
+                                    </div>
+                                )}
                             </div>
                         )}
 

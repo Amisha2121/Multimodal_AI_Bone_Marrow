@@ -351,6 +351,85 @@ def upload_analysis():
         return jsonify({'error': str(e)}), 500
 
 
+# ---------------------------------------------------------------------------
+# Multimodal Document Upload & Extraction Endpoint (Phase 3 & 4)
+# ---------------------------------------------------------------------------
+
+@app.route('/api/upload-document', methods=['POST'])
+def upload_medical_document():
+    """
+    Ingests and processes medical reports (PDF, CSV, TXT) across Categories A-L.
+    Associates the extracted parameters with the selected case or creates a new case.
+    """
+    if 'files' not in request.files:
+        return jsonify({'error': 'No document files provided'}), 400
+    
+    files = request.files.getlist('files')
+    if not files or files[0].filename == '':
+        return jsonify({'error': 'No document files selected'}), 400
+
+    target_case_id = request.form.get('case_id')
+    from pipeline.document_intelligence import process_uploaded_document_file
+    from pipeline.unified_patient_model import UnifiedPatientCase, DocumentCategory
+    from pipeline.patient_correlation import correlate_patient_findings
+
+    processed_docs = []
+    
+    for file in files:
+        if file:
+            filename = secure_filename(file.filename)
+            filepath = UPLOAD_FOLDER / filename
+            file.save(filepath)
+
+            # Ingest & parse through Document Intelligence
+            doc = process_uploaded_document_file(filepath)
+            processed_docs.append(doc)
+
+    # Attach to existing analysis or create context
+    target_aid = None
+    if target_case_id:
+        for aid, entry in analyses.items():
+            if entry.get("case_id") == target_case_id or aid == target_case_id:
+                target_aid = aid
+                break
+
+    if target_aid and target_aid in analyses:
+        entry = analyses[target_aid]
+        # Attach documents to case dictionary
+        entry.setdefault('uploaded_medical_documents', [])
+        for doc in processed_docs:
+            entry['uploaded_medical_documents'].append(doc.model_dump())
+            # Update clinical_data for report engine consumption
+            entry.setdefault('clinical_data', {})
+            for p in doc.extracted_parameters:
+                p_name = p.name.lower()
+                if "hemoglobin" in p_name:
+                    entry['clinical_data']['hb'] = p.reported_value
+                elif "wbc" in p_name:
+                    entry['clinical_data']['wbc'] = p.reported_value
+                elif "platelet" in p_name:
+                    entry['clinical_data']['plt'] = p.reported_value
+                elif "anc" in p_name:
+                    entry['clinical_data']['anc'] = p.reported_value
+                elif "karyotype" in p_name or "iscn" in p_name:
+                    entry['clinical_data']['karyotype'] = p.reported_value
+                elif "flow" in p_name:
+                    entry['clinical_data'].setdefault('flow_markers', []).append(f"{p.name}: {p.reported_value}")
+                elif "molecular" in p_name:
+                    entry['clinical_data'].setdefault('mutations', []).append(f"{p.name}: {p.reported_value}")
+
+        # Invalidate cached report so next view incorporates new multimodal context
+        entry.pop('cached_report', None)
+        save_analyses(analyses)
+
+    return jsonify({
+        'success': True,
+        'documents_processed': len(processed_docs),
+        'documents': [d.model_dump() for d in processed_docs],
+        'associated_case_id': target_case_id or "Unassigned"
+    })
+
+
 @app.route('/api/analyses')
 def get_analyses():
     return jsonify({
@@ -617,6 +696,41 @@ def get_analysis_report(analysis_id):
                 print(f"Phase 10: scan_facts, chapters, figures, diagrams, and medical differential enriched for {analysis_id}")
             except Exception as _fe:
                 print(f"Phase 10 scan_facts enrichment error: {_fe}")
+
+        # Dynamic Patient-Specific Report Architecture enrichment (Module 1-8)
+        if not cached.get('patient_clinical_context') or not cached.get('visualization_manifest'):
+            try:
+                from pipeline.patient_context import extract_patient_context_from_case
+                from pipeline.evidence_registry import build_evidence_registry_for_case
+                from pipeline.dynamic_visualizer import build_patient_visualization_manifest
+                from pipeline.report_validator import validate_report
+
+                _d = analyses[analysis_id]
+                _summary = build_morphology_summary(analysis_id, case_dict=_d)
+                _cells = _d.get('cell_images', [])
+                _patient_ctx = extract_patient_context_from_case(_d)
+                cached['patient_clinical_context'] = _patient_ctx.to_dict()
+
+                _top4_chunks = [{'chunk_id': s, 'text': ''} for s in cached.get('sources', [])[:4]]
+                _evidence_reg = build_evidence_registry_for_case(_top4_chunks, cached.get('multibank_evidence'))
+                cached['evidence_registry'] = {k: v.to_dict() for k, v in _evidence_reg.items()}
+
+                _manifest = build_patient_visualization_manifest(
+                    case_id=_summary.get('case_id', analysis_id),
+                    summary=_summary,
+                    cells=_cells,
+                    top4_sources=_top4_chunks,
+                    patient_ctx=_patient_ctx
+                )
+                cached['visualization_manifest'] = _manifest
+                for k_dia, v_dia in _manifest.get('diagram_urls', {}).items():
+                    cached.setdefault('diagrams', {})[k_dia.lower()] = v_dia
+
+                _val = validate_report(cached, _summary, _evidence_reg)
+                cached['validation_audit'] = _val.to_dict()
+                print(f"Dynamic patient-specific report enriched for {analysis_id}")
+            except Exception as _psee:
+                print(f"Dynamic patient-specific report enrichment error: {_psee}")
 
         # Phase 10 language guard: strip stray markdown (**) and forbidden diagnostic phrases
         # from LLM-generated cached section content and claim texts.
@@ -899,22 +1013,59 @@ def get_analysis_report(analysis_id):
         except Exception as _mde:
             print(f"Disease detection / multibank query non-fatal error: {_mde}")
 
-        report_data = {
-            'sections':             sections,
-            'case_id':              result.case_id,
-            'generated_at':         datetime.now().isoformat(),
-            'sources':              list(dict.fromkeys(all_src_ids)),
-            'schema_version':       'v3',
-            'has_claims':           True,
-            'disease_differential': disease_diff,
-            'multibank_evidence':   multibank_ev,
-            '_p10_lang_cleaned':    True,  # mark as already cleaned so cache path skips re-cleaning
-            'warning':      (
+        # Build comprehensive patient-specific medical report object (Module 1-8)
+        try:
+            from pipeline.patient_report_engine import build_patient_specific_report
+            from pipeline.scan_facts import build_scan_facts, generate_deterministic_chapters
+            from pipeline.report_figures import generate_all_figures
+
+            _cells = d.get('cell_images', [])
+            _facts = build_scan_facts(summary, _cells)
+            _top4_chunks = [{'chunk_id': s, 'text': ''} for s in all_src_ids[:4]]
+            _chapters = generate_deterministic_chapters(_facts, _top4_chunks)
+            _figures = generate_all_figures(result.case_id, summary, _cells)
+
+            patient_report = build_patient_specific_report(
+                case_dict=d,
+                summary=summary,
+                retrieved_chunks=_top4_chunks,
+                multibank_evidence=multibank_ev,
+                disease_differential=disease_diff,
+                scan_facts=_facts,
+                chapters=_chapters,
+                figures=_figures
+            )
+
+            # Preserve LLM generated prose sections if successful, appending structured clinical sections
+            if not llm_failure and sections:
+                # Merge LLM narrative sections with patient report clinical structure
+                patient_report['llm_sections'] = sections
+
+            report_data = patient_report
+            report_data['warning'] = (
                 'The LLM provider could not complete report generation. Affected sections contain retrieved '
                 'guideline evidence only and are not model-generated interpretations. Retry after the provider '
                 'rate limit clears for a fully generated report.'
-            ) if llm_failure else None,
-        }
+            ) if llm_failure else None
+            report_data['_p10_lang_cleaned'] = True
+        except Exception as _pbe:
+            print(f"build_patient_specific_report fallback: {_pbe}")
+            report_data = {
+                'sections':             sections,
+                'case_id':              result.case_id,
+                'generated_at':         datetime.now().isoformat(),
+                'sources':              list(dict.fromkeys(all_src_ids)),
+                'schema_version':       'v4_dynamic_patient_specific',
+                'has_claims':           True,
+                'disease_differential': disease_diff,
+                'multibank_evidence':   multibank_ev,
+                '_p10_lang_cleaned':    True,
+                'warning':      (
+                    'The LLM provider could not complete report generation. Affected sections contain retrieved '
+                    'guideline evidence only and are not model-generated interpretations. Retry after the provider '
+                    'rate limit clears for a fully generated report.'
+                ) if llm_failure else None,
+            }
 
         # Cache for instant future access ONLY if generation succeeded without LLM failure
         if not llm_failure:
