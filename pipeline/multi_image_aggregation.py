@@ -431,13 +431,13 @@ def format_aggregation_report(agg: AggregatedStatistics) -> str:
     
     report_lines.append("### Cross-Image Consistency")
     report_lines.append(f"- **Consistency Score**: {agg.consistency_score:.2f} / 1.00")
-    report_lines.append(f"- **Status**: {'✓ Consistent' if agg.is_consistent else '⚠ Inconsistent'}")
+    report_lines.append(f"- **Status**: {'Consistent' if agg.is_consistent else 'Inconsistent'}")
     report_lines.append("")
     
     if agg.consistency_warnings:
         report_lines.append("### Quality Flags")
         for warning in agg.consistency_warnings:
-            report_lines.append(f"- ⚠ {warning}")
+            report_lines.append(f"- [Warning] {warning}")
         report_lines.append("")
     
     report_lines.append("### Predominant Morphology")

@@ -406,7 +406,7 @@ def format_consistency_report(result: ConsistencyResult) -> str:
         report += "\n"
     
     if result.disagreement_flags:
-        report += "### ⚠️ Detected Disagreements\n\n"
+        report += "### Detected Disagreements\n\n"
         for flag in result.disagreement_flags:
             report += f"- {flag}\n"
         report += "\n"
@@ -415,14 +415,14 @@ def format_consistency_report(result: ConsistencyResult) -> str:
     report += "### Clinical Interpretation\n\n"
     
     if result.consistency_score >= 0.70:
-        report += "✅ **HIGH CONSISTENCY**: Multiple samples show strong agreement. The model is confident in its assessment.\n"
+        report += "**HIGH CONSISTENCY**: Multiple samples show strong agreement. The model is confident in its assessment.\n"
     elif result.consistency_score >= 0.50:
-        report += "⚠️ **MODERATE CONSISTENCY**: Some variation across samples. The model shows moderate uncertainty.\n"
+        report += "**MODERATE CONSISTENCY**: Some variation across samples. The model shows moderate uncertainty.\n"
     else:
-        report += "❌ **LOW CONSISTENCY**: Significant disagreement across samples. The model is uncertain or hallucinating. Manual review strongly recommended.\n"
+        report += "**LOW CONSISTENCY**: Significant disagreement across samples. The model is uncertain or hallucinating. Manual review strongly recommended.\n"
     
     if len(result.disagreement_flags) > 0:
-        report += "\n⚠️ **FACTUAL INCONSISTENCIES DETECTED**: Different samples made contradictory claims. This may indicate hallucination or high model uncertainty. Expert review is required.\n"
+        report += "\n**FACTUAL INCONSISTENCIES DETECTED**: Different samples made contradictory claims. This may indicate hallucination or high model uncertainty. Expert review is required.\n"
     
     report += "\n---\n\n"
     report += "**Literature**: Manakul et al. (2023) SelfCheckGPT, Wang et al. (2023) Self-Consistency\n"

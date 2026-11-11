@@ -25,3 +25,4 @@ else:
         if matches:
             print(f"Potential raw less than at line {idx+1}: {l.strip()}")
 print("Syntax check finished.")
+

@@ -327,7 +327,7 @@ If information is not available, clearly state what additional tests would be ne
 
 def render_cell_explorer(analysis: PatientAnalysis, retriever: HybridRetriever, llm_provider):
     """Render the Cell-by-Cell Explorer interface."""
-    st.markdown("### 🔬 Cell-by-Cell Analysis Explorer")
+    st.markdown("### Cell-by-Cell Analysis Explorer")
     st.caption("Explore each detected cell with AI-powered explanations from WHO guidelines")
     
     if not analysis.cell_predictions:
@@ -401,7 +401,7 @@ def render_cell_explorer(analysis: PatientAnalysis, retriever: HybridRetriever, 
             
             # Show retrieved evidence
             if knowledge.get("passages"):
-                with st.expander("📚 Retrieved WHO Guideline Evidence"):
+                with st.expander("Retrieved WHO Guideline Evidence"):
                     for passage in knowledge["passages"]:
                         st.markdown(f"**[{passage['chunk_id']}]** - Score: {passage.get('score', 0):.3f}")
                         st.text(passage['text'][:300] + "...")
@@ -410,7 +410,7 @@ def render_cell_explorer(analysis: PatientAnalysis, retriever: HybridRetriever, 
 
 def render_chatbot(analysis: PatientAnalysis, retriever: HybridRetriever, llm_provider):
     """Render the Interactive Chatbot interface."""
-    st.markdown("### 💬 Interactive Q&A About This Sample")
+    st.markdown("### Interactive Q&A About This Sample")
     st.caption("Ask questions about this specific bone marrow sample - answers are based on detected cells and WHO guidelines")
     
     # Initialize chatbot
@@ -422,16 +422,16 @@ def render_chatbot(analysis: PatientAnalysis, retriever: HybridRetriever, llm_pr
     chatbot = st.session_state.chatbot
     
     # Display sample context
-    with st.expander("📊 Sample Overview"):
+    with st.expander("Sample Overview"):
         st.text(chatbot.sample_context)
     
     # Suggested questions
-    st.markdown("**💡 Suggested Questions:**")
+    st.markdown("**Suggested Questions:**")
     suggestions = chatbot.suggest_questions()
     
     cols = st.columns(len(suggestions))
     for i, (col, suggestion) in enumerate(zip(cols, suggestions)):
-        if col.button(f"❓", key=f"suggest_{i}", help=suggestion):
+        if col.button("[?]", key=f"suggest_{i}", help=suggestion):
             st.session_state.current_question = suggestion
     
     # Display suggestions as chips
@@ -449,9 +449,9 @@ def render_chatbot(analysis: PatientAnalysis, retriever: HybridRetriever, llm_pr
     
     col1, col2 = st.columns([1, 4])
     with col1:
-        ask_button = st.button("🔍 Ask", type="primary", use_container_width=True)
+        ask_button = st.button("Ask", type="primary", use_container_width=True)
     with col2:
-        clear_button = st.button("🗑️ Clear History", use_container_width=True)
+        clear_button = st.button("Clear History", use_container_width=True)
     
     if clear_button:
         st.session_state.chat_history = []
@@ -476,7 +476,7 @@ def render_chatbot(analysis: PatientAnalysis, retriever: HybridRetriever, llm_pr
     # Display chat history (most recent first)
     if st.session_state.chat_history:
         st.markdown("---")
-        st.markdown("### 📝 Conversation History")
+        st.markdown("### Conversation History")
         
         for i, chat in enumerate(reversed(st.session_state.chat_history)):
             with st.container():
@@ -493,7 +493,7 @@ def render_chatbot(analysis: PatientAnalysis, retriever: HybridRetriever, llm_pr
                 """, unsafe_allow_html=True)
                 
                 if chat.get('sources'):
-                    st.caption(f"📚 Sources: {', '.join(chat['sources'])}")
+                    st.caption(f"Sources: {', '.join(chat['sources'])}")
                 
                 st.divider()
 

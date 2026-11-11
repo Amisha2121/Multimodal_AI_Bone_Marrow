@@ -177,7 +177,34 @@ RAG retrieves from a curated index under `data/knowledge_base/` and processed ch
 
 ---
 
-## 11. Citation & License
+## 12. Where Data Lives & How to Back Up
+
+All persistent clinical cases, analysis metrics, chat sessions, and uploaded images are saved under the `DATA_DIR` directory:
+
+- **Environment Variable**: `DATA_DIR` (defaults to `./data` relative to the repository root).
+- **SQLite Database**: `$DATA_DIR/cases.db` — Stores persistent case records, morphological counts, confidence metrics, RAG reports, and chat interactions.
+- **Legacy Storage**: `$DATA_DIR/app_storage/` (`analyses.pkl`, `chats.json`) — Dual-written alongside SQLite for backward compatibility.
+- **Uploads & Image Crops**:
+  - `$DATA_DIR/uploads/` — Raw uploaded aspirate images.
+  - `$DATA_DIR/new_patient_cache/` — Segmented cell crops, overlays, and contact sheets per case ID.
+
+### Backup Procedure
+To back up all patient analyses, chat histories, and database state safely without moving or modifying live files:
+```bash
+# Set your backup destination
+BACKUP_DIR="backup_$(date +%Y%m%d_%H%M%S)"
+mkdir -p "$BACKUP_DIR"
+
+# Copy SQLite database, storage files, and uploads
+cp "$DATA_DIR/cases.db" "$BACKUP_DIR/" 2>/dev/null || true
+cp -r "$DATA_DIR/app_storage" "$BACKUP_DIR/"
+cp -r "$DATA_DIR/uploads" "$BACKUP_DIR/"
+cp -r "$DATA_DIR/new_patient_cache" "$BACKUP_DIR/"
+```
+
+---
+
+## 13. Citation & License
 
 Cite the **BoneMarrowWSI-PediatricLeukemia** dataset and this codebase as appropriate for your publication. Dataset license: **CC BY 4.0** (see dataset card in `data/dataset_cards/`).
 

@@ -287,7 +287,7 @@ def format_fallback_notice() -> str:
     """Returns a notice that fallback guidelines are being used."""
     return (
         "\n\n---\n\n"
-        "> ⚠️ **Note:** Knowledge base retrieval did not return results for this query. "
+        "> **Note:** Knowledge base retrieval did not return results for this query. "
         "The assessment above is based on built-in WHO classification criteria and general "
         "hematopathology guidelines. For the most current disease-specific recommendations, "
         "consult primary literature and institutional protocols.\n"

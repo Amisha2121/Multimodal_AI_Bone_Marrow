@@ -58,6 +58,14 @@ def critic_node(state: AgentState) -> AgentState:
     valid_cids    = {e["chunk_id"] for e in evidence}
     low_evidence  = state.get("low_evidence_flag", False)
     total_cells   = state.get("total_cells", 0)
+    if not total_cells and state.get("cell_counts_by_category"):
+        total_cells = sum(state.get("cell_counts_by_category", {}).values())
+    if not total_cells and pid != "UNKNOWN":
+        try:
+            from pipeline.summary import build_morphology_summary
+            total_cells = build_morphology_summary(pid).get("total_cells", 0)
+        except Exception:
+            pass
     revisions     = state.get("revision_count", 0)
 
     logger.info(f"[{pid}] Critic verifying draft (revision #{revisions}) — {total_cells} cells...")

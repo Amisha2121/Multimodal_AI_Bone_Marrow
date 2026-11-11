@@ -405,11 +405,11 @@ def main():
         print(f"\nResponse:\n{response}")
 
         print("\n" + "=" * 70)
-        print("✓ LLM PROVIDER TEST SUCCESSFUL")
+        print("LLM PROVIDER TEST SUCCESSFUL")
         print("=" * 70)
 
     except Exception as e:
-        print(f"\n✗ Test failed: {e}")
+        print(f"\nTest failed: {e}")
         print("\nMake sure you have:")
         print("  1. Set GROQ_API_KEY in .env file")
         print("  2. Installed groq: pip install groq")
