@@ -1,0 +1,113 @@
+{
+  "model_architecture": "VisionTransformer-DocumentClassifier",
+  "test_split_size": 90,
+  "test_accuracy": 0.08888888888888889,
+  "test_macro_f1": 0.06645502645502645,
+  "test_micro_f1": 0.08888888888888889,
+  "held_out_template": "TEMPLATE_C",
+  "detailed_classification_report": {
+    "CAT_A_MORPHOLOGY": {
+      "precision": 0.08333333333333333,
+      "recall": 0.16666666666666666,
+      "f1-score": 0.1111111111111111,
+      "support": 6.0
+    },
+    "CAT_B_BIOPSY": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 6.0
+    },
+    "CAT_C_CBC": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 6.0
+    },
+    "CAT_L_COAG": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 6.0
+    },
+    "CAT_E_FLOW": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 6.0
+    },
+    "CAT_G_FISH": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 6.0
+    },
+    "CAT_F_IHC": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 6.0
+    },
+    "CAT_K_IRON": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 6.0
+    },
+    "CAT_H_KARYOTYPE": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 6.0
+    },
+    "CAT_M_MRD": {
+      "precision": 0.42857142857142855,
+      "recall": 1.0,
+      "f1-score": 0.6,
+      "support": 6.0
+    },
+    "CAT_I_NGS": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 6.0
+    },
+    "CAT_D_SMEAR": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 6.0
+    },
+    "CAT_J_PCR": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 6.0
+    },
+    "CAT_O_SPEP": {
+      "precision": 1.0,
+      "recall": 0.16666666666666666,
+      "f1-score": 0.2857142857142857,
+      "support": 6.0
+    },
+    "CAT_N_TRANSPLANT": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 6.0
+    },
+    "accuracy": 0.08888888888888889,
+    "macro avg": {
+      "precision": 0.1007936507936508,
+      "recall": 0.08888888888888889,
+      "f1-score": 0.06645502645502645,
+      "support": 90.0
+    },
+    "weighted avg": {
+      "precision": 0.1007936507936508,
+      "recall": 0.08888888888888889,
+      "f1-score": 0.06645502645502646,
+      "support": 90.0
+    }
+  }
+}

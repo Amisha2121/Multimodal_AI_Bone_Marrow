@@ -1,0 +1,10 @@
+{
+  "task": "structured_biomarker_extraction",
+  "test_documents_evaluated": 90,
+  "true_positives": 366,
+  "total_ground_truth": 492,
+  "total_extracted": 390,
+  "precision": 0.9384615384615385,
+  "recall": 0.7439024390243902,
+  "f1": 0.8299319727891157
+}

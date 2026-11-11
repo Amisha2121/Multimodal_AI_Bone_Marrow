@@ -1,0 +1,17 @@
+{
+  "CAT_A_MORPHOLOGY": 0,
+  "CAT_B_BIOPSY": 1,
+  "CAT_C_CBC": 2,
+  "CAT_L_COAG": 3,
+  "CAT_E_FLOW": 4,
+  "CAT_G_FISH": 5,
+  "CAT_F_IHC": 6,
+  "CAT_K_IRON": 7,
+  "CAT_H_KARYOTYPE": 8,
+  "CAT_M_MRD": 9,
+  "CAT_I_NGS": 10,
+  "CAT_D_SMEAR": 11,
+  "CAT_J_PCR": 12,
+  "CAT_O_SPEP": 13,
+  "CAT_N_TRANSPLANT": 14
+}
