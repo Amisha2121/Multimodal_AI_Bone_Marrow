@@ -1,0 +1,48 @@
+{
+  "validation_status": "PASSED",
+  "total_documents": 300,
+  "total_categories": 15,
+  "categories_found": [
+    "CAT_A_MORPHOLOGY",
+    "CAT_B_BIOPSY",
+    "CAT_C_CBC",
+    "CAT_D_SMEAR",
+    "CAT_E_FLOW",
+    "CAT_F_IHC",
+    "CAT_G_FISH",
+    "CAT_H_KARYOTYPE",
+    "CAT_I_NGS",
+    "CAT_J_PCR",
+    "CAT_K_IRON",
+    "CAT_L_COAG",
+    "CAT_M_MRD",
+    "CAT_N_TRANSPLANT",
+    "CAT_O_SPEP"
+  ],
+  "category_distribution": {
+    "CAT_A_MORPHOLOGY": 20,
+    "CAT_B_BIOPSY": 20,
+    "CAT_C_CBC": 20,
+    "CAT_L_COAG": 20,
+    "CAT_E_FLOW": 20,
+    "CAT_G_FISH": 20,
+    "CAT_F_IHC": 20,
+    "CAT_K_IRON": 20,
+    "CAT_H_KARYOTYPE": 20,
+    "CAT_M_MRD": 20,
+    "CAT_I_NGS": 20,
+    "CAT_D_SMEAR": 20,
+    "CAT_J_PCR": 20,
+    "CAT_O_SPEP": 20,
+    "CAT_N_TRANSPLANT": 20
+  },
+  "template_distribution": {
+    "TEMPLATE_B": 105,
+    "TEMPLATE_C": 90,
+    "TEMPLATE_A": 105
+  },
+  "error_count": 0,
+  "errors": [],
+  "warning_count": 0,
+  "warnings": []
+}

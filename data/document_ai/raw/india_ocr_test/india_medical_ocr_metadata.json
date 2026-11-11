@@ -1,0 +1,9 @@
+{
+  "dataset_name": "india-medical-ocr-test",
+  "hf_id": "davanstrien/india-medical-ocr-test",
+  "license": "open research",
+  "description": "",
+  "splits": [
+    "train"
+  ]
+}

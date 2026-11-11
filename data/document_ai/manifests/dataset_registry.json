@@ -1,0 +1,46 @@
+{
+  "datasets": {
+    "DocLayNet": {
+      "hf_id": "ds4sd/DocLayNet",
+      "license": "CDLA-Permissive-1.0",
+      "total_pages": 80863,
+      "download_size_gb": 28.6,
+      "task": "document_layout_segmentation",
+      "status": "cataloged_for_future_training"
+    },
+    "PubLayNet": {
+      "hf_id": "creative-graphic-design/PubLayNet",
+      "license": "CDLA-Permissive-1.0",
+      "total_pages": 360000,
+      "download_size_gb": 96.0,
+      "task": "scientific_paper_layout",
+      "status": "cataloged_for_reference"
+    },
+    "MTSamples_Hematology": {
+      "hf_id": "harishnair04/mtsamples",
+      "license": "public_domain",
+      "download_size_mb": 6.2,
+      "total_hematology_samples": 90,
+      "local_path": "data/document_ai/raw/mtsamples/mtsamples_hematology.json",
+      "task": "clinical_ner_benchmark",
+      "status": "downloaded_and_verified"
+    },
+    "India_Medical_OCR": {
+      "hf_id": "davanstrien/india-medical-ocr-test",
+      "license": "open_research",
+      "download_size_mb": 45.0,
+      "local_path": "data/document_ai/raw/india_ocr_test/india_medical_ocr_metadata.json",
+      "task": "ood_ocr_evaluation",
+      "status": "downloaded_and_verified"
+    },
+    "Synthetic_Hematology_Corpus": {
+      "source": "scripts/document_ai/generate_synthetic_reports.py",
+      "license": "fictional_research_only",
+      "total_documents": 300,
+      "total_categories": 15,
+      "template_variants": ["TEMPLATE_A", "TEMPLATE_B", "TEMPLATE_C"],
+      "is_synthetic": true,
+      "status": "generated_and_validated"
+    }
+  }
+}
