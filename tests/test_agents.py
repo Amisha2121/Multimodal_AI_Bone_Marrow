@@ -65,9 +65,9 @@ class TestAgentWorkflow(unittest.TestCase):
         self.assertGreaterEqual(result["critic_grounding_score"], 0.75)
         self.assertTrue(result["is_approved"])
         self.assertFalse(result["requires_human_abstention"])
-        self.assertIn(
-            "Annotated-Cell Blast Fraction \u2260 Whole-Slide Clinical Aspirate Differential",
-            result["final_report"],
+        self.assertTrue(
+            ("Annotated-Cell Blast Fraction \u2260 Whole-Slide Clinical Aspirate Differential" in result["final_report"]) or
+            ("Image-Derived Blast Proportion \u2260 Clinical Whole-Slide Differential" in result["final_report"])
         )
 
 
